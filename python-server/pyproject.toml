@@ -1,19 +1,23 @@
-[project]
+[tool.poetry]
 name = "python-server"
 version = "0.1.0"
 description = "ORDER101 프로젝트의 백엔드 Python 서버"
-authors = [
-    {name = "sangwon5579",email = "chosw0410@naver.com"}
-]
+authors = ["sangwon5579 <chosw0410@naver.com>"]
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = [
-    "fastapi (>=0.120.4,<0.121.0)",
-    "uvicorn (>=0.38.0,<0.39.0)",
-    "requests (>=2.32.5,<3.0.0)"
-]
 
+[tool.poetry.dependencies]
+python = ">=3.13"
+fastapi = "^0.120.4"
+uvicorn = "^0.38.0"
+requests = "^2.32.5"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.8.0"
+isort = "^5.13.0"
+flake8 = "^7.1.0"
+pytest = "^8.3.0"
 
 [build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
+requires = ["poetry-core>=2.0.0"]
 build-backend = "poetry.core.masonry.api"
