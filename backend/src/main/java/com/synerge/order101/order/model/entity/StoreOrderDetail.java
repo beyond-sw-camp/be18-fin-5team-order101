@@ -15,7 +15,7 @@ public class StoreOrderDetail {
 
     @ManyToOne
     @JoinColumn(name = "store_order_id", nullable = false)
-    private StoreOrder storeOrder;
+    private StoreOrder storeOrderId;
 
     @Column
     private Double orderQTY;

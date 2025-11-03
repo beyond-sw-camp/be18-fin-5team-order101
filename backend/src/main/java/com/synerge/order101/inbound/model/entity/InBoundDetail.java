@@ -11,6 +11,6 @@ public class InBoundDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long inboundId;
+    private Long inboundDetailId;
 
 }
