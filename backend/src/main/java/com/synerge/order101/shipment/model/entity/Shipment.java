@@ -30,18 +30,21 @@ public class Shipment {
     private StoreOrder storeOrder;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
+    @Column(name = "status", nullable = true)
     private Status status;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at", nullable = true)
     private LocalDateTime updatedAt;
 
 
-    private enum Status{
-        WAITING, IN_TRANSIT, DELIVERED
+    public enum Status{
+        WAITING,
+        IN_TRANSIT,
+        DELIVERED
     }
+
 
 }

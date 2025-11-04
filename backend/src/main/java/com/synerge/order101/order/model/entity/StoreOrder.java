@@ -46,7 +46,7 @@ public class StoreOrder {
     DeliveryStatus deliveryStatus;
 
     @Column
-    String orderStatus;
+    OrderStatus orderStatus;
 
     @Column
     String remark;
@@ -58,6 +58,10 @@ public class StoreOrder {
     @Column
     @LastModifiedDate
     OffsetDateTime updatedAt;
+
+    public enum OrderStatus{
+        SUBMITTED,CONFIRMED
+    }
 
 
 }
