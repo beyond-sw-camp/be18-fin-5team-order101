@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-@EnableScheduling
 public class ShipmentScheduler {
     private final ShipmentService shipmentService;
 
