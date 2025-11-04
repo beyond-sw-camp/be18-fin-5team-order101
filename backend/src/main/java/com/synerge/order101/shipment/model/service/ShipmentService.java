@@ -4,12 +4,13 @@ import com.synerge.order101.common.enums.ShipmentStatus;
 import com.synerge.order101.shipment.model.entity.Shipment;
 import com.synerge.order101.shipment.model.repository.ShipmentRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ShipmentService {
@@ -32,6 +33,9 @@ public class ShipmentService {
                 now.minusMinutes(60),
                 now
         );
+
+        log.info("배송 상태 업데이트 완료: WAITING→IN_TRANSIT={}건, IN_TRANSIT→DELIVERED={}건",
+                waitingUpdate, inTransitUpdate);
 
 
 
