@@ -1,5 +1,6 @@
 package com.synerge.order101.order.model.entity;
 
+import com.synerge.order101.common.enums.OrderStatus;
 import com.synerge.order101.store.model.entity.Store;
 import com.synerge.order101.user.model.entity.User;
 import com.synerge.order101.warehouse.model.entity.Warehouse;
@@ -58,10 +59,6 @@ public class StoreOrder {
     @Column
     @LastModifiedDate
     OffsetDateTime updatedAt;
-
-    public enum OrderStatus{
-        SUBMITTED,CONFIRMED
-    }
 
 
 }

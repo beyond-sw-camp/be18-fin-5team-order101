@@ -1,5 +1,6 @@
 package com.synerge.order101.shipment.model.service;
 
+import com.synerge.order101.common.enums.ShipmentStatus;
 import com.synerge.order101.shipment.model.entity.Shipment;
 import com.synerge.order101.shipment.model.repository.ShipmentRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,15 +20,15 @@ public class ShipmentService {
         LocalDateTime now = LocalDateTime.now();
 
         int waitingUpdate = shipmentRepository.updateStatus(
-                Shipment.Status.WAITING,
-                Shipment.Status.IN_TRANSIT,
+                ShipmentStatus.WAITING,
+                ShipmentStatus.IN_TRANSIT,
                 now.minusMinutes(30),
                 now
         );
 
         int inTransitUpdate = shipmentRepository.updateStatus(
-                Shipment.Status.IN_TRANSIT,
-                Shipment.Status.DELIVERED,
+                ShipmentStatus.IN_TRANSIT,
+                ShipmentStatus.DELIVERED,
                 now.minusMinutes(60),
                 now
         );
