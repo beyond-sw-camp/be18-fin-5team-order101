@@ -1,5 +1,7 @@
 package com.synerge.order101.order.model.entity;
 
+import com.synerge.order101.common.enums.OrderStatus;
+import com.synerge.order101.common.enums.ShipmentStatus;
 import com.synerge.order101.store.model.entity.Store;
 import com.synerge.order101.user.model.entity.User;
 import com.synerge.order101.warehouse.model.entity.Warehouse;
@@ -43,10 +45,10 @@ public class StoreOrder {
     OffsetDateTime orderDatetime;
 
     @Enumerated(EnumType.STRING) // Enum 타입을 데이터베이스에 저장할 때 문자열로 저장하도록 설정
-    DeliveryStatus deliveryStatus;
+    ShipmentStatus shipmentStatus;
 
     @Column
-    String orderStatus;
+    OrderStatus orderStatus;
 
     @Column
     String remark;
