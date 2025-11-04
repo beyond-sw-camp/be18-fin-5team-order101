@@ -1,6 +1,6 @@
 package com.synerge.order101.common.enums;
 
-public enum ShipmentStatus{
+public enum ShipmentStatus {
     WAITING,
     IN_TRANSIT,
     DELIVERED
