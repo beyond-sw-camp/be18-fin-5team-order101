@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 @RequestMapping("/api/v1/shipments")
 @RequiredArgsConstructor
 public class ShipmentController {
+
     private final ShipmentListService shipmentListService;
 
     @GetMapping
@@ -30,9 +31,8 @@ public class ShipmentController {
             @RequestParam(required = false) ShipmentStatus status,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
-            @PageableDefault(size = 20, sort = "requestTime", direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(size = 20) Pageable pageable
     ) {
         return shipmentListService.findShipments(orderNo, storeId, status, from, to, pageable);
     }
-
 }
