@@ -12,11 +12,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.OffsetDateTime;
 
 @Getter
-//@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "store_order")
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class StoreOrder {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,15 +26,15 @@ public class StoreOrder {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id", nullable = false)
-    Store storeId;
+    Store store;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    User userId;
+    User user;
 
     @ManyToOne
     @JoinColumn(name = "warehouse_id", nullable = false)
-    Warehouse warehouseId;
+    Warehouse warehouse;
 
     @Column
     String orderNo;
@@ -58,7 +59,5 @@ public class StoreOrder {
     @LastModifiedDate
     OffsetDateTime updatedAt;
 
-    public StoreOrder() {
-    }
 
 }
