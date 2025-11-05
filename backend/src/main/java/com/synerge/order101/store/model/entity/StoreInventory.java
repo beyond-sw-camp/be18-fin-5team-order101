@@ -27,7 +27,7 @@ public class StoreInventory {
     private Store store;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id2", nullable = false)
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
     @Column(name = "on_hand_qty", precision = 18, scale = 3, nullable = false)
