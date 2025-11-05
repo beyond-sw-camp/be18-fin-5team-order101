@@ -34,3 +34,4 @@ public class CategoryController {
 record CategorySimpleDto(Long id, String name) {
     static CategorySimpleDto from(ProductCategory c) { return new CategorySimpleDto(c.getProductCategoryId(), c.getCategoryName()); }
 }
+
