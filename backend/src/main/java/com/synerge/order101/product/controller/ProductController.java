@@ -12,6 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1")
 public class ProductController {
 
-    @GetMapping("/products")
-    public ResponseEntity<ItemsResponseDto>
+//    @GetMapping("/products")
+//    public ResponseEntity<ItemsResponseDto>
 }
