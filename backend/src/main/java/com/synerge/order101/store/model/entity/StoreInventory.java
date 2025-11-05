@@ -30,11 +30,11 @@ public class StoreInventory {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    @Column(name = "on_hand_qty", precision = 18, scale = 3, nullable = false)
-    private BigDecimal onHandQty = BigDecimal.ZERO;
+    @Column(name = "on_hand_qty", nullable = false)
+    private int onHandQty = BigDecimal.ZERO;
 
-    @Column(name = "in_transit_qty", precision = 18, scale = 3, nullable = false)
-    private BigDecimal inTransitQty = BigDecimal.ZERO;
+    @Column(name = "in_transit_qty", nullable = false)
+    private int inTransitQty = BigDecimal.ZERO;
 
     @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @UpdateTimestamp
