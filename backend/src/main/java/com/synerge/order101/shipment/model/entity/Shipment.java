@@ -16,6 +16,7 @@ public class Shipment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "shipment_id")
     private Long shipmentId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -31,7 +32,7 @@ public class Shipment {
     private StoreOrder storeOrder;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = true)
+    @Column(name = "shipment_status", nullable = true)
     private ShipmentStatus shipmentStatus;
 
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -40,6 +41,22 @@ public class Shipment {
     @Column(name = "updated_at", nullable = true)
     private LocalDateTime updatedAt;
 
+    @PrePersist
+    void onCreate(){
+        LocalDateTime now = LocalDateTime.now();
+        if(createdAt == null){
+            createdAt = now;
+        }
+        if(shipmentStatus == null){
+            shipmentStatus = ShipmentStatus.WAITING;
+        }
+        updatedAt = now;
+    }
+
+    @PreUpdate
+    void onUpdate(){
+        updatedAt = LocalDateTime.now();
+    }
 
 
 }

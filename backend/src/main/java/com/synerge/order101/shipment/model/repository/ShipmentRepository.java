@@ -2,10 +2,10 @@ package com.synerge.order101.shipment.model.repository;
 
 import com.synerge.order101.common.enums.ShipmentStatus;
 import com.synerge.order101.shipment.model.entity.Shipment;
-import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
