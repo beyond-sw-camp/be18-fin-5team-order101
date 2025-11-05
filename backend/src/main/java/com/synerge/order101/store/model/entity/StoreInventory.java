@@ -31,10 +31,10 @@ public class StoreInventory {
     private Product product;
 
     @Column(name = "on_hand_qty", nullable = false)
-    private int onHandQty = BigDecimal.ZERO;
+    private int onHandQty;
 
     @Column(name = "in_transit_qty", nullable = false)
-    private int inTransitQty = BigDecimal.ZERO;
+    private int inTransitQty;
 
     @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @UpdateTimestamp
