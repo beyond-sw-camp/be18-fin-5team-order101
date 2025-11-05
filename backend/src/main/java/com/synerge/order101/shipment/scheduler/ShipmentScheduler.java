@@ -15,8 +15,8 @@ public class ShipmentScheduler {
 
     @Scheduled(cron = "0 * * * * *")
     public void run(){
-        log.info("배송 상태 업데이트 스케줄러 시작");
+        log.info("Start Shipment Status Update Scheduler");
         shipmentService.updateShipmentStatus();
-        log.info("배송 상태 업데이트 스케줄러 종료");
+        log.info("End Shipment Status Update Scheduler");
     }
 }
