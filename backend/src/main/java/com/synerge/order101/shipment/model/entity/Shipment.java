@@ -35,6 +35,9 @@ public class Shipment {
     @Column(name = "shipment_status", nullable = true)
     private ShipmentStatus shipmentStatus;
 
+    @Column(name="inventory_applied", nullable = false)
+    private Boolean inventoryApplied = false;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -56,6 +59,17 @@ public class Shipment {
     @PreUpdate
     void onUpdate(){
         updatedAt = LocalDateTime.now();
+    }
+
+    public void changeStatus(ShipmentStatus next) {
+        this.shipmentStatus = next;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+
+    public void markInventoryApplied() {
+        this.inventoryApplied = true;
+        this.updatedAt = LocalDateTime.now();
     }
 
 
