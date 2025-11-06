@@ -38,6 +38,9 @@ public class Shipment {
     @Column(name="inventory_applied", nullable = false)
     private Boolean inventoryApplied = false;
 
+    @Column(name = "in_transit_applied", nullable = false)
+    private Boolean inTransitApplied = false;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -69,6 +72,11 @@ public class Shipment {
 
     public void markInventoryApplied() {
         this.inventoryApplied = true;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void markInTransitApplied() {
+        this.inTransitApplied = true;
         this.updatedAt = LocalDateTime.now();
     }
 
