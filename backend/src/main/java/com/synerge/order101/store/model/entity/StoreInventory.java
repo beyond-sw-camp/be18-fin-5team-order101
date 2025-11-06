@@ -2,19 +2,17 @@ package com.synerge.order101.store.model.entity;
 
 import com.synerge.order101.product.model.entity.Product;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
 @Entity
 @Table(name = "store_inventory")
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 public class StoreInventory {
 
     @Id
@@ -39,5 +37,13 @@ public class StoreInventory {
     @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    public void increaseOnHand(int qty) {
+        this.onHandQty += qty;
+    }
+
+    public void decreaseOnHand(int qty) {
+        this.onHandQty = Math.max(this.onHandQty - qty, 0);
+    }
 
 }
