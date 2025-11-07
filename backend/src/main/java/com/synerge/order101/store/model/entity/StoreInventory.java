@@ -2,19 +2,17 @@ package com.synerge.order101.store.model.entity;
 
 import com.synerge.order101.product.model.entity.Product;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
 @Entity
 @Table(name = "store_inventory")
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 public class StoreInventory {
 
     @Id
@@ -39,5 +37,42 @@ public class StoreInventory {
     @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+
+    public static StoreInventory create(Store store, Product product) {
+        return StoreInventory.builder()
+                .store(store)
+                .product(product)
+                .onHandQty(0)
+                .inTransitQty(0)
+                .build();
+    }
+
+
+    public void increaseInTransit(int qty) {
+        if (qty <= 0) return;
+        this.inTransitQty += qty;
+    }
+
+    public void decreaseInTransit(int qty) {
+        if (qty <= 0) return;
+        this.inTransitQty = Math.max(this.inTransitQty - qty, 0);
+    }
+
+    public void increaseOnHand(int qty) {
+        if (qty <= 0) return;
+        this.onHandQty += qty;
+    }
+
+    public void decreaseOnHand(int qty) {
+        if (qty <= 0) return;
+        this.onHandQty = Math.max(this.onHandQty - qty, 0);
+    }
+
+    public void moveTransitToOnHand(int qty) {
+        if (qty <= 0) return;
+        decreaseInTransit(qty);
+        increaseOnHand(qty);
+    }
 
 }

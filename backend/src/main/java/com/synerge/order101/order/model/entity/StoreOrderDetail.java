@@ -29,6 +29,7 @@
 
 package com.synerge.order101.order.model.entity;
 
+import com.synerge.order101.product.model.entity.Product;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -48,10 +49,12 @@ public class StoreOrderDetail {
     @Column(name = "store_order_detail_id")
     private Long storeOrderDetailId;
 
-    @ManyToOne(fetch = LAZY) @JoinColumn(name="store_order_id") StoreOrder storeOrder;
+    @ManyToOne(fetch = LAZY) @JoinColumn(name="store_order_id")
+    StoreOrder storeOrder;
 
-    @Column(name = "product_id", nullable = false)
-    private Long productId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 
     @Column(name = "order_qty", nullable = false, precision = 15, scale = 3)
     private BigDecimal orderQty;
@@ -64,5 +67,7 @@ public class StoreOrderDetail {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+
 }
 

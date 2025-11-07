@@ -35,9 +35,6 @@ public class Product {
     @Column(name = "image_url")
     private String imageUrl;
 
-    @Column(name = "base_uom", length = 20, nullable = false)
-    private String baseUom;
-
     @Column
     private String description;
 
@@ -54,9 +51,5 @@ public class Product {
     @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-
-
-
-
 
 }
