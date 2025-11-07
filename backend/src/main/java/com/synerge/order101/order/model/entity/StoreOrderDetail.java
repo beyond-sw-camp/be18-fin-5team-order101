@@ -1,32 +1,3 @@
-//package com.synerge.order101.order.model.entity;
-//
-//
-//import jakarta.persistence.*;
-//import lombok.Getter;
-//
-//@Getter
-//@Entity
-//@Table(name = "store_order_detatil")
-//public class StoreOrderDetail {
-//
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private Long storeOrderDetailId;
-//
-//    @ManyToOne
-//    @JoinColumn(name = "store_order_id", nullable = false)
-//    private StoreOrder storeOrderId;
-//
-//    @Column
-//    private Double orderQTY;
-//
-//    @Column
-//    private Double unitPrice;
-//
-//
-//}
-
-
 package com.synerge.order101.order.model.entity;
 
 import jakarta.persistence.*;
@@ -45,10 +16,13 @@ import static jakarta.persistence.FetchType.LAZY;
 public class StoreOrderDetail {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "store_order_detail_id")
     private Long storeOrderDetailId;
 
-    @ManyToOne(fetch = LAZY) @JoinColumn(name="store_order_id") StoreOrder storeOrder;
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name="store_order_id")
+    StoreOrder storeOrder;
 
     @Column(name = "product_id", nullable = false)
     private Long productId;

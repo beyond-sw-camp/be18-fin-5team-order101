@@ -75,6 +75,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -118,6 +120,9 @@ public class StoreOrder {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "storeOrder")
+    private List<StoreOrderDetail> storeOrderDetails = new ArrayList<>();
 
     @PrePersist
     void onCreate() {
