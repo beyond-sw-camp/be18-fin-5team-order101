@@ -52,13 +52,6 @@ public class Shipment {
     private LocalDateTime updatedAt;
 
 
-
-    public void changeStatus(ShipmentStatus next) {
-        this.shipmentStatus = next;
-        this.updatedAt = LocalDateTime.now();
-    }
-
-
     public void markInventoryApplied() {
         this.inventoryApplied = true;
         this.updatedAt = LocalDateTime.now();

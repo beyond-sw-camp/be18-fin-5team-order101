@@ -14,14 +14,6 @@ import java.util.List;
 @Repository
 public interface ShipmentRepository extends JpaRepository<Shipment, Long> {
 
-    @Query("""
-    select s
-      from Shipment s
-     where s.shipmentStatus = :status
-       and s.inventoryApplied = false
-  """)
-    List<Shipment> findByStatusAndNotApplied(@Param("status") ShipmentStatus status);
-
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("""
     update Shipment s
