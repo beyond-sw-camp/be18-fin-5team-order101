@@ -9,7 +9,15 @@ import java.time.LocalDateTime;
 
 @Getter
 @Entity
-@Table(name = "store_inventory")
+@Table(
+        name = "store_inventory",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "ux_store_inventory_store_product",
+                        columnNames = {"store_id", "product_id"}
+                )
+        }
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
