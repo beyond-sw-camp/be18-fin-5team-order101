@@ -54,8 +54,9 @@
 
 ## <a id="1-프로젝트-개요"></a> 1. 프로젝트 개요  
 ### 1.1 프로젝트 소개
-**ORDER101**은 AI 기반 의사결정 자동화로 공급사–본사–점포의 발주·재고·주문·물류(SCM)를 지능화하여 재고 손실 최소화와 운영 효율 극대화하는 주문 관리 시스템입니다.
-[프로젝트 기획서](https://docs.google.com/document/d/1WtzSRvkpIZyfA1Ly5Uefu3BVrmNXd_YseDzOPMAbrlo/edit?tab=t.0#heading=h.d5g3yog13kgn)
+[프로젝트 기획서](https://docs.google.com/document/d/1WtzSRvkpIZyfA1Ly5Uefu3BVrmNXd_YseDzOPMAbrlo/edit?tab=t.0#heading=h.d5g3yog13kgn)  
+**ORDER101**은 AI 기반 의사결정 자동화로 공급사–본사–점포의 발주·재고·주문·물류(SCM)를 지능화하여 재고 손실 최소화와 운영 효율 극대화하는 주문 관리 시스템입니다.  
+
 <br></br>
 ### 1.2 프로젝트 배경
 - 재고관리 : 수동 및 경험 기반의 발주로 과잉 재고 및 품절 발생 빈번.   
