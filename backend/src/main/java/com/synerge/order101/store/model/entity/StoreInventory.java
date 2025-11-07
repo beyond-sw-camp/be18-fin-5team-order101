@@ -38,12 +38,41 @@ public class StoreInventory {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+
+    public static StoreInventory create(Store store, Product product) {
+        return StoreInventory.builder()
+                .store(store)
+                .product(product)
+                .onHandQty(0)
+                .inTransitQty(0)
+                .build();
+    }
+
+
+    public void increaseInTransit(int qty) {
+        if (qty <= 0) return;
+        this.inTransitQty += qty;
+    }
+
+    public void decreaseInTransit(int qty) {
+        if (qty <= 0) return;
+        this.inTransitQty = Math.max(this.inTransitQty - qty, 0);
+    }
+
     public void increaseOnHand(int qty) {
+        if (qty <= 0) return;
         this.onHandQty += qty;
     }
 
     public void decreaseOnHand(int qty) {
+        if (qty <= 0) return;
         this.onHandQty = Math.max(this.onHandQty - qty, 0);
+    }
+
+    public void moveTransitToOnHand(int qty) {
+        if (qty <= 0) return;
+        decreaseInTransit(qty);
+        increaseOnHand(qty);
     }
 
 }

@@ -3,8 +3,6 @@ package com.synerge.order101.shipment.event;
 import com.synerge.order101.common.enums.ShipmentStatus;
 import com.synerge.order101.common.exception.CustomException;
 import com.synerge.order101.common.exception.errorcode.CommonErrorCode;
-import com.synerge.order101.order.model.entity.StoreOrder;
-import com.synerge.order101.order.model.entity.StoreOrderDetail;
 import com.synerge.order101.order.model.repository.StoreOrderDetailRepository;
 import com.synerge.order101.order.model.repository.StoreOrderRepository;
 import com.synerge.order101.shipment.exception.errorcode.ShipmentErrorCode;
@@ -21,12 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
-import java.util.List;
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ShipmentInventoryListener {
+public class ShipmentInTransitListener {
 
     private final ShipmentRepository shipmentRepository;
     private final StoreOrderRepository storeOrderRepository;
@@ -35,49 +31,40 @@ public class ShipmentInventoryListener {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void applyInventory(ShipmentDeliveredEvent event) {
+    public void applyInTransit(ShipmentInTransitEvent event) {
+
         try {
             Shipment shipment = shipmentRepository.findById(event.shipmentId())
                     .orElseThrow(() -> new CustomException(CommonErrorCode.INVALID_REQUEST));
 
-            if (Boolean.TRUE.equals(shipment.getInventoryApplied())) {
-                log.info("already applied (delivered): shipmentId={}", event.shipmentId());
+            if (Boolean.TRUE.equals(shipment.getInTransitApplied())) {
+                log.info("in_transit already applied: {}", shipment.getShipmentId());
                 return;
             }
-            if (shipment.getShipmentStatus() != ShipmentStatus.DELIVERED) {
-                throw new CustomException(ShipmentErrorCode.SHIPMENT_NOT_DELIVERED);
+            if (shipment.getShipmentStatus() != ShipmentStatus.IN_TRANSIT) {
+                log.info("skip applyInTransit, status != IN_TRANSIT: {}", shipment.getShipmentId());
+                return;
             }
 
-            StoreOrder order = storeOrderRepository.findById(event.storeOrderId())
+            var order = storeOrderRepository.findById(event.storeOrderId())
                     .orElseThrow(() -> new CustomException(CommonErrorCode.INVALID_REQUEST));
 
-            List<StoreOrderDetail> lines = storeOrderDetailRepository
-                    .findByStoreOrder_StoreOrderId(order.getStoreOrderId());
+            var lines = storeOrderDetailRepository.findByStoreOrder_StoreOrderId(order.getStoreOrderId());
             if (lines.isEmpty()) throw new CustomException(CommonErrorCode.INVALID_REQUEST);
-
-            boolean hadTransitPhase = Boolean.TRUE.equals(shipment.getInTransitApplied());
 
             lines.forEach(d -> {
                 StoreInventory inv = storeInventoryRepository
                         .findByStoreAndProduct(order.getStore(), d.getProduct())
                         .orElseGet(() -> StoreInventory.create(order.getStore(), d.getProduct()));
 
-                int qty = d.getOrderQty().intValue();
-
-
-                if (hadTransitPhase) {
-                    inv.moveTransitToOnHand(qty);
-                } else {
-                    inv.increaseOnHand(qty);
-                }
+                inv.increaseInTransit(d.getOrderQty().intValue());
                 storeInventoryRepository.save(inv);
             });
 
-            shipment.markInventoryApplied();
+            shipment.markInTransitApplied();
             shipmentRepository.save(shipment);
 
-            log.info("store inventory applied (delivered): shipmentId={}, storeOrderId={}",
-                    event.shipmentId(), event.storeOrderId());
+            log.info("in_transit applied: shipmentId={}", shipment.getShipmentId());
 
         } catch (CustomException e) {
             throw e;

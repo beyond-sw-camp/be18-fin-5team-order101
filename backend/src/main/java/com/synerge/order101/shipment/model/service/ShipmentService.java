@@ -3,6 +3,7 @@ package com.synerge.order101.shipment.model.service;
 
 import com.synerge.order101.common.enums.ShipmentStatus;
 import com.synerge.order101.shipment.event.ShipmentDeliveredEvent;
+import com.synerge.order101.shipment.event.ShipmentInTransitEvent;
 import com.synerge.order101.shipment.model.entity.Shipment;
 import com.synerge.order101.shipment.model.repository.ShipmentRepository;
 import jakarta.persistence.EntityManager;
@@ -46,13 +47,18 @@ public class ShipmentService {
         );
         log.info("IN_TRANSIT → DELIVERED: {}", t2d);
 
-        List<Shipment> delivered = shipmentRepository.findByStatusAndNotApplied(ShipmentStatus.DELIVERED);
-        delivered.forEach(s -> {
-            eventPublisher.publishEvent(new ShipmentDeliveredEvent(
-                    s.getShipmentId(),
-                    s.getStoreOrder().getStoreOrderId(),
-                    s.getStore().getStoreId()
+        // IN_TRANSIT 입고예정 반영 이벤트
+        for (Shipment s : shipmentRepository.findInTransitNotApplied()) {
+            eventPublisher.publishEvent(new ShipmentInTransitEvent(
+                    s.getShipmentId(), s.getStoreOrder().getStoreOrderId(), s.getStore().getStoreId()
             ));
-        });
+        }
+
+        // DELIVERED 재고 반영 이벤트
+        for (Shipment s : shipmentRepository.findDeliveredNotApplied()) {
+            eventPublisher.publishEvent(new ShipmentDeliveredEvent(
+                    s.getShipmentId(), s.getStoreOrder().getStoreOrderId(), s.getStore().getStoreId()
+            ));
+        }
     }
 }
