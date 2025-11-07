@@ -19,11 +19,11 @@ public class WarehouseInventory {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "warehouse_id", nullable = false)
-    private Warehouse warehouseId;
+    private Warehouse warehouse;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
-    private Product productId;
+    private Product product;
 
     @Column(name = "on_hand_qty", nullable = false)
     private Integer onHandQuantity;
