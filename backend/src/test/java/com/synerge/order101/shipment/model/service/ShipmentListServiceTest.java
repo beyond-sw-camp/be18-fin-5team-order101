@@ -38,7 +38,7 @@ class ShipmentListServiceTest {
     private ShipmentListRepository shipmentListRepository;
 
     @Test @Order(1)
-    void GET_SHIPMENT_LIST_SUCCESS() {
+    void GetShipmentListSuccess() {
         // given
         var dto = new ShipmentResponseDto(1L, "ORDER-1", "가맹점A", null, ShipmentStatus.WAITING, LocalDateTime.now());
         var page = new PageImpl<>(List.of(dto), PageRequest.of(0,20), 1);
@@ -55,7 +55,7 @@ class ShipmentListServiceTest {
 
     @Test
     @Order(2)
-    void GET_SHIPMENT_LIST_NONE_EXCEPTION() {
+    void GetShipmentListNoneException() {
         // given
         given(shipmentListRepository.findPage(any(), any(), any(), any(), any(), any()))
                 .willReturn(Page.empty());
