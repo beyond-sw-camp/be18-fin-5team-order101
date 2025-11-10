@@ -1,85 +1,316 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import { computed, ref, watch } from 'vue'
+import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
+import Header from './components/Header.vue'
+import Sidebar from './components/Sidebar.vue'
+import { auth, setRole } from './stores/auth'
+
+const roleOptions = [
+  { label: 'HQ', value: 'HQ' },
+  { label: 'HQ Admin', value: 'HQ_ADMIN' },
+  { label: 'Store Admin', value: 'STORE_ADMIN' },
+]
+
+const adminSidebar = [
+  {
+    id: 'orders',
+    title: '주문 관리',
+    icon: 'tooling',
+    children: [
+      { title: '구매 주문 생성', path: '/hq/orders/create' },
+      { title: '주문 현황', path: '/hq/orders/status' },
+      { title: '주문 승인', path: '/hq/orders/approval' },
+      { title: '공급사 관리', path: '/hq/orders/vendors' },
+    ],
+  },
+  {
+    id: 'warehouse',
+    title: '창고 관리',
+    icon: 'ecosystem',
+    children: [
+      { title: '재고 상태', path: '/hq/inventory/stock' },
+      { title: '입출고 조회', path: '/hq/inventory/movements' },
+    ],
+  },
+  {
+    id: 'settlement',
+    title: '정산 관리',
+    icon: 'documentation',
+    children: [{ title: '일일 정산', path: '/hq/settlement/daily' }],
+  },
+  {
+    id: 'users',
+    title: '사용자 관리',
+    icon: 'community',
+    children: [
+      { title: '사용자 목록', path: '/hq/users/' },
+      { title: '사용자 등록', path: '/hq/users/registration' },
+    ],
+  },
+  {
+    id: 'franchise',
+    title: '가맹점 관리',
+    icon: 'support',
+    children: [
+      { title: '가맹점 등록', path: '/hq/franchise/registration' },
+      { title: '가맹점 재고 현황', path: '/hq/franchise/stock' },
+      { title: '가맹점 주문 승인', path: '/hq/franchise/approval' },
+      { title: '가맹점 주문 조회', path: '/hq/franchise/orders' },
+      { title: '배송 관리', path: '/hq/franchise/delivery' },
+    ],
+  },
+]
+
+const storeSidebar = [
+  {
+    id: 'store-orders',
+    title: '발주 관리',
+    icon: 'tooling',
+    children: [{ title: '발주 생성', path: '/store/purchase/create' }],
+  },
+  {
+    id: 'store-inventory',
+    title: '재고 관리',
+    icon: 'ecosystem',
+    children: [{ title: '재고 조회', path: '/store/inventory/stock' }],
+  },
+  {
+    id: 'store-settlement',
+    title: '정산 관리',
+    icon: 'documentation',
+    children: [{ title: '정산 관리', path: '/store/settlement/overview' }],
+  },
+]
+
+const router = useRouter()
+const route = useRoute()
+const currentRole = computed({
+  get: () => auth.role,
+  set: (v) => setRole(v),
+})
+const expandedSections = ref({})
+const isAuthRoute = computed(() => {
+  // hide header/sidebar for login or other auth-only pages
+  return route.name === 'login' || route.path === '/login'
+})
+
+const sidebarSections = computed(() =>
+  currentRole.value === 'STORE_ADMIN' ? storeSidebar : adminSidebar,
+)
+
+const isStoreRole = computed(() => currentRole.value === 'STORE_ADMIN')
+
+const setDefaultExpanded = () => {
+  const sections = sidebarSections.value
+  if (!sections.length) return
+  const defaults = {}
+  sections.forEach((section, index) => {
+    defaults[section.id] = index === 0
+  })
+  expandedSections.value = defaults
+}
+
+watch(
+  currentRole,
+  (role) => {
+    const defaultPath = role === 'STORE_ADMIN' ? '/store/dashboard' : '/hq/dashboard'
+    const targetPrefix = role === 'STORE_ADMIN' ? '/store' : '/hq'
+    // if (!route.path.startsWith(targetPrefix)) {
+    //   router.push(defaultPath)
+    // }
+  },
+  { immediate: true },
+)
+
+watch(
+  sidebarSections,
+  () => {
+    setDefaultExpanded()
+  },
+  { immediate: true },
+)
+
+watch(
+  () => route.path,
+  (path) => {
+    const activeSection = sidebarSections.value.find((section) =>
+      section.children.some((child) => child.path === path),
+    )
+    if (activeSection) {
+      expandedSections.value = {
+        ...expandedSections.value,
+        [activeSection.id]: true,
+      }
+    }
+  },
+  { immediate: true },
+)
+
+const toggleSection = (sectionId) => {
+  expandedSections.value = {
+    ...expandedSections.value,
+    [sectionId]: !expandedSections.value[sectionId],
+  }
+}
+
+const isSectionExpanded = (sectionId) => !!expandedSections.value[sectionId]
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+  <div>
+    <!-- If route is an auth page (login), render only the view without header/sidebar -->
+    <Header
+      v-if="!isAuthRoute"
+      :currentRole="currentRole"
+      :roleOptions="roleOptions"
+      @update:currentRole="(val) => (currentRole.value = val)"
+    />
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+    <div v-if="!isAuthRoute" class="app-shell">
+      <div class="app-body" :class="sidebarPlacementClass">
+        <!-- Sidebar moved into its own component -->
+        <Sidebar :sections="sidebarSections" :expanded="expandedSections" @toggle="toggleSection" />
 
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
+        <section class="app-content">
+          <RouterView />
+        </section>
+      </div>
     </div>
-  </header>
 
-  <RouterView />
+    <!-- Auth routes (login) render here without header/sidebar -->
+    <div v-else class="auth-route">
+      <RouterView />
+    </div>
+  </div>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
+.app-shell {
+  /* leave space on the left for the fixed sidebar (260px) + standard page padding (24px) */
+  padding: 24px 24px 24px calc(260px + 24px);
+  min-height: 100vh;
+  background-color: #f7f8fa;
+  color: #1f2933;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+.brand {
+  display: flex;
+  gap: 12px;
+  align-items: center;
 }
 
-nav {
-  width: 100%;
+.logo-mark {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #4c6fff, #8a7dff);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 20px;
+}
+
+.brand-title {
+  font-weight: 700;
+  font-size: 18px;
+  margin-bottom: 2px;
+}
+
+.brand-subtitle {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.header-tools {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid #e5e7eb;
+  background-color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #1f2933;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.role-select {
+  display: flex;
+  flex-direction: column;
   font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
+  color: #6b7280;
 }
 
-nav a.router-link-exact-active {
-  color: var(--color-text);
+.role-select select {
+  margin-top: 4px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  padding: 6px 12px;
+  background-color: #fff;
 }
 
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
+.app-body {
+  display: flex;
+  gap: 24px;
 }
 
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
+.app-body.sidebar-right {
+  flex-direction: row-reverse;
 }
 
-nav a:first-of-type {
-  border: 0;
+.app-content {
+  flex: 1;
+  padding: 24px;
+  background-color: #fff;
+  border-radius: 16px;
+  border: 1px solid #ebeef5;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
 }
+/* Sidebar and header styles moved into their own components */
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
+@media (max-width: 1024px) {
+  .app-header {
+    flex-direction: column;
+    align-items: stretch;
   }
 
-  .logo {
-    margin: 0 2rem 0 0;
+  .app-body,
+  .app-body.sidebar-right {
+    flex-direction: column;
   }
 
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
+  /* On smaller screens the sidebar becomes part of the flow again and we should remove the left padding */
+  .app-shell {
+    padding: 24px;
   }
 
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
+  .app-sidebar {
+    width: 100%;
   }
 }
 </style>
