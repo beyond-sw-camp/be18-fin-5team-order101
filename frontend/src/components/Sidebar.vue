@@ -2,6 +2,12 @@
 import { defineProps, defineEmits } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { logout } from '../stores/auth'
+// SVG icon components available in the project
+import IconEcosystem from './icons/IconEcosystem.vue'
+import IconDocumentation from './icons/IconDocumentation.vue'
+import IconTooling from './icons/IconTooling.vue'
+import IconSupport from './icons/IconSupport.vue'
+import IconCommunity from './icons/IconCommunity.vue'
 
 const props = defineProps({
   sections: { type: Array, default: () => [] },
