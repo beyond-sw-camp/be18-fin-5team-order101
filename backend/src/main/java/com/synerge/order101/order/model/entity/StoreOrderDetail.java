@@ -1,6 +1,8 @@
 package com.synerge.order101.order.model.entity;
 
+import com.synerge.order101.product.model.entity.Product;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +14,7 @@ import static jakarta.persistence.FetchType.LAZY;
 @Getter
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "store_order_detail")
 public class StoreOrderDetail {
 
@@ -24,8 +27,9 @@ public class StoreOrderDetail {
     @JoinColumn(name="store_order_id")
     StoreOrder storeOrder;
 
-    @Column(name = "product_id", nullable = false)
-    private Long productId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 
     @Column(name = "order_qty", nullable = false, precision = 15, scale = 3)
     private BigDecimal orderQty;
@@ -38,5 +42,24 @@ public class StoreOrderDetail {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @PrePersist
+    void onCreate() {
+        LocalDateTime now = LocalDateTime.now();
+        if (createdAt == null) {
+                createdAt = now;
+        }
+
+        this.createdAt = LocalDateTime.now();
+    }
+
+    public StoreOrderDetail(StoreOrder storeOrder, Product product, BigDecimal orderQty, BigDecimal unitPrice, BigDecimal amount) {
+        this.storeOrder = storeOrder;
+        this.product = product;
+        this.orderQty = orderQty;
+        this.unitPrice = unitPrice;
+        this.amount = amount;
+    }
 }
+
 

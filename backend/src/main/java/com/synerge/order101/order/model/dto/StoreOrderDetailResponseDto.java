@@ -40,9 +40,9 @@ public class StoreOrderDetailResponseDto {
                 .collect(Collectors.toList());
 
         return StoreOrderDetailResponseDto.builder()
-                .storeOrderId(storeOrder.getUserId())
-                .storeName(storeOrder.getStore().getStoreName())
-                .status(storeOrder.getOrderStatus().name())
+                .storeOrderId(storeOrder.getStoreOrderId())
+                .storeName(storeOrder.getStore()==null?null:storeOrder.getStore().getStoreName())
+                .status(storeOrder.getOrderStatus()==null?null:storeOrder.getOrderStatus().name())
                 .orderDate(storeOrder.getOrderDatetime())
                 .orderItems(itemDtoList)
                 .build();
@@ -59,7 +59,7 @@ public class StoreOrderDetailResponseDto {
 
         public static OrderItemDto fromEntity(StoreOrderDetail detail) {
             return OrderItemDto.builder()
-                    .productId(detail.getProductId())
+                    .productId(detail.getProduct()==null?null:detail.getProduct().getProductId())
                     .orderQty(detail.getOrderQty())
                     .unitPrice(detail.getUnitPrice())
                     .amount(detail.getAmount())

@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex) {
         // 필드 단위 오류 메시지 추출
         String errorMessage = ex.getBindingResult().getFieldErrors().stream()
-                .map(error -> error.getDefaultMessage()) // 👉 "이메일 형식이 올바르지 않습니다."
+                .map(error -> error.getDefaultMessage())
                 .findFirst()
                 .orElse("잘못된 요청입니다.");
 
@@ -32,12 +32,11 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(
                         HttpStatus.BAD_REQUEST.value(),
-                        CommonErrorCode.INVALID_REQUEST.getCode(),  // "INVALID_REQUEST"
+                        CommonErrorCode.INVALID_REQUEST.getCode(),
                         errorMessage
                 ));
     }
 
-    //  예상 못한 모든 예외 (서버 내부 오류)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception ex) {
         return ResponseEntity
