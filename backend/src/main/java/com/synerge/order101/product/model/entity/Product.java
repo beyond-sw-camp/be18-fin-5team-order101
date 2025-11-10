@@ -3,6 +3,7 @@ package com.synerge.order101.product.model.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @Table(name = "product")
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Product {
 
     @Id
@@ -35,16 +37,13 @@ public class Product {
     @Column(name = "image_url")
     private String imageUrl;
 
-    @Column(name = "base_uom", length = 20, nullable = false)
-    private String baseUom;
-
     @Column
     private String description;
 
     @Column(nullable = false)
     private Boolean status = true;
 
-    @Column(name = "price", precision = 15, scale = 2)
+    @Column(name = "price", precision = 15, scale = 2, nullable = false)
     private BigDecimal price;
 
     @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
@@ -55,8 +54,14 @@ public class Product {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-
-
-
-
+    public void update(String productCode, String productName, String description, BigDecimal price,
+                       String imageUrl, Boolean status, ProductCategory productCategory) {
+        this.productCode = productCode;
+        this.productName = productName;
+        this.description = description;
+        this.price = price;
+        this.imageUrl = imageUrl;
+        this.status = status;
+        this.productCategory = productCategory;
+    }
 }

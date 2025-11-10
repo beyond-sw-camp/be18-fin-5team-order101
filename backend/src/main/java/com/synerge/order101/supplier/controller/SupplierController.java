@@ -24,9 +24,9 @@ public class SupplierController {
     public ResponseEntity<ItemsResponseDto<SupplierListRes>> getAllSuppliers(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int numOfRows,
-            @RequestParam(required = false) String address
+            @RequestParam(required = false) String keyword
     ) {
-        ItemsResponseDto<SupplierListRes> body = supplierService.getSuppliers(page, numOfRows, address);
+        ItemsResponseDto<SupplierListRes> body = supplierService.getSuppliers(page, numOfRows, keyword);
         return ResponseEntity.ok(body);
     }
 }

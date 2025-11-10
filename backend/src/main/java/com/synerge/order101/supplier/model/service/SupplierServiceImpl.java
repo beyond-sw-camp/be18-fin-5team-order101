@@ -24,23 +24,19 @@ public class SupplierServiceImpl implements SupplierService {
     private final SupplierRepository supplierRepository;
 
     @Override
-    public int getTotalCount(String region) {
-        return supplierRepository.countSupplierByAddress(region);
-    }
-
-    @Override
     @Transactional(readOnly = true)
-    public ItemsResponseDto<SupplierListRes> getSuppliers(int page, int numOfRows, String address) {
+    public ItemsResponseDto<SupplierListRes> getSuppliers(int page, int numOfRows, String keyword) {
         int pageIndex = Math.max(0, page - 1);
 
         Pageable pageable = PageRequest.of(pageIndex, numOfRows, Sort.by(Sort.Direction.DESC, "createdAt"));
 
         Page<Supplier> resultPage;
-        if(address != null && !address.isBlank()) {
-            resultPage = supplierRepository.findByAddressContainingIgnoreCase(address, pageable);
+        if(keyword != null && !keyword.isBlank()) {
+            resultPage = supplierRepository.findBySupplierNameContainingIgnoreCase(keyword, pageable);
         }else {
             resultPage = supplierRepository.findAll(pageable);
         }
+
         List<SupplierListRes> items = resultPage.getContent().stream()
                 .map(s -> SupplierListRes.builder()
                         .supplierId(s.getSupplierId())

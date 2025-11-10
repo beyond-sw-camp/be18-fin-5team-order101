@@ -10,5 +10,5 @@ import org.springframework.stereotype.Repository;
 public interface SupplierRepository extends JpaRepository<Supplier, Long> {
     int countSupplierByAddress(String address);
 
-    Page<Supplier> findByAddressContainingIgnoreCase(String address, Pageable pageable);
+    Page<Supplier> findBySupplierNameContainingIgnoreCase(String keyword, Pageable pageable);
 }

@@ -7,19 +7,17 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
-@Builder
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
-public class ProductCreateReq {
+@AllArgsConstructor
+@Builder
+public class ProductRes {
     private String productName;
     private String productCode;
-    private BigDecimal price;
-    private Boolean status;
-    private String description;
+    private String categorySmallName;
+    private String categoryMediumName;
+    private String categoryLargeName;
     private String imageUrl;
-
-    private Long categorySmallId;      // 소분류 id (leaf)
-    private Long categoryMediumId;     // (검증용/선택적으로 받고 parent 체인 확인)
-    private Long categoryLargeId;
+    private BigDecimal price;
+    private String description;
 }
