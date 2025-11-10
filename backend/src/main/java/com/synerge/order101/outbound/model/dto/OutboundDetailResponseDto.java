@@ -1,18 +1,16 @@
-package com.synerge.order101.inbound.model.dto;
+package com.synerge.order101.outbound.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
-@AllArgsConstructor
 @Builder
-public class InboundDetailResponseDto {
+public class OutboundDetailResponseDto {
 
-    private String inboundNo; // INB-20230110-010
+    private String outboundNo; // OUT-20230110-010 (주석 예시 변경)
 
     private List<Item> items; // 화면 테이블에 뿌릴 리스트
 
@@ -21,6 +19,6 @@ public class InboundDetailResponseDto {
     public static class Item {
         private String productCode;   // 제품 코드
         private String productName;   // 제품명
-        private Integer receivedQty;  // 입고 수량
+        private Integer shippedQty;  // 입고 수량 -> 출고 수량
     }
 }

@@ -25,7 +25,7 @@ public class InboundDetail {
     @JoinColumn(name = "product_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Product product;
 
-    @Column(name = "received_qty", nullable = false)
+    @Column(nullable = false)
     private Integer receivedQty;
 
     @Column(columnDefinition = "DATETIME(6)")
