@@ -2,10 +2,14 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 const DashboardView = () => import('../views/DashboardView.vue')
 const PagePlaceholder = () => import('../views/PagePlaceholder.vue')
+const OrderCreateView = () => import('../views/hq/orders/OrderCreateView.vue')
 const UserRegistrationView = () => import('../views/hq/user/UserRegistrationView.vue')
 const UserListView = () => import('../views/hq/user/UsersListView.vue')
 const StoreInventoryView = () => import('../views/store/inventory/InventoryView.vue')
 const LoginView = () => import('../views/LoginView.vue')
+const MyView = () => import('../views/MyView.vue')
+const MovementsView = () => import('../views/hq/inventory/MovementsView.vue')
+const StockView = () => import('../views/hq/inventory/StockView.vue')
 
 const hqRoutes = [
   {
@@ -17,7 +21,7 @@ const hqRoutes = [
   {
     path: '/hq/orders/create',
     name: 'hq-orders-create',
-    component: PagePlaceholder,
+    component: OrderCreateView,
     meta: { title: '구매 주문 생성' },
   },
   {
@@ -41,13 +45,13 @@ const hqRoutes = [
   {
     path: '/hq/inventory/stock',
     name: 'hq-inventory-stock',
-    component: PagePlaceholder,
+    component: StockView,
     meta: { title: '재고 상태' },
   },
   {
     path: '/hq/inventory/movements',
     name: 'hq-inventory-movements',
-    component: PagePlaceholder,
+    component: MovementsView,
     meta: { title: '입출고 조회' },
   },
   {
@@ -133,6 +137,7 @@ const router = createRouter({
   routes: [
     { path: '/', name: 'dashboard', component: DashboardView, meta: { title: '대시보드' } },
     { path: '/login', name: 'login', component: LoginView, meta: { title: '로그인' } },
+    { path: '/mypage', name: 'mypage', component: MyView, meta: { title: '내 정보' } },
     ...hqRoutes,
     ...storeRoutes,
     // { path: '/:pathMatch(.*)*', redirect: '/' },
