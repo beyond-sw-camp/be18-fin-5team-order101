@@ -2,10 +2,12 @@ package com.synerge.order101.shipment.model.service;
 
 import com.synerge.order101.common.enums.ShipmentStatus;
 import com.synerge.order101.common.exception.CustomException;
+import com.synerge.order101.common.exception.errorcode.CommonErrorCode;
 import com.synerge.order101.shipment.exception.errorcode.ShipmentErrorCode;
 import com.synerge.order101.shipment.model.dto.response.ShipmentResponseDto;
 import com.synerge.order101.shipment.model.repository.ShipmentListRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -37,8 +39,10 @@ public class ShipmentListService {
             return results;
         } catch (CustomException e){
             throw e;
+        } catch (DataAccessException e){
+            throw new CustomException(ShipmentErrorCode.SHIPMENT_QUERY_FAILED);
         } catch (Exception e){
-            throw new CustomException(ShipmentErrorCode.SHIPMENT_UPDATE_FAILED);
+            throw new CustomException(CommonErrorCode.UNEXPECTED_ERROR);
         }
 
     }

@@ -6,6 +6,8 @@ import com.synerge.order101.outbound.model.entity.OutBound;
 import com.synerge.order101.store.model.entity.Store;
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -35,27 +37,29 @@ public class Shipment {
     @Column(name = "shipment_status", nullable = true)
     private ShipmentStatus shipmentStatus;
 
+    @Column(name="inventory_applied", nullable = false)
+    private Boolean inventoryApplied = false;
+
+    @Column(name = "in_transit_applied", nullable = false)
+    private Boolean inTransitApplied = false;
+
+    @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = true)
+    @UpdateTimestamp
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @PrePersist
-    void onCreate(){
-        LocalDateTime now = LocalDateTime.now();
-        if(createdAt == null){
-            createdAt = now;
-        }
-        if(shipmentStatus == null){
-            shipmentStatus = ShipmentStatus.WAITING;
-        }
-        updatedAt = now;
+
+    public void markInventoryApplied() {
+        this.inventoryApplied = true;
+        this.updatedAt = LocalDateTime.now();
     }
 
-    @PreUpdate
-    void onUpdate(){
-        updatedAt = LocalDateTime.now();
+    public void markInTransitApplied() {
+        this.inTransitApplied = true;
+        this.updatedAt = LocalDateTime.now();
     }
 
 

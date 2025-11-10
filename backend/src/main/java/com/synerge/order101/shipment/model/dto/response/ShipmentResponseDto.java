@@ -13,7 +13,7 @@ public class ShipmentResponseDto {
     private Long storeOrderId;
     private String orderNo;
     private String storeName;
-    private BigDecimal totalQty;          // 합계 수량
+    private BigDecimal totalQty;
     private ShipmentStatus shipmentStatus;
-    private LocalDateTime orderDatetime;  // 요청 시간
+    private LocalDateTime orderDatetime;
 }
