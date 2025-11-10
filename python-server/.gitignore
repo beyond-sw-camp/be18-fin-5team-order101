@@ -1,3 +1,18 @@
+# data
+app/data_pipeline/*.csv
+app/data_pipeline/*.zip
+app/data_pipeline/*.json
+!app/data_pipeline/sample_*.csv
+
+# caches
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# models
+app/models/*
+
+
 __pycache__/
 .env
 .venv/
