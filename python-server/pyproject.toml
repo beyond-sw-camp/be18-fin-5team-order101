@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "ORDER101 프로젝트의 백엔드 Python 서버"
 authors = ["sangwon5579 <chosw0410@naver.com>"]
 readme = "README.md"
-requires-python = ">=3.13"
+packages = [{ include = "app" }]
 
 [tool.poetry.dependencies]
 python = ">=3.13"
