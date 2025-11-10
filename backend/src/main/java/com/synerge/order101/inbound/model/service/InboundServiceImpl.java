@@ -1,0 +1,70 @@
+package com.synerge.order101.inbound.model.service;
+
+import com.synerge.order101.inbound.model.dto.InboundDetailResponseDto;
+import com.synerge.order101.inbound.model.dto.InboundResponseDto;
+import com.synerge.order101.inbound.model.entity.Inbound;
+import com.synerge.order101.inbound.model.entity.InboundDetail;
+import com.synerge.order101.inbound.model.repository.InboundDetailRepository;
+import com.synerge.order101.inbound.model.repository.InboundRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class InboundServiceImpl implements InboundService {
+    private final InboundRepository inboundRepository;
+    private final InboundDetailRepository inboundDetailRepository;
+
+    @Override
+    @Transactional
+    public List<InboundResponseDto> getInboundList(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Object[]> result = inboundRepository.findInboundWithCounts(pageable);
+
+        return result.getContent().stream()
+                .map(row -> {
+                    Inbound i = (Inbound) row[0];
+                    Integer itemCount = ((Number) row[1]).intValue();
+                    Integer totalQty = ((Number) row[2]).intValue();
+
+                    return new InboundResponseDto(
+                            i.getInboundId(),
+                            i.getInboundNo(),
+                            i.getInboundDatetime(),
+                            i.getSupplier().getSupplierName(),
+                            itemCount,
+                            totalQty
+                    );
+                })
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public InboundDetailResponseDto getInboundDetail(Long inboundId) {
+        Inbound inbound = inboundRepository.findById(inboundId)
+                .orElseThrow(() -> new RuntimeException("입고 정보를 찾을 수 없습니다."));
+
+        List<InboundDetail> details = inboundDetailRepository.findByInbound(inboundId);
+
+        List<InboundDetailResponseDto.Item> items = details.stream()
+                .map(d -> InboundDetailResponseDto.Item.builder()
+                        .productCode(d.getProduct().getProductCode())
+                        .productName(d.getProduct().getProductName())
+                        .receivedQty(d.getReceivedQty())
+                        .build())
+                .toList();
+
+        return InboundDetailResponseDto.builder()
+                .inboundNo(inbound.getInboundNo())
+                .items(items)
+                .build();
+    }
+}

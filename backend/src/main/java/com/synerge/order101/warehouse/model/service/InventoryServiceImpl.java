@@ -1,6 +1,7 @@
 package com.synerge.order101.warehouse.model.service;
 
-import com.synerge.order101.warehouse.model.dto.InventoryResponseDto;
+import com.synerge.order101.warehouse.model.dto.request.InventoryQuantityChangeRequestDto;
+import com.synerge.order101.warehouse.model.dto.response.InventoryResponseDto;
 import com.synerge.order101.warehouse.model.entity.WarehouseInventory;
 import com.synerge.order101.warehouse.model.repository.WarehouseInventoryRepository;
 import lombok.RequiredArgsConstructor;

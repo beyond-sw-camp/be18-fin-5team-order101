@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface WarehouseInventoryRepository extends JpaRepository<WarehouseInventory,Long> {
@@ -18,4 +19,5 @@ public interface WarehouseInventoryRepository extends JpaRepository<WarehouseInv
         JOIN FETCH p.productCategory c
     """)
     List<WarehouseInventory> findAllWithProduct();
+
 }

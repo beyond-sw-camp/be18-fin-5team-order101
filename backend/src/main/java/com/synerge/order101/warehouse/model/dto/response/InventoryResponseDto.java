@@ -1,4 +1,4 @@
-package com.synerge.order101.warehouse.model.dto;
+package com.synerge.order101.warehouse.model.dto.response;
 
 import com.synerge.order101.warehouse.model.entity.WarehouseInventory;
 import lombok.AllArgsConstructor;
