@@ -1,9 +1,8 @@
 package com.synerge.order101.order.controller;
 
+import com.synerge.order101.common.enums.OrderStatus;
 import com.synerge.order101.order.model.dto.*;
-import com.synerge.order101.order.model.entity.StoreOrder;
 import com.synerge.order101.order.model.service.StoreOrderService;
-import com.synerge.order101.order.model.service.StoreOrderServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,19 +18,19 @@ public class StoreOrderController {
 
     private final StoreOrderService storeOrderService;
 
+    /**
+     * 1. 가맹점 주문 목록 조회 (GET /orders)
+     * - 요청 파라미터(RequestParam)로 상태(status)와 페이지(page)를 받아 해당 조건에 맞는 주문 목록을 반환합니다.
+     */
     @GetMapping
     public ResponseEntity<List<StoreOrderSummaryResponseDto>> findStoreOrders(
-            @RequestParam(required = false) String status,
+            @RequestParam(required = false) OrderStatus status,
             @RequestParam(required = false) Integer page
     ) {
+
         List<StoreOrderSummaryResponseDto> response = storeOrderService.findOrders(status, page);
+
         return ResponseEntity.ok(response);
-    }
-
-    @DeleteMapping
-    public ResponseEntity<Void> deleteAllStoreOrders() {
-
-        return ResponseEntity.noContent().build();
     }
 
     /**

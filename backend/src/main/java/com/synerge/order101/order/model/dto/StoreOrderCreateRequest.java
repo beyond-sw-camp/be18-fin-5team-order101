@@ -15,6 +15,7 @@ public class StoreOrderCreateRequest {
     @NonNull
     private Long storeId;
 
+    @NonNull
     private Long warehouseId;
 
     @NonNull

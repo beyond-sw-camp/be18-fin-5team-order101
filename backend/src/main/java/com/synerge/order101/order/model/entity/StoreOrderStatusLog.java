@@ -3,6 +3,7 @@ package com.synerge.order101.order.model.entity;
 import com.synerge.order101.common.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
@@ -15,6 +16,7 @@ import static jakarta.persistence.FetchType.LAZY;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Table(name = "store_order_status_log")
 public class StoreOrderStatusLog {
 
@@ -36,4 +38,5 @@ public class StoreOrderStatusLog {
     private OrderStatus curStatus;
 
 }
+
 

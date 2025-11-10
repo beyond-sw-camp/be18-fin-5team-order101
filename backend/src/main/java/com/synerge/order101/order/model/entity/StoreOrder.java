@@ -169,12 +169,15 @@ public class StoreOrder {
     public void approve() {
         if(this.orderStatus == OrderStatus.SUBMITTED) {
             this.orderStatus = OrderStatus.CONFIRMED;
+            // orderStatusLog  이블에 변경 이력 남겨야됌.
+
         }
     }
 
     public void reject() {
         if(this.orderStatus == OrderStatus.SUBMITTED) {
             this.orderStatus = OrderStatus.REJECTED;
+            // orderStatusLog  이블에 변경 이력 남겨야됌.
         }
     }
 }
