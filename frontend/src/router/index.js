@@ -3,6 +3,9 @@ import { createRouter, createWebHistory } from 'vue-router'
 const DashboardView = () => import('../views/DashboardView.vue')
 const PagePlaceholder = () => import('../views/PagePlaceholder.vue')
 const OrderCreateView = () => import('../views/hq/orders/OrderCreateView.vue')
+const OrderStatusView = () => import('../views/hq/orders/OrderStatusView.vue')
+const OrderApprovalView = () => import('../views/hq/orders/OrderApprovalView.vue')
+const OrderApprovalListView = () => import('../views/hq/orders/OrderApprovalListView.vue')
 const UserRegistrationView = () => import('../views/hq/user/UserRegistrationView.vue')
 const UserListView = () => import('../views/hq/user/UsersListView.vue')
 const StoreInventoryView = () => import('../views/store/inventory/InventoryView.vue')
@@ -16,6 +19,13 @@ const FranchiseRegistrationView = () =>
   import('../views/hq/franchise/FranchiseRegistrationView.vue')
 const SupplierListView = () => import('../views/hq/suppliers/SupplierListView.vue')
 const SupplierDetailView = () => import('../views/hq/suppliers/SupplierDetailView.vue')
+const SettlementListView = () => import('../views/hq/settlement/SettlementListView.vue')
+const DailySettlementView = () => import('../views/hq/settlement/DailySettlementView.vue')
+const FranchiseOrderApprovalView = () =>
+  import('../views/hq/franchise/FranchiseOrderApprovalView.vue')
+const FranchiseOrderListView = () => import('../views/hq/franchise/FranchiseOrderListView.vue')
+const FranchiseOrderDetailView = () => import('../views/hq/franchise/FranchiseOrderDetailView.vue')
+const FranchiseDeliveryView = () => import('../views/hq/franchise/FranchiseDeliveryView.vue')
 
 const hqRoutes = [
   {
@@ -33,14 +43,20 @@ const hqRoutes = [
   {
     path: '/hq/orders/status',
     name: 'hq-orders-status',
-    component: PagePlaceholder,
+    component: OrderStatusView,
     meta: { title: '주문 현황' },
   },
   {
     path: '/hq/orders/approval',
     name: 'hq-orders-approval',
-    component: PagePlaceholder,
+    component: OrderApprovalListView,
     meta: { title: '주문 승인' },
+  },
+  {
+    path: '/hq/orders/approval/:id',
+    name: 'hq-orders-approval-detail',
+    component: OrderApprovalView,
+    meta: { title: '발주 상세' },
   },
   {
     path: '/hq/orders/vendors',
@@ -69,8 +85,14 @@ const hqRoutes = [
   {
     path: '/hq/settlement/daily',
     name: 'hq-settlement-daily',
-    component: PagePlaceholder,
+    component: DailySettlementView,
     meta: { title: '일일 정산' },
+  },
+  {
+    path: '/hq/settlement/list',
+    name: 'hq-settlement-list',
+    component: SettlementListView,
+    meta: { title: '정산 목록' },
   },
   {
     path: '/hq/users/',
@@ -84,7 +106,6 @@ const hqRoutes = [
     component: UserRegistrationView,
     meta: { title: '사용자 등록' },
   },
-
   {
     path: '/hq/franchise/registration',
     name: 'hq-franchise-registration',
@@ -106,19 +127,31 @@ const hqRoutes = [
   {
     path: '/hq/franchise/approval',
     name: 'hq-franchise-approval',
-    component: PagePlaceholder,
+    component: FranchiseOrderApprovalView,
     meta: { title: '가맹점 주문 승인' },
+  },
+  {
+    path: '/hq/franchise/approval/:id',
+    name: 'hq-franchise-approval-detail',
+    component: OrderApprovalView,
+    meta: { title: '가맹점 발주 상세' },
   },
   {
     path: '/hq/franchise/orders',
     name: 'hq-franchise-orders',
-    component: PagePlaceholder,
+    component: FranchiseOrderListView,
     meta: { title: '가맹점 주문 조회' },
+  },
+  {
+    path: '/hq/franchise/orders/:id',
+    name: 'hq-franchise-order-detail',
+    component: FranchiseOrderDetailView,
+    meta: { title: '가맹점 주문 상세' },
   },
   {
     path: '/hq/franchise/delivery',
     name: 'hq-franchise-delivery',
-    component: PagePlaceholder,
+    component: FranchiseDeliveryView,
     meta: { title: '배송 관리' },
   },
 ]

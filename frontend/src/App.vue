@@ -33,7 +33,10 @@ const adminSidebar = [
   {
     id: 'settlement',
     title: '정산 관리',
-    children: [{ title: '일일 정산', path: '/hq/settlement/daily' }],
+    children: [
+      { title: '정산 목록', path: '/hq/settlement/list' },
+      { title: '일일 정산', path: '/hq/settlement/daily' },
+    ],
   },
   {
     id: 'users',
