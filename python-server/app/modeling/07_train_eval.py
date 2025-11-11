@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from sklearn.metrics import mean_absolute_error
 from lightgbm import LGBMRegressor
+import joblib
 
 BASE = Path(__file__).resolve().parents[1] / "data_pipeline"
 TR = BASE / "features_train.csv"
@@ -68,7 +69,13 @@ def main():
     out.to_csv(OUT, index=False)
     print(f"saved: {OUT} ({len(out):,} rows)")
 
-    # 모델 저장 여기서
+    MODEL_PATH = BASE / "lightgbm_model.pkl"
+    joblib.dump(model, MODEL_PATH)
+    
+    import json
+    with open(BASE / "lightgbm_features.json", "w", encoding="utf-8") as f:
+        json.dump(features, f, ensure_ascii=False, indent=2)
+    print(f"model saved to {MODEL_PATH}")
 
 if __name__ == "__main__":
     main()
