@@ -1,36 +1,8 @@
-//package com.synerge.order101.order.model.entity;
-//
-//
-//import jakarta.persistence.*;
-//import lombok.Getter;
-//
-//@Getter
-//@Entity
-//@Table(name = "store_order_detatil")
-//public class StoreOrderDetail {
-//
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private Long storeOrderDetailId;
-//
-//    @ManyToOne
-//    @JoinColumn(name = "store_order_id", nullable = false)
-//    private StoreOrder storeOrderId;
-//
-//    @Column
-//    private Double orderQTY;
-//
-//    @Column
-//    private Double unitPrice;
-//
-//
-//}
-
-
 package com.synerge.order101.order.model.entity;
 
 import com.synerge.order101.product.model.entity.Product;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -42,14 +14,17 @@ import static jakarta.persistence.FetchType.LAZY;
 @Getter
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "store_order_detail")
-public class StoreOrderDetail {
+public class  StoreOrderDetail {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "store_order_detail_id")
     private Long storeOrderDetailId;
 
-    @ManyToOne(fetch = LAZY) @JoinColumn(name="store_order_id")
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name="store_order_id")
     StoreOrder storeOrder;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -68,6 +43,23 @@ public class StoreOrderDetail {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @PrePersist
+    void onCreate() {
+        LocalDateTime now = LocalDateTime.now();
+        if (createdAt == null) {
+                createdAt = now;
+        }
 
+        this.createdAt = LocalDateTime.now();
+    }
+
+    public StoreOrderDetail(StoreOrder storeOrder, Product product, BigDecimal orderQty, BigDecimal unitPrice, BigDecimal amount) {
+        this.storeOrder = storeOrder;
+        this.product = product;
+        this.orderQty = orderQty;
+        this.unitPrice = unitPrice;
+        this.amount = amount;
+    }
 }
+
 

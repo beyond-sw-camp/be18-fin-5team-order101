@@ -70,19 +70,30 @@ package com.synerge.order101.order.model.entity;
 import com.synerge.order101.common.enums.OrderStatus;
 import com.synerge.order101.common.enums.ShipmentStatus;
 import com.synerge.order101.store.model.entity.Store;
+import com.synerge.order101.user.model.entity.User;
+import com.synerge.order101.warehouse.model.entity.Warehouse;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Getter
+@Builder
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "store_order")
 public class StoreOrder {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "store_order_id")
     private Long storeOrderId;
 
@@ -90,11 +101,13 @@ public class StoreOrder {
     @JoinColumn(name = "store_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Store store;
 
-    @Column(name = "warehouse_id", nullable = false)
-    private Long warehouseId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "warehouse_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)) // 필요 없나?
+    private Warehouse warehouse;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private User user;
 
     @Column(name = "order_no", nullable = false, length = 50)
     private String orderNo;
@@ -104,11 +117,11 @@ public class StoreOrder {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "shipment_status", nullable = false, length = 20)
-    private ShipmentStatus shipmentStatus;
+    private ShipmentStatus shipmentStatus = ShipmentStatus.WAITING;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "order_status", nullable = false, length = 20)
-    private OrderStatus orderStatus;
+    private OrderStatus orderStatus = OrderStatus.SUBMITTED;
 
     @Column(name = "remark")
     private String remark;
@@ -119,16 +132,48 @@ public class StoreOrder {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @OneToMany(mappedBy = "storeOrder")
+    private List<StoreOrderDetail> storeOrderDetails = new ArrayList<>();
+
+    public StoreOrder(Store store,
+                      Warehouse warehouse,
+                      User user,
+                      String remark) {
+        this.store = store;
+        this.warehouse = warehouse;
+        this.user = user;
+        this.remark = remark;
+    }
+
     @PrePersist
     void onCreate() {
         LocalDateTime now = LocalDateTime.now();
         if (createdAt == null) createdAt = now;
         updatedAt = now;
+        orderNo = this.generateOrderNo();
+    }
+
+    public String generateOrderNo() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String datePart = LocalDateTime.now().format(formatter);
+        int randomNum = ThreadLocalRandom.current().nextInt(1000, 9999);
+        return "OR" + datePart + randomNum;
     }
 
     @PreUpdate
     void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
-}
 
+    public void approve() {
+        if(this.orderStatus == OrderStatus.SUBMITTED) {
+            this.orderStatus = OrderStatus.CONFIRMED;
+        }
+    }
+
+    public void reject() {
+        if(this.orderStatus == OrderStatus.SUBMITTED) {
+            this.orderStatus = OrderStatus.REJECTED;
+        }
+    }
+}
