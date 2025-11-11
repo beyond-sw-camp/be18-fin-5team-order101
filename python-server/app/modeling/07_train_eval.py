@@ -1,11 +1,9 @@
-# -*- coding: utf-8 -*-
 from pathlib import Path
 import pandas as pd
 import numpy as np
 from sklearn.metrics import mean_absolute_error
 from lightgbm import LGBMRegressor
 
-# modeling/ 에서 한 단계 올라가면 app/
 BASE = Path(__file__).resolve().parents[1] / "data_pipeline"
 TR = BASE / "features_train.csv"
 TE = BASE / "features_test.csv"
@@ -24,13 +22,17 @@ def mape(y_true, y_pred):
     return (np.abs((y_true - y_pred) / denom)).mean() * 100.0
 
 def main():
-    print("DATA DIR:", BASE)  # 경로 확인용
+    print("DATA DIR:", BASE) 
     tr = pd.read_csv(TR, parse_dates=["target_date"])
     te = pd.read_csv(TE, parse_dates=["target_date"])
 
     target = "y"
     ignore = set(ID_KEYS + [target, "split"])
-    features = [c for c in tr.columns if c not in ignore]
+    numeric_cols = set(tr.select_dtypes(include=["number", "bool"]).columns.tolist())
+    features = [c for c in tr.columns if c in numeric_cols and c not in ignore]
+
+    print(f"[DEBUG] using {len(features)} features:", features)
+
 
     # NaN 처리
     for c in features:
@@ -65,6 +67,8 @@ def main():
     out["y_pred"] = te_pred.round(0).astype(int)
     out.to_csv(OUT, index=False)
     print(f"saved: {OUT} ({len(out):,} rows)")
+
+    # 모델 저장 여기서
 
 if __name__ == "__main__":
     main()
