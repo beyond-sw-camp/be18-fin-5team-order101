@@ -1,7 +1,14 @@
 package com.synerge.order101.supplier.model.service;
 
 import com.synerge.order101.common.dto.ItemsResponseDto;
+import com.synerge.order101.common.exception.CustomException;
+import com.synerge.order101.product.model.entity.ProductSupplier;
+import com.synerge.order101.product.model.repository.ProductSupplierRepository;
+import com.synerge.order101.supplier.exception.SupplierErrorCode;
+import com.synerge.order101.supplier.model.dto.SupplierDetailRes;
+import com.synerge.order101.supplier.model.dto.SupplierInfoRes;
 import com.synerge.order101.supplier.model.dto.SupplierListRes;
+import com.synerge.order101.supplier.model.dto.SupplierProductItemRes;
 import com.synerge.order101.supplier.model.entity.Supplier;
 import com.synerge.order101.supplier.model.repository.SupplierRepository;
 import jakarta.persistence.Table;
@@ -22,6 +29,7 @@ import java.util.List;
 public class SupplierServiceImpl implements SupplierService {
 
     private final SupplierRepository supplierRepository;
+    private final ProductSupplierRepository productSupplierRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -53,5 +61,46 @@ public class SupplierServiceImpl implements SupplierService {
         return new ItemsResponseDto<>(HttpStatus.OK, items, page, totalCount);
     }
 
+    @Override
+    public SupplierDetailRes getSupplierDetail(Long supplierId, int numOfRows, int page) {
+        Supplier supplier = supplierRepository.findById(supplierId).orElseThrow(() ->
+                new CustomException(SupplierErrorCode.SUPPLIER_NOT_FOUND));
+
+        SupplierInfoRes info = SupplierInfoRes.builder()
+                .supplierId(supplier.getSupplierId())
+                .supplierCode(supplier.getSupplierCode())
+                .supplierName(supplier.getSupplierName())
+                .address(supplier.getAddress())
+                .contactName(supplier.getContactName())
+                .contactNumber(supplier.getContactNumber())
+                .createdAt(supplier.getCreatedAt())
+                .build();
+
+        int pageIndex = Math.max(0, page - 1);
+
+        Pageable pageable = PageRequest.of(pageIndex, numOfRows);
+
+        Page<ProductSupplier> psPage = productSupplierRepository.findBySupplierWithProduct(supplierId, pageable);
+
+        List<SupplierProductItemRes> items = psPage.getContent().stream()
+                .map(ps -> SupplierProductItemRes.builder()
+                        .productId(ps.getProduct().getProductId())
+                        .productCode(ps.getProduct().getProductCode())
+                        .supplierProductCode(ps.getSupplierProductCode())
+                        .productName(ps.getProduct().getProductName())
+                        .price(ps.getPurchasePrice())
+                        .leadTimeDays(ps.getLeadTimeDays())
+                        .build())
+                .toList();
+
+        return SupplierDetailRes.builder()
+                .supplier(info)
+                .products(items)
+                .page(page)
+                .numOfRows(numOfRows)
+                .totalCount((int)psPage.getTotalElements())
+                .build();
+
+    }
 
 }

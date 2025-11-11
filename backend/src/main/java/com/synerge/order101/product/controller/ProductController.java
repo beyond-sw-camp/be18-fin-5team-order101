@@ -36,7 +36,7 @@ public class ProductController {
 
     @PutMapping("/{productId}")
     public ResponseEntity<BaseResponseDto<ProductRes>> update(@PathVariable Long productId,
-                                                              @RequestBody ProductUpdateReq request) {
+                                                              @RequestBody   ProductUpdateReq request) {
         ProductRes productRes = productService.update(productId, request);
         return ResponseEntity.ok(new BaseResponseDto<>(HttpStatus.OK, productRes));
     }
@@ -45,9 +45,13 @@ public class ProductController {
     public ResponseEntity<ItemsResponseDto<ProductListRes>> getAllProducts(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int numOfRows,
-            @RequestParam(required = false) String keyword
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Long largeCategoryId,
+            @RequestParam(required = false) Long mediumCategoryId,
+            @RequestParam(required = false) Long smallCategoryId
     ) {
-        ItemsResponseDto<ProductListRes> body = productService.getProducts(page, numOfRows, keyword);
+        ItemsResponseDto<ProductListRes> body = productService.getProducts(page, numOfRows, keyword,
+                largeCategoryId, mediumCategoryId, smallCategoryId);
         return ResponseEntity.ok(body);
     }
 

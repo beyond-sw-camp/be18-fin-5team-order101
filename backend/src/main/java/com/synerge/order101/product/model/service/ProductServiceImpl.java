@@ -13,6 +13,9 @@ import com.synerge.order101.product.model.entity.Product;
 import com.synerge.order101.product.model.entity.ProductCategory;
 import com.synerge.order101.product.model.repository.ProductCategoryRepository;
 import com.synerge.order101.product.model.repository.ProductRepository;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,7 +25,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+
+
 
 @Service
 @RequiredArgsConstructor
@@ -110,17 +116,37 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ItemsResponseDto<ProductListRes> getProducts(int page, int numOfRows, String keyword) {
+    public ItemsResponseDto<ProductListRes> getProducts(int page, int numOfRows, String keyword,
+                                                        Long largeCategoryId,
+                                                        Long mediumCategoryId, Long smallCategoryId) {
         int pageIndex = Math.max(0, page - 1);
 
         Pageable pageable = PageRequest.of(pageIndex, numOfRows, Sort.by(Sort.Direction.DESC, "createdAt"));
 
-        Page<Product> productPage;
-        if(keyword != null && !keyword.isBlank()) {
-            productPage = productRepository.findByProductNameContainingIgnoreCase(keyword, pageable);
-        } else {
-            productPage = productRepository.findAll(pageable);
-        }
+        Page<Product> productPage = productRepository.findAll((root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (keyword != null && !keyword.isBlank()) {
+                predicates.add(cb.like(cb.lower(root.get("productName")), "%" + keyword.toLowerCase() + "%"));
+            }
+
+            // category join
+            Join<Product, ProductCategory> small = root.join("productCategory");
+            Join<ProductCategory, ProductCategory> medium = small.join("parent", JoinType.LEFT);
+            Join<ProductCategory, ProductCategory> large = medium.join("parent", JoinType.LEFT);
+
+            if (smallCategoryId != null) {
+                predicates.add(cb.equal(small.get("productCategoryId"), smallCategoryId));
+            }
+            if (mediumCategoryId != null) {
+                predicates.add(cb.equal(medium.get("productCategoryId"), mediumCategoryId));
+            }
+            if (largeCategoryId != null) {
+                predicates.add(cb.equal(large.get("productCategoryId"), largeCategoryId));
+            }
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        }, pageable);
 
         List<ProductListRes> items = productPage.getContent().stream()
                 .map(s -> ProductListRes.builder()

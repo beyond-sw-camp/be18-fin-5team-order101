@@ -10,7 +10,8 @@ import com.synerge.order101.product.model.dto.ProductUpdateReq;
 public interface ProductService {
     ProductCreateRes create(ProductCreateReq request);
 
-    ItemsResponseDto<ProductListRes> getProducts(int page, int numOfRows, String description);
+    ItemsResponseDto<ProductListRes> getProducts(int page, int numOfRows, String keyword,
+                                                 Long largeCategoryId, Long mediumCategoryId, Long smallCategoryId);
 
     void deleteProduct(Long productId);
 
