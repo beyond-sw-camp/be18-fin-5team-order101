@@ -1,8 +1,11 @@
 <script setup>
-import { defineProps, defineEmits } from 'vue'
 import { RouterLink } from 'vue-router'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { useRouter } from 'vue-router'
+import { logout } from '../stores/auth'
 
-import notificationIcon from '../assets/notification.png'
+// use the provided flaticon image URL
+const notificationIcon = 'https://cdn-icons-png.flaticon.com/512/3119/3119338.png'
 import logoUrl from '../assets/logo.png'
 const props = defineProps({
   currentRole: { type: String, required: true },
@@ -12,6 +15,39 @@ const props = defineProps({
 const emit = defineEmits(['update:currentRole'])
 
 const updateRole = (e) => emit('update:currentRole', e.target.value)
+
+const router = useRouter()
+
+// avatar dropdown state
+const showProfileMenu = ref(false)
+const avatarBtnRef = ref(null)
+const profileMenuRef = ref(null)
+
+const toggleProfileMenu = () => {
+  showProfileMenu.value = !showProfileMenu.value
+}
+
+const goToMyPage = () => {
+  showProfileMenu.value = false
+  router.push('/mypage')
+}
+
+const handleLogoutClick = () => {
+  showProfileMenu.value = false
+  logout()
+  router.push('/login')
+}
+
+const onDocumentClick = (e) => {
+  const btn = avatarBtnRef.value
+  const menu = profileMenuRef.value
+  if (!btn || !menu) return
+  if (btn.contains(e.target) || menu.contains(e.target)) return
+  showProfileMenu.value = false
+}
+
+onMounted(() => document.addEventListener('click', onDocumentClick))
+onBeforeUnmount(() => document.removeEventListener('click', onDocumentClick))
 </script>
 
 <template>
@@ -30,7 +66,24 @@ const updateRole = (e) => emit('update:currentRole', e.target.value)
             </span>
             <span class="badge">3</span>
           </button>
-          <div class="avatar">SY</div>
+          <div class="avatar-wrap">
+            <button
+              ref="avatarBtnRef"
+              type="button"
+              class="avatar"
+              @click="toggleProfileMenu"
+              aria-haspopup="true"
+              :aria-expanded="showProfileMenu"
+            >
+              SY
+            </button>
+            <div v-if="showProfileMenu" ref="profileMenuRef" class="profile-menu" role="menu">
+              <button type="button" class="profile-action" @click="goToMyPage">내 정보</button>
+              <button type="button" class="profile-action logout" @click="handleLogoutClick">
+                로그아웃
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -173,5 +226,61 @@ const updateRole = (e) => emit('update:currentRole', e.target.value)
   border: 1px solid #d1d5db;
   padding: 6px 12px;
   background: #fff;
+}
+
+/* profile dropdown */
+.profile-menu {
+  position: absolute;
+  right: 0; /* position relative to avatar-wrap */
+  top: calc(100% + 8px);
+  background: #fff;
+  border: 1px solid #e6e9f2;
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.08);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  min-width: 140px;
+  z-index: 1100;
+}
+.avatar-wrap {
+  position: relative;
+  display: inline-block;
+}
+.profile-action {
+  background: transparent;
+  border: none;
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #111827;
+  cursor: pointer;
+}
+.profile-action:hover {
+  background: #f5f7ff;
+}
+.profile-action.logout {
+  color: #ef4444;
+  font-weight: 700;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #1f2933;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+
+.notification-img {
+  width: 18px;
+  height: 18px;
+  display: inline-block;
 }
 </style>

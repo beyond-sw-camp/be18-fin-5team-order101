@@ -15,7 +15,6 @@ const adminSidebar = [
   {
     id: 'orders',
     title: '주문 관리',
-    icon: 'tooling',
     children: [
       { title: '구매 주문 생성', path: '/hq/orders/create' },
       { title: '주문 현황', path: '/hq/orders/status' },
@@ -26,7 +25,6 @@ const adminSidebar = [
   {
     id: 'warehouse',
     title: '창고 관리',
-    icon: 'ecosystem',
     children: [
       { title: '재고 상태', path: '/hq/inventory/stock' },
       { title: '입출고 조회', path: '/hq/inventory/movements' },
@@ -35,13 +33,14 @@ const adminSidebar = [
   {
     id: 'settlement',
     title: '정산 관리',
-    icon: 'documentation',
-    children: [{ title: '일일 정산', path: '/hq/settlement/daily' }],
+    children: [
+      { title: '정산 목록', path: '/hq/settlement/list' },
+      { title: '일일 정산', path: '/hq/settlement/daily' },
+    ],
   },
   {
     id: 'users',
     title: '사용자 관리',
-    icon: 'community',
     children: [
       { title: '사용자 목록', path: '/hq/users/' },
       { title: '사용자 등록', path: '/hq/users/registration' },
@@ -50,8 +49,8 @@ const adminSidebar = [
   {
     id: 'franchise',
     title: '가맹점 관리',
-    icon: 'support',
     children: [
+      { title: '가맹점 목록', path: '/hq/franchise/list' },
       { title: '가맹점 등록', path: '/hq/franchise/registration' },
       { title: '가맹점 재고 현황', path: '/hq/franchise/stock' },
       { title: '가맹점 주문 승인', path: '/hq/franchise/approval' },
@@ -65,19 +64,16 @@ const storeSidebar = [
   {
     id: 'store-orders',
     title: '발주 관리',
-    icon: 'tooling',
     children: [{ title: '발주 생성', path: '/store/purchase/create' }],
   },
   {
     id: 'store-inventory',
     title: '재고 관리',
-    icon: 'ecosystem',
     children: [{ title: '재고 조회', path: '/store/inventory/stock' }],
   },
   {
     id: 'store-settlement',
     title: '정산 관리',
-    icon: 'documentation',
     children: [{ title: '정산 관리', path: '/store/settlement/overview' }],
   },
 ]
@@ -187,9 +183,10 @@ const isSectionExpanded = (sectionId) => !!expandedSections.value[sectionId]
 <style scoped>
 .app-shell {
   /* leave space on the left for the fixed sidebar (260px) + standard page padding (24px) */
-  padding: 24px 24px 24px calc(260px + 24px);
+  /* remove top padding so content sits flush under the sticky header */
+  padding: 0 0 0 calc(260px);
   min-height: 100vh;
-  background-color: #f7f8fa;
+  background-color: #fff;
   color: #1f2933;
 }
 
@@ -287,9 +284,6 @@ const isSectionExpanded = (sectionId) => !!expandedSections.value[sectionId]
   flex: 1;
   padding: 24px;
   background-color: #fff;
-  border-radius: 16px;
-  border: 1px solid #ebeef5;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
 }
 /* Sidebar and header styles moved into their own components */
 
