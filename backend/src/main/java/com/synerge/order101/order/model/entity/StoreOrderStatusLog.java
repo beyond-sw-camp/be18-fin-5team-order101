@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.jmx.export.annotation.ManagedAttribute;
 
 import java.time.LocalDateTime;
 
@@ -25,7 +24,7 @@ public class StoreOrderStatusLog {
     private String storeOrderStatusLogId;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name="store_order_id")
+    @JoinColumn(name = "store_order_id")
     private StoreOrder storeOrder;
 
     @Column(name = "updated_at")

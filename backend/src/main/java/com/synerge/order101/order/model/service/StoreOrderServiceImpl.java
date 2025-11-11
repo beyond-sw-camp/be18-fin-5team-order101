@@ -52,12 +52,11 @@ public class StoreOrderServiceImpl implements StoreOrderService {
 
         int pageNum = (page == null || page < 0) ? 0 : page;
         int pageSize = 10; // 기본 페이지 크기 설정
-        Pageable pageable = PageRequest.of(pageNum, pageSize,Sort.by(Sort.Direction.DESC, "orderDatetime"));
+        Pageable pageable = PageRequest.of(pageNum, pageSize, Sort.by(Sort.Direction.DESC, "orderDatetime"));
         Page<StoreOrder> pageResult;
-        if(status == null){
+        if (status == null) {
             pageResult = storeOrderRepository.findOrderAllStatus(pageable);
-        }
-        else{
+        } else {
             pageResult = storeOrderRepository.findByOrderStatus(status, pageable);
         }
 
@@ -69,7 +68,7 @@ public class StoreOrderServiceImpl implements StoreOrderService {
                         .orderDate(order.getOrderDatetime())
                         .orderStatus(order.getOrderStatus() == null ? null : order.getOrderStatus().name())
                         .itemCount(order.getStoreOrderDetails() == null ? 0 : order.getStoreOrderDetails().size())
-                        .totalQTY(order.getStoreOrderDetails()== null ? 0 : order.getStoreOrderDetails().stream()
+                        .totalQTY(order.getStoreOrderDetails() == null ? 0 : order.getStoreOrderDetails().stream()
                                 .map(detail -> detail.getOrderQty() == null ? BigDecimal.ZERO : detail.getOrderQty())
                                 .reduce(BigDecimal.ZERO, BigDecimal::add).intValue())
                         .build())
@@ -111,6 +110,7 @@ public class StoreOrderServiceImpl implements StoreOrderService {
                 BigDecimal amount = unitPrice == null ? null : unitPrice.multiply(item.getOrderQty());
 
                 StoreOrderDetail detail = new StoreOrderDetail(savedOrder, product, item.getOrderQty(), unitPrice, amount);
+                // TODO : saveALl로 수정. 박진우
                 storeOrderDetailRepository.save(detail);
             }
         }
@@ -131,18 +131,16 @@ public class StoreOrderServiceImpl implements StoreOrderService {
         StoreOrder order = storeOrderRepository.findById(storeOrderId).orElseThrow(() ->
                 new CustomException(OrderErrorCode.ORDER_NOT_FOUND));
 
-        // ensure details loaded (could use repository to fetch details separately)
         List<StoreOrderDetail> details = storeOrderDetailRepository.findByStoreOrder_StoreOrderId(storeOrderId);
 
-        // Build DTO manually using details and order
         StoreOrderDetailResponseDto.OrderItemDto[] items = details.stream()
                 .map(StoreOrderDetailResponseDto.OrderItemDto::fromEntity)
                 .toArray(StoreOrderDetailResponseDto.OrderItemDto[]::new);
 
         StoreOrderDetailResponseDto responseDto = StoreOrderDetailResponseDto.builder()
                 .storeOrderId(order.getStoreOrderId())
-                .storeName(order.getStore()==null?null:order.getStore().getStoreName())
-                .status(order.getOrderStatus()==null?null:order.getOrderStatus().name())
+                .storeName(order.getStore() == null ? null : order.getStore().getStoreName())
+                .status(order.getOrderStatus() == null ? null : order.getOrderStatus().name())
                 .orderDate(order.getOrderDatetime())
                 .orderItems(List.of(items))
                 .build();

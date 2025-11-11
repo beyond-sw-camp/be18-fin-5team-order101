@@ -1,7 +1,5 @@
 package com.synerge.order101.order.model.dto;
 
-import com.synerge.order101.common.enums.OrderStatus;
-import jakarta.persistence.Basic;
 import lombok.Builder;
 import lombok.Getter;
 

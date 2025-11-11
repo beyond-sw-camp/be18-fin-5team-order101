@@ -154,11 +154,10 @@ public class StoreOrder {
     }
 
     public String generateOrderNo() {
-        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-        int random = ThreadLocalRandom.current().nextInt(1000);
-        String randomStr = String.format("%03d", random); // 3자리로 0 채우기
-
-        return "OR-" + timestamp + "-" + randomStr;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String datePart = LocalDateTime.now().format(formatter);
+        int randomNum = ThreadLocalRandom.current().nextInt(1000, 9999);
+        return "OR" + datePart + randomNum;
     }
 
     @PreUpdate
@@ -169,15 +168,12 @@ public class StoreOrder {
     public void approve() {
         if(this.orderStatus == OrderStatus.SUBMITTED) {
             this.orderStatus = OrderStatus.CONFIRMED;
-            // orderStatusLog  이블에 변경 이력 남겨야됌.
-
         }
     }
 
     public void reject() {
         if(this.orderStatus == OrderStatus.SUBMITTED) {
             this.orderStatus = OrderStatus.REJECTED;
-            // orderStatusLog  이블에 변경 이력 남겨야됌.
         }
     }
 }
