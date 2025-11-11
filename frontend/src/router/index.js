@@ -21,6 +21,11 @@ const SupplierListView = () => import('../views/hq/suppliers/SupplierListView.vu
 const SupplierDetailView = () => import('../views/hq/suppliers/SupplierDetailView.vue')
 const SettlementListView = () => import('../views/hq/settlement/SettlementListView.vue')
 const DailySettlementView = () => import('../views/hq/settlement/DailySettlementView.vue')
+const FranchiseOrderApprovalView = () =>
+  import('../views/hq/franchise/FranchiseOrderApprovalView.vue')
+const FranchiseOrderListView = () => import('../views/hq/franchise/FranchiseOrderListView.vue')
+const FranchiseOrderDetailView = () => import('../views/hq/franchise/FranchiseOrderDetailView.vue')
+const FranchiseDeliveryView = () => import('../views/hq/franchise/FranchiseDeliveryView.vue')
 
 const hqRoutes = [
   {
@@ -122,19 +127,31 @@ const hqRoutes = [
   {
     path: '/hq/franchise/approval',
     name: 'hq-franchise-approval',
-    component: PagePlaceholder,
+    component: FranchiseOrderApprovalView,
     meta: { title: '가맹점 주문 승인' },
+  },
+  {
+    path: '/hq/franchise/approval/:id',
+    name: 'hq-franchise-approval-detail',
+    component: OrderApprovalView,
+    meta: { title: '가맹점 발주 상세' },
   },
   {
     path: '/hq/franchise/orders',
     name: 'hq-franchise-orders',
-    component: PagePlaceholder,
+    component: FranchiseOrderListView,
     meta: { title: '가맹점 주문 조회' },
+  },
+  {
+    path: '/hq/franchise/orders/:id',
+    name: 'hq-franchise-order-detail',
+    component: FranchiseOrderDetailView,
+    meta: { title: '가맹점 주문 상세' },
   },
   {
     path: '/hq/franchise/delivery',
     name: 'hq-franchise-delivery',
-    component: PagePlaceholder,
+    component: FranchiseDeliveryView,
     meta: { title: '배송 관리' },
   },
 ]
