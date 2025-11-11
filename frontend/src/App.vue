@@ -47,6 +47,7 @@ const adminSidebar = [
     id: 'franchise',
     title: '가맹점 관리',
     children: [
+      { title: '가맹점 목록', path: '/hq/franchise/list' },
       { title: '가맹점 등록', path: '/hq/franchise/registration' },
       { title: '가맹점 재고 현황', path: '/hq/franchise/stock' },
       { title: '가맹점 주문 승인', path: '/hq/franchise/approval' },
