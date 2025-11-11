@@ -10,6 +10,12 @@ const LoginView = () => import('../views/LoginView.vue')
 const MyView = () => import('../views/MyView.vue')
 const MovementsView = () => import('../views/hq/inventory/MovementsView.vue')
 const StockView = () => import('../views/hq/inventory/StockView.vue')
+const FranchiseListView = () => import('../views/hq/franchise/FranchiseListView.vue')
+const FranchiseStockView = () => import('../views/hq/franchise/FranchiseStockView.vue')
+const FranchiseRegistrationView = () =>
+  import('../views/hq/franchise/FranchiseRegistrationView.vue')
+const SupplierListView = () => import('../views/hq/suppliers/SupplierListView.vue')
+const SupplierDetailView = () => import('../views/hq/suppliers/SupplierDetailView.vue')
 
 const hqRoutes = [
   {
@@ -39,8 +45,14 @@ const hqRoutes = [
   {
     path: '/hq/orders/vendors',
     name: 'hq-orders-vendors',
-    component: PagePlaceholder,
+    component: SupplierListView,
     meta: { title: '공급사 관리' },
+  },
+  {
+    path: '/hq/orders/vendors/:id',
+    name: 'hq-supplier-detail',
+    component: SupplierDetailView,
+    meta: { title: '공급사 상세' },
   },
   {
     path: '/hq/inventory/stock',
@@ -76,13 +88,19 @@ const hqRoutes = [
   {
     path: '/hq/franchise/registration',
     name: 'hq-franchise-registration',
-    component: PagePlaceholder,
+    component: FranchiseRegistrationView,
     meta: { title: '가맹점 등록' },
+  },
+  {
+    path: '/hq/franchise/list',
+    name: 'hq-franchise-list',
+    component: FranchiseListView,
+    meta: { title: '가맹점 목록' },
   },
   {
     path: '/hq/franchise/stock',
     name: 'hq-franchise-stock',
-    component: PagePlaceholder,
+    component: FranchiseStockView,
     meta: { title: '가맹점 재고 현황' },
   },
   {
