@@ -1,5 +1,4 @@
 <script setup>
-import { defineProps, defineEmits } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { logout } from '../stores/auth'
 // SVG icon components available in the project
@@ -62,6 +61,9 @@ const getIconComponent = (name) => iconMap[name] || null
               class="menu-link"
               :class="{ active: route.path === item.path }"
             >
+              <span class="menu-icon" v-if="item.icon">
+                <component :is="getIconComponent(item.icon)" />
+              </span>
               <span class="menu-title">{{ item.title }}</span>
             </RouterLink>
           </li>
@@ -181,6 +183,16 @@ const getIconComponent = (name) => iconMap[name] || null
 }
 .menu-title {
   flex: 1;
+}
+.menu-icon {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  color: #6b7280;
+}
+.menu-icon svg {
+  width: 18px;
+  height: 18px;
 }
 .logout-button {
   margin-top: 32px;
