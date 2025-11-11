@@ -2,7 +2,7 @@ package com.synerge.order101.outbound.model.service;
 
 import com.synerge.order101.outbound.model.dto.OutboundDetailResponseDto;
 import com.synerge.order101.outbound.model.dto.OutboundResponseDto;
-import com.synerge.order101.outbound.model.entity.OutBound;
+import com.synerge.order101.outbound.model.entity.Outbound;
 import com.synerge.order101.outbound.model.entity.OutboundDetail;
 import com.synerge.order101.outbound.model.repository.OutboundDetailRepository;
 import com.synerge.order101.outbound.model.repository.OutboundRepository;
@@ -30,7 +30,7 @@ public class OutboundServiceImpl implements OutboundService {
 
         return result.getContent().stream()
                 .map(row -> {
-                    OutBound o = (OutBound) row[0];
+                    Outbound o = (Outbound) row[0];
                     Integer itemCount = ((Number) row[1]).intValue();
                     Integer totalQty = ((Number) row[2]).intValue();
 
@@ -49,7 +49,7 @@ public class OutboundServiceImpl implements OutboundService {
     @Override
     @Transactional(readOnly = true)
     public OutboundDetailResponseDto getOutboundDetail(Long outboundId) {
-        OutBound outbound = outboundRepository.findById(outboundId)
+        Outbound outbound = outboundRepository.findById(outboundId)
                 .orElseThrow(() -> new RuntimeException("출고 정보를 찾을 수 없습니다."));
 
         List<OutboundDetail> details = outboundDetailRepository.findByOutbound(outboundId);

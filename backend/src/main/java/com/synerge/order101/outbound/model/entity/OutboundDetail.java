@@ -19,7 +19,7 @@ public class OutboundDetail {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "outbound_id", nullable = false)
-    private OutBound outbound;
+    private Outbound outbound;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.CONSTRAINT))

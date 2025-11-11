@@ -2,7 +2,7 @@ package com.synerge.order101.shipment.model.entity;
 
 import com.synerge.order101.common.enums.ShipmentStatus;
 import com.synerge.order101.order.model.entity.StoreOrder;
-import com.synerge.order101.outbound.model.entity.OutBound;
+import com.synerge.order101.outbound.model.entity.Outbound;
 import com.synerge.order101.store.model.entity.Store;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -23,7 +23,7 @@ public class Shipment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "outbound_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private OutBound outbound;
+    private Outbound outbound;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
