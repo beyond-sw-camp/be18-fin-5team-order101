@@ -1,4 +1,4 @@
-package com.synerge.order101.inbound.model.entity;
+package com.synerge.order101.outbound.model.entity;
 
 
 import com.synerge.order101.product.model.entity.Product;
@@ -10,23 +10,23 @@ import java.time.LocalDateTime;
 
 @Getter
 @Entity
-@Table(name = "inbound_detail")
-public class InBoundDetail {
+@Table(name = "outbound_detail")
+public class OutboundDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long inboundDetailId;
+    private Long outboundDetailId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "inbound_id", nullable = false)
-    private InBound inboundId;
+    @JoinColumn(name = "outbound_id", nullable = false)
+    private Outbound outbound;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private Product productId;
+    @JoinColumn(name = "product_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.CONSTRAINT))
+    private Product product;
 
-    @Column(name = "received_qty", nullable = false)
-    private Integer receivedQuantity;
+    @Column(nullable = false)
+    private Integer outboundQty;
 
     @Column(columnDefinition = "DATETIME(6)")
     @CreationTimestamp
