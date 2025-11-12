@@ -92,6 +92,12 @@ public class OutboundServiceImpl implements OutboundService {
         );
         outboundRepository.save(outbound);
 
+        // 주문 상세 기반 출고 상세 생성
+        storeOrder.getStoreOrderDetails().forEach(detail -> {
+            OutboundDetail outboundDetail = new OutboundDetail(outbound, detail.getProduct(), detail.getOrderQty().intValue());
+            outboundDetailRepository.save(outboundDetail);
+        });
+
         // 주문 상세 기반 재고 차감
         storeOrder.getStoreOrderDetails().forEach(detail ->
                 inventoryService.decreaseInventory(detail.getProduct().getProductId(), detail.getOrderQty().intValue())
