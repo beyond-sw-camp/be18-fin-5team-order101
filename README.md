@@ -246,7 +246,7 @@ AI 제안값의 근거(예측치, 안전재고, 최소/최대 발주수량)를 �
 
 
 
-### ETC
+### API
 <img src="https://img.shields.io/badge/apidog-FE4F19?style=for-the-badge&logoColor=white">
 
 
@@ -269,6 +269,16 @@ AI 제안값의 근거(예측치, 안전재고, 최소/최대 발주수량)를 �
 <br/>
 
 ## 5. 시스템 아키텍처
+<details>
+  <summary><b>시스템 아키텍처</b></summary>
+  <div markdown="1">
+    <ul>
+      <img width="1177" height="1359" alt="image" src="https://github.com/user-attachments/assets/0e84db9c-21db-4a25-b530-e414f8e76226" />
+      <img width="1170" height="702" alt="image" src="https://github.com/user-attachments/assets/7555252a-87c2-4bbb-9c90-d80e8d15c830" />
+    </ul>
+  </div>
+</details>
+
 
 
 <br/>
