@@ -25,28 +25,18 @@ public class StoreOrderController {
     @GetMapping
     public ResponseEntity<List<StoreOrderSummaryResponseDto>> findStoreOrders(
             @RequestParam(required = false) OrderStatus status,
-            @RequestParam(required = false) Integer page
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size
     ) {
 
-        List<StoreOrderSummaryResponseDto> response = storeOrderService.findOrders(status, page);
+        List<StoreOrderSummaryResponseDto> response = storeOrderService.findOrders(status, page, size);
 
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * 2. 가맹점 주문 생성 (POST /orders)
-     * - 요청 본문(RequestBody)에서 주문 정보를 받아 새로운 주문을 생성합니다.
-     */
-    @PostMapping
-    public ResponseEntity<StoreOrderCreateResponseDto> createStoreOrder(@RequestBody StoreOrderCreateRequest request) {
-
-        StoreOrderCreateResponseDto responseDto = storeOrderService.createOrder(request);
-
-        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
-    }
 
     /**
-     * 3. 주문 상세 조회 (GET /orders/{orderId})
+     * 2. 주문 상세 조회 (GET /orders/{orderId})
      * - 경로 변수(PathVariable)로 받은 주문 ID에 해당하는 상세 정보를 반환합니다.
      */
     @GetMapping("/{storeOrderId}")
@@ -58,25 +48,28 @@ public class StoreOrderController {
     }
 
     /**
-     * 4. 주문 승인 (PUT /orders/{orderId}/approve)
-     * - 특정 주문의 상태를 '승인'으로 변경합니다.
+     * 3. 가맹점 주문 생성 (POST /orders)
+     * - 요청 본문(RequestBody)에서 주문 정보를 받아 새로운 주문을 생성합니다.
      */
-    @PatchMapping("/{storeOrderId}/approve")
-    public ResponseEntity<StoreOrderUpdateStatusResponseDto> approveStoreOrder(@PathVariable Long storeOrderId) {
+    @PostMapping
+    public ResponseEntity<StoreOrderCreateResponseDto> createStoreOrder(@RequestBody StoreOrderCreateRequest request) {
 
-        StoreOrderUpdateStatusResponseDto responseDto = storeOrderService.approveOrder(storeOrderId);
+        StoreOrderCreateResponseDto responseDto = storeOrderService.createOrder(request);
 
-        return ResponseEntity.ok(responseDto);
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
     /**
-     * 5. 주문 반려 (PUT /orders/{orderId}/reject)
-     * - 특정 주문의 상태를 '반려/취소'로 변경합니다.
+     * 4. 주문 승인 (PUT /orders/{storeOrderId}/{status})
+     * 5. 주문 반려 (PUT /orders/{storeOrderId}/{status})
+     * - 특정 주문의 상태를 'status'으로 변경합니다.
      */
-    @PatchMapping("/{storeOrderId}/reject")
-    public ResponseEntity<StoreOrderUpdateStatusResponseDto> rejectOrder(@PathVariable Long storeOrderId) {
+    @PatchMapping("/{storeOrderId}/{status}")
+    public ResponseEntity<StoreOrderUpdateStatusResponseDto> approveStoreOrder(
+            @PathVariable Long storeOrderId,
+            @PathVariable OrderStatus status) {
 
-        StoreOrderUpdateStatusResponseDto responseDto = storeOrderService.rejectOrder(storeOrderId);
+        StoreOrderUpdateStatusResponseDto responseDto = storeOrderService.updateOrderStatus(storeOrderId,status);
 
         return ResponseEntity.ok(responseDto);
     }

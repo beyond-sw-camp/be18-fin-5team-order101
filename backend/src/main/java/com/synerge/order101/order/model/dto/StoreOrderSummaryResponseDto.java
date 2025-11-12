@@ -1,28 +1,32 @@
 package com.synerge.order101.order.model.dto;
 
+import com.synerge.order101.common.enums.OrderStatus;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import org.hibernate.Internal;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
-@Builder
+@AllArgsConstructor
 public class StoreOrderSummaryResponseDto {
 
-    Long storeOrderId;
+    private Long storeOrderId;
 
-    String orderNo;
+    private String orderNo;
 
-    String storeName;
+    private String storeName;
 
     // 품목 수
-    Integer itemCount;
+    private Integer itemCount;
 
     // 총 수량
-    Integer totalQTY;
+    private Integer totalQTY;
 
-    LocalDateTime orderDate;
+    private LocalDateTime orderDate;
 
-    String orderStatus;
+    private OrderStatus orderStatus;
 
 }
