@@ -65,6 +65,7 @@ public class Purchase {
         LocalDateTime now = LocalDateTime.now();
         if (createdAt == null) {
                 createdAt = now;
+                poDate = now;
         }
         poNo = this.generatePoNo();
 
@@ -76,6 +77,10 @@ public class Purchase {
         String datePart = LocalDateTime.now().format(formatter);
         int randomNum = ThreadLocalRandom.current().nextInt(1000, 9999);
         return "PO" + datePart + randomNum;
+    }
+
+    public void updateOrderStatus(OrderStatus newOrderStatus) {
+        this.orderStatus = newOrderStatus;
     }
 
 }

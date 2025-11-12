@@ -27,20 +27,21 @@
 ## 📚 목차
 
 0. [발표 슬라이드](#0-발표-슬라이드)  
-1. [프로젝트 개요](#1-프로젝트-개요)  
-2. [요구사항 명세서](#2-요구사항-명세서)  
-3. [기술 스택](#3-기술-스택)  
-4. [시스템 아키텍처](#4-시스템-아키텍처)  
-5. [데이터베이스 설계 (ERD)](#5-데이터베이스-설계-erd)  
-6. [테이블 명세서](#6-테이블-명세서)  
-7. [API 명세서](#7-api-명세서)
-8. .[화면 기능 설계서](#8-화면-기능-설계서)
-9. [백엔드 테스트 결과서](#9-백엔드-테스트-결과서)
-10. .[프론트엔드 테스트 결과서](#10-프론트엔드-테스트-결과서)
-11. .[CICD](#11-CICD)
-12. .[트러블 슈팅](#12-트러블-슈팅)
-13. [향후 개선 계획](#13-향후-개선-계획)  
-14. [회고록](#14-회고록)
+1. [프로젝트 개요](#1-프로젝트-개요)
+2. [WBS](#2-WBS)
+3. [요구사항 명세서](#3-요구사항-명세서)  
+4. [기술 스택](#4-기술-스택)  
+5. [시스템 아키텍처](#5-시스템-아키텍처)  
+6. [데이터베이스 설계 (ERD)](#6-데이터베이스-설계-erd)  
+7. [테이블 명세서](#7-테이블-명세서)  
+8. [API 명세서](#8-api-명세서)
+9. .[화면 기능 설계서](#9-화면-기능-설계서)
+10. [백엔드 테스트 결과서](#10-백엔드-테스트-결과서)
+11. .[프론트엔드 테스트 결과서](#11-프론트엔드-테스트-결과서)
+12. .[CICD](#12-CICD)
+13. .[트러블 슈팅](#13-트러블-슈팅)
+14. [향후 개선 계획](#14-향후-개선-계획)  
+15. [회고록](#15-회고록)
 
 
 
@@ -150,6 +151,7 @@ AI 제안값의 근거(예측치, 안전재고, 최소/최대 발주수량)를 �
   <div markdown="1">
     <ul>
       <li>AI 예측 모듈</li>
+      <li>AI 스마트 발주 제안</li>
     </ul>
   </div>
 </details>
@@ -177,11 +179,15 @@ AI 제안값의 근거(예측치, 안전재고, 최소/최대 발주수량)를 �
 
 <br/>
 
-## 2. 요구사항 명세서
+## 2. WBS
+[WBS](https://docs.google.com/spreadsheets/d/1isf6GO9iqXJyhFxtxYRvIOtjqf20IP69H_oeq2SgyC8/edit?gid=509945759#gid=509945759)
+
+
+## 3. 요구사항 명세서
 
 ### 기능 요구사항
 
-#### 2.1 요약
+#### 3.1 요약
 
 | 구분 | 주요 기능 | 핵심 요약 설명 |
 |----------------|--------|--------|
@@ -194,7 +200,7 @@ AI 제안값의 근거(예측치, 안전재고, 최소/최대 발주수량)를 �
 | 정산 관리 | 자동 금액 산정 및 리포트 | AR(가맹점청구)/AP(공급사지급) 구분 정산, 기간별 대시보드 제공 |
 
 
-#### 2.2 전문
+#### 3.2 전문
 [요구사항 명세서](https://docs.google.com/spreadsheets/d/1vx25t4TzY9Tyu7JUvGRLR6c3iasbg0lG-xEiHt3Kacs/edit?gid=0#gid=0)
 
 </div>
@@ -203,70 +209,135 @@ AI 제안값의 근거(예측치, 안전재고, 최소/최대 발주수량)를 �
 <br/>
 
 
-## 3. 기술 스택
+## 4. 기술 스택
+### BACKEND
+
+
+![java](https://github.com/user-attachments/assets/a9cd03e7-07d6-477e-b3dd-32e7a6ae1e08)
+![jpa](https://github.com/user-attachments/assets/dd9fdaec-6850-4401-9c67-af2da34ddf5d) 
+<img src="https://img.shields.io/badge/Maven-C71A36?style=for-the-badge&logo=apachemaven&logoColor=white">
+![jwt](https://github.com/user-attachments/assets/83bddf8b-d556-4e60-8391-2074704103c4)
+<img src="https://img.shields.io/badge/SpringBoot-10B146?style=for-the-badge&logo=SpringBoot&logoColor=white">
+<img src="https://img.shields.io/badge/SpringSecurity-3B66BC?style=for-the-badge&logo=SpringSecurity&logoColor=white">
+<img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white">
+<img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white">
+<img src="https://img.shields.io/badge/Poetry-60A5FA?style=for-the-badge&logo=poetry&logoColor=white">
+
+### AI
+<img src="https://img.shields.io/badge/LightGBM-024F27?style=for-the-badge&logo=lightgbm&logoColor=white"> <img src="https://img.shields.io/badge/pandas-150458?style=for-the-badge&logo=pandas&logoColor=white"> <img src="https://img.shields.io/badge/numpy-013243?style=for-the-badge&logo=numpy&logoColor=white"> <img src="https://img.shields.io/badge/scikit--learn-F7931E?style=for-the-badge&logo=scikitlearn&logoColor=white"> <img src="https://img.shields.io/badge/matplotlib-11557C?style=for-the-badge&logo=plotly&logoColor=white"> <img src="https://img.shields.io/badge/joblib-0088CC?style=for-the-badge&logo=python&logoColor=white"> 
+
+
+### FRONTEND
+  
+<img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white"> <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white">
+<img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black">
+<img src="https://img.shields.io/badge/Vue.js-4FC08D?style=for-the-badge&logo=vue.js&logoColor=white">
+<img src="https://img.shields.io/badge/Pinia-F8E162?style=for-the-badge&logo=pinia&logoColor=black">
+<img src="https://img.shields.io/badge/Bootstrap-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white">
+
+
+
+
+### DATABASE
+
+
+![redis](https://github.com/user-attachments/assets/df929d81-ce2f-4853-97fd-cdf7bf45907e) ![mariadb](https://github.com/user-attachments/assets/19a0ad09-804d-4303-80bd-32cafdae0e6f)
+
+
+
+
+### API
+<img src="https://img.shields.io/badge/apidog-FE4F19?style=for-the-badge&logoColor=white">
+
+
+
+
+### IDE
+
+![intellij](https://github.com/user-attachments/assets/25d426ed-e30e-4619-9968-11375adba8b9)
+<img src="https://img.shields.io/badge/VS%20Code-007ACC?style=for-the-badge&logo=visualstudiocode&logoColor=white">
+<img src="https://img.shields.io/badge/jupyter-F37626?style=for-the-badge&logo=jupyter&logoColor=white">
+
+### DEVOPS
+
+<img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white"> <img src="https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white">
+<img src="https://img.shields.io/badge/GitHub%20Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white">
+<img src="https://img.shields.io/badge/Jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=white">
+<img src="https://img.shields.io/badge/Argo%20CD-FE6A16?style=for-the-badge&logo=argo&logoColor=white">
 
 
 <br/>
 
-## 4. 시스템 아키텍처
+## 5. 시스템 아키텍처
+<details>
+  <summary><b>시스템 아키텍처</b></summary>
+  <div markdown="1">
+    <ul>
+      <img width="1177" height="1359" alt="image" src="https://github.com/user-attachments/assets/0e84db9c-21db-4a25-b530-e414f8e76226" />
+      <img width="1170" height="702" alt="image" src="https://github.com/user-attachments/assets/7555252a-87c2-4bbb-9c90-d80e8d15c830" />
+    </ul>
+  </div>
+</details>
+
 
 
 <br/>
 
 
-## 5. 데이터베이스 설계 (ERD)
+## 6. 데이터베이스 설계 (ERD)
 
 ### ERD
-[ERD CLOUD](https://www.erdcloud.com/d/BNoDxLbwss3ZbKg8x)
+[ERD CLOUD](https://www.erdcloud.com/d/jWZc3FeZeT5W6F7EX)
   
-![erd]()
+<img width="3980" height="2392" alt="Copy of 오더101" src="https://github.com/user-attachments/assets/b5cb8f74-4ee5-4241-9672-2b2a03a929c2" />
+
 
 <br>
 
 
-## 6. 테이블 명세서
+## 7. 테이블 명세서
 
 [테이블 명세서](https://docs.google.com/spreadsheets/d/1L8VvISg4ghGQ_SOjZdJVomAtUtR1-A0axD3hO7-VWj4/edit?gid=1345457380#gid=1345457380)
 
 
 <br>
 
-## 7. API 명세서
+## 8. API 명세서
 
 [API 명세서](https://4ktgjt483l.apidog.io)
 
 <br/>
 
-## 8. 화면 기능 설계서 
+## 9. 화면 기능 설계서 
 
 [화면 기능 설계서](https://app.visily.ai/projects/76f025b6-c743-4fe3-8bea-7c5e958c9d20/boards/2283842)
 
 <br/>
 
-## 9. 백엔드 테스트 결과서
+## 10. 백엔드 테스트 결과서
 
 
 <br>
 
-## 10. 프론트엔드 테스트 결과서
+## 11. 프론트엔드 테스트 결과서
 
 
 
-## 11. CICD
+## 12. CICD
 
 
 
-## 12. 트러블 슈팅
+## 13. 트러블 슈팅
 
 
 
-## 13. 향후 개선 계획
+## 14. 향후 개선 계획
 
 
 
 <br/>
 
-## 14. 회고록
+## 15. 회고록
 
 |   조원 이름	| 회고  	 |
 |---	|-------|

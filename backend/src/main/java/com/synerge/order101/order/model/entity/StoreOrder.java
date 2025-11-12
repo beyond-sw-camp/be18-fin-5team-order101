@@ -165,15 +165,7 @@ public class StoreOrder {
         updatedAt = LocalDateTime.now();
     }
 
-    public void approve() {
-        if(this.orderStatus == OrderStatus.SUBMITTED) {
-            this.orderStatus = OrderStatus.CONFIRMED;
-        }
-    }
-
-    public void reject() {
-        if(this.orderStatus == OrderStatus.SUBMITTED) {
-            this.orderStatus = OrderStatus.REJECTED;
-        }
+    public void updateOrderState(OrderStatus newOrderStatus) {
+        this.orderStatus = newOrderStatus;
     }
 }
