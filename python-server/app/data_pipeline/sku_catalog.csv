@@ -1,0 +1,66 @@
+sku_id,sku_name_ko,sku_name_en,cat_low,brand,series,model_code,size_inch,volume_l,capacity_text,energy_grade,price_tier,msrp_krw,launch_date,warranty_months,case_pack,min_order_qty,eol_flag,base_share
+TV-LG-OLED-65-2024,"LG OLED 65""",LG OLED 65,TV,LG,OLED,C2,65,,,1등급,high,2890000,2024-03-01,24,1,1,0,0.35
+TV-SAM-QLED-65-2024,"삼성 QLED 65""",Samsung QLED 65,TV,Samsung,QLED,Q80C,65,,,1등급,high,2790000,2024-03-15,24,1,1,0,0.3
+TV-LG-LED-55-2023,"LG LED 55""",LG LED 55,TV,LG,LED,UQ80,55,,,2등급,mid,1290000,2023-04-01,24,1,1,0,0.2
+TV-XIA-LED-50-2024,"샤오미 50""",Xiaomi 50,TV,Xiaomi,LED,P1,50,,,3등급,low,499000,2024-05-01,12,1,1,0,0.15
+FR-SAM-4D-820L-2024,삼성 비스포크 4도어 820L,Samsung Bespoke 4D 820L,냉장고,Samsung,Bespoke,RF85,,820,820L,1등급,high,3490000,2024-02-01,24,1,1,0,0.35
+FR-LG-OBJ-820L-2024,LG 오브제 4도어 820L,LG Objet 4D 820L,냉장고,LG,Objet,M823,,820,820L,1등급,high,3390000,2024-02-10,24,1,1,0,0.3
+FR-WIN-3D-650L-2023,위니아 3도어 650L,Winia 3D 650L,냉장고,Winia,Standard,W650,,650,650L,2등급,mid,1790000,2023-04-01,24,1,1,0,0.2
+FR-CAR-2D-300L-2023,캐리어 2도어 300L,Carrier 2D 300L,냉장고,Carrier,Standard,C300,,300,300L,3등급,low,799000,2023-03-01,12,1,1,0,0.15
+WM-LG-TOP-21K-2024,LG 통돌이 21kg,LG Top Load 21kg,세탁기,LG,TopLoad,TL21,,,,2등급,mid,999000,2024-02-01,24,1,1,0,0.35
+WM-SAM-GRN-24K-2024,삼성 그랑데 24kg,Samsung Grande 24kg,세탁기,Samsung,Grande,GR24,,,,1등급,high,1399000,2024-02-01,24,1,1,0,0.3
+WM-WIN-DRUM-20K-2023,위니아 드럼 20kg,Winia Drum 20kg,세탁기,Winia,Drum,WD20,,,,2등급,mid,899000,2023-05-01,24,1,1,0,0.2
+WM-MIE-DRUM-9K-2023,미iele 드럼 9kg,Miele Drum 9kg,세탁기,Miele,Drum,W1,,,,1등급,high,1490000,2023-06-01,24,1,1,0,0.15
+DRY-SAM-GRN-20K-2024,삼성 그랑데 건조기 20kg,Samsung Grande Dryer 20kg,건조기,Samsung,GrandeDV,DV20,,,,1등급,high,1290000,2024-03-01,24,1,1,0,0.35
+DRY-LG-TROM-19K-2024,LG 트롬 건조기 19kg,LG Tromm Dryer 19kg,건조기,LG,TrommDV,DV19,,,,1등급,high,1190000,2024-03-10,24,1,1,0,0.3
+DRY-WIN-17K-2023,위니아 17kg,Winia 17kg,건조기,Winia,Standard,DV17,,,,2등급,mid,799000,2023-04-01,24,1,1,0,0.2
+DRY-WHP-10K-2023,위프로 10kg,Whirlpool 10kg,건조기,Whirlpool,Standard,W10,,,,2등급,mid,699000,2023-05-01,24,1,1,0,0.15
+VAC-DYS-V11-2024,다이슨 V11,Dyson V11,청소기,Dyson,V11,V11,,,,high,799000,2024-02-01,24,4,1,0,0.40,0.25
+VAC-SAM-JET-2024,삼성 제트,Samsung Jet,청소기,Samsung,Jet,Jet,,,,high,699000,2024-02-10,24,4,1,0,0.30,0.25
+VAC-XIA-ROBO-2024,샤오미 로봇청소기,Xiaomi Robot,청소기,Xiaomi,Robot,Vac2,,,,mid,399000,2024-03-01,12,2,1,0,0.20,0.25
+VAC-ROB-I7-2023,아이로봇 i7,iRobot Roomba i7,청소기,iRobot,Roomba,i7,,,,mid,599000,2023-09-01,12,2,1,0,0.10,0.25
+AC-LG-STAND-18P-2024,LG 휘센 스탠드 18평,LG Stand AC 18py,에어컨,LG,Whisen,AS18,,,,1등급,high,2590000,2024-04-01,24,1,1,0,0.4000000000000001
+AC-SAM-WF-18P-2024,삼성 무풍 18평,Samsung WindFree 18py,에어컨,Samsung,WindFree,AF18,,,,1등급,high,2490000,2024-04-01,24,1,1,0,0.3
+AC-CAR-16P-2024,캐리어 16평,Carrier 16py,에어컨,Carrier,Standard,CR16,,,,2등급,mid,1690000,2024-04-15,24,1,1,0,0.2
+AC-LG-WS-6P-2024,LG 벽걸이 6평,LG Wall 6py,에어컨,LG,Wall,WA06,,,,2등급,mid,799000,2024-05-01,24,1,1,0,0.1
+AIR-LG-PURI-58-2024,LG 퓨리케어 58㎡,LG PuriCare 58m²,공기청정기,LG,PuriCare,AS58,,,,1등급,high,599000,2024-02-01,24,2,1,0,0.4000000000000001
+AIR-WNX-56-2024,위닉스 56㎡,Winix 56m²,공기청정기,Winix,Zero,WX56,,,,2등급,mid,399000,2024-02-15,24,2,1,0,0.3
+AIR-XIA-52-2024,샤오미 52㎡,Xiaomi 52m²,공기청정기,Xiaomi,MiAir,MA52,,,,3등급,low,199000,2024-03-01,12,2,1,0,0.2
+AIR-SAM-60-2024,삼성 블루스카이 60㎡,Samsung BlueSky 60m²,공기청정기,Samsung,BlueSky,BS60,,,,1등급,high,549000,2024-03-10,24,2,1,0,0.1
+MW-SAM-30L-2024,삼성 전자레인지 30L,Samsung Microwave 30L,전자레인지,Samsung,MW,ME30,,,30L,2등급,mid,169000,2024-01-20,24,2,1,0,0.4
+MW-LG-25L-2024,LG 전자레인지 25L,LG Microwave 25L,전자레인지,LG,MW,LG25,,,25L,2등급,mid,159000,2024-01-15,24,2,1,0,0.35
+MW-CK-23L-2024,쿠쿠 23L,Cuckoo 23L,전자레인지,Cuckoo,MW,CK23,,,23L,3등급,low,119000,2024-02-01,12,2,1,0,0.15
+MW-DAE-25L-2023,대우 25L,Daewoo 25L,전자레인지,Daewoo,MW,DW25,,,25L,3등급,low,109000,2023-11-01,12,2,1,0,0.1
+OV-LG-70L-2024,LG 빌트인 오븐 70L,LG Built-in Oven 70L,오븐,LG,BuiltIn,OB70,,,70L,1등급,high,999000,2024-03-01,24,1,1,0,0.45
+OV-SAM-72L-2024,삼성 빌트인 오븐 72L,Samsung Built-in Oven 72L,오븐,Samsung,BuiltIn,OB72,,,72L,1등급,high,949000,2024-03-10,24,1,1,0,0.35
+OV-CK-45L-2024,쿠첸 45L,Cuchen 45L,오븐,Cuchen,Electric,CE45,,,45L,2등급,mid,349000,2024-02-10,12,1,1,0,0.2
+DW-SAM-12P-2024,삼성 식기세척기 12인,Samsung DW 12p,식기세척기,Samsung,Standard,DW12,,,,1등급,high,1099000,2024-01-20,24,1,1,0,0.4
+DW-LG-12P-2024,LG 식기세척기 12인,LG DW 12p,식기세척기,LG,Standard,LD12,,,,1등급,high,1049000,2024-01-15,24,1,1,0,0.35
+DW-SKM-8P-2024,SK매직 8인,SKMagic 8p,식기세척기,SKMagic,Compact,SK8,,,,2등급,mid,699000,2024-02-10,12,1,1,0,0.25
+COF-DEL-AUTO-2024,드롱기 전자동,DeLonghi Auto,커피머신,DeLonghi,Auto,ECAM,,,,high,899000,2024-03-01,24,2,1,0,0.35,0.3333333333333333
+COF-BRV-SEMI-2024,브레빌 반자동,Breville Semi,커피머신,Breville,Semi,BES,,,,high,799000,2024-03-01,24,2,1,0,0.35,0.3333333333333333
+COF-NES-CAPS-2024,네스프레소 캡슐,Nespresso Capsule,커피머신,Nespresso,Capsule,Vertuo,,,,mid,299000,2024-02-01,12,4,1,0,0.30,0.3333333333333333
+TOA-BRN-2S-2024,브라운 토스터 2구,Braun Toaster 2S,토스터기,Braun,Toaster,BR2,,,2구,2등급,mid,99000,2024-01-10,12,6,1,0,0.5
+TOA-PHI-2S-2024,필립스 토스터 2구,Philips Toaster 2S,토스터기,Philips,Toaster,PH2,,,2구,2등급,mid,89000,2024-01-10,12,6,1,0,0.5
+MIX-BRV-STAND-5L-2024,브레빌 스탠드믹서 5L,Breville Stand Mixer 5L,믹서기,Breville,Stand,BR5,,5,5L,1등급,high,399000,2024-02-01,24,4,1,0,1.0
+MIX-CUI-HAND-2024,쿠진아트 핸드블렌더,Cuisinart Hand Blender,믹서기,Cuisinart,Hand,HB,,,,mid,129000,2024-01-20,12,6,1,0,0.60,0.0
+NBK-LG-GRAM-16-2024,LG 그램 16,LG Gram 16,노트북,LG,Gram,16,16,,,high,2190000,2024-03-01,24,1,1,0,0.35,0.3333333333333333
+NBK-SAM-GALAXY-15-2024,삼성 갤럭시북 15,Samsung Galaxy Book 15,노트북,Samsung,GalaxyBook,15,15,,,mid,1690000,2024-03-01,24,1,1,0,0.35,0.3333333333333333
+NBK-LEN-IDEA-15-2023,레노보 아이디어패드 15,Lenovo IdeaPad 15,노트북,Lenovo,IdeaPad,15,15,,,mid,1190000,2023-10-01,24,1,1,0,0.30,0.3333333333333333
+DES-HP-STD-2024,HP 데스크탑,HP Desktop,데스크탑,HP,Standard,HPD,,,,mid,899000,2024-02-01,24,1,1,0,0.45,0.3333333333333333
+DES-SAM-STD-2024,삼성 데스크탑,Samsung Desktop,데스크탑,Samsung,Standard,SMD,,,,mid,849000,2024-02-01,24,1,1,0,0.30,0.3333333333333333
+DES-LEN-THINK-2024,레노보 씽크센터,Lenovo ThinkCentre,데스크탑,Lenovo,ThinkCentre,LTC,,,,mid,949000,2024-02-15,24,1,1,0,0.25,0.3333333333333333
+MON-LG-27QHD-2024,LG 27인치 QHD,LG 27 QHD,모니터,LG,Ultrafine,27,27,,,mid,399000,2024-02-01,24,2,1,0,0.40,0.3333333333333333
+MON-SAM-32UHD-2024,삼성 32인치 4K,Samsung 32 4K,모니터,Samsung,UR,32,32,,,high,549000,2024-02-01,24,2,1,0,0.35,0.3333333333333333
+MON-DEL-24FHD-2023,델 24인치 FHD,Dell 24 FHD,모니터,Dell,P,24,24,,,low,199000,2023-09-01,12,4,1,0,0.25,0.3333333333333333
+PHN-SAM-S24-256-2024,갤럭시 S24 256GB,Galaxy S24 256GB,스마트폰,Samsung,Galaxy,S24,,,,high,1299000,2024-01-26,24,1,1,0,0.40,0.3333333333333333
+PHN-APL-IP15-128-2024,아이폰 15 128GB,iPhone 15 128GB,스마트폰,Apple,iPhone,15,,,,high,1250000,2024-09-22,24,1,1,0,0.40,0.3333333333333333
+PHN-XIA-RED-128-2024,샤오미 Redmi 128GB,Xiaomi Redmi 128GB,스마트폰,Xiaomi,Redmi,Note,,,,mid,399000,2024-03-10,12,1,1,0,0.20,0.3333333333333333
+WAT-SAM-GAL-45-2024,갤럭시 워치 45mm,Galaxy Watch 45mm,스마트워치,Samsung,GalaxyWatch,45,45mm,,,mid,399000,2024-08-01,12,4,1,0,0.55,0.5
+WAT-APL-AW-41-2024,애플 워치 41mm,Apple Watch 41mm,스마트워치,Apple,AppleWatch,41,41mm,,,high,529000,2024-09-22,12,4,1,0,0.45,0.5
+PRN-HP-LASER-2024,HP 레이저프린터,HP Laser Printer,프린터,HP,Laser,HP-L,,,,mid,299000,2024-02-01,12,1,1,0,0.45,0.3333333333333333
+PRN-CAN-INK-2024,캐논 잉크젯,Canon Inkjet,프린터,Canon,Inkjet,CAN-I,,,,mid,199000,2024-01-10,12,1,1,0,0.35,0.3333333333333333
+PRN-BRO-LASER-2024,브라더 레이저,Brother Laser,프린터,Brother,Laser,BRO-L,,,,low,179000,2024-03-01,12,1,1,0,0.20,0.3333333333333333
+RTR-NET-AX5400-2024,넷기어 AX5400,Netgear AX5400,라우터,Netgear,AX,AX5400,,,,mid,189000,2024-05-01,12,4,1,0,0.40,0.3333333333333333
+RTR-ASU-AX6000-2024,아수스 AX6000,ASUS AX6000,라우터,ASUS,AX,AX6000,,,,high,249000,2024-05-01,12,4,1,0,0.35,0.3333333333333333
+RTR-TPL-AX3000-2024,티피링크 AX3000,TP-Link AX3000,라우터,TP-Link,AX,AX3000,,,,low,129000,2024-05-01,12,4,1,0,0.25,0.3333333333333333
