@@ -34,4 +34,15 @@ public class WarehouseInventory {
     @Column(columnDefinition = "DATETIME(6)")
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    public void decrease(int qty) {
+        if (onHandQuantity < qty) {
+            throw new IllegalStateException("재고 부족: 요청 수량=" + qty + ", 보유 수량=" + onHandQuantity);
+        }
+        this.onHandQuantity -= qty;
+    }
+
+    public void increase(int qty) {
+        this.onHandQuantity += qty;
+    }
 }

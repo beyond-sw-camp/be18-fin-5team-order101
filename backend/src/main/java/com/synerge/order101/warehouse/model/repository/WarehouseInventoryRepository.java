@@ -20,4 +20,5 @@ public interface WarehouseInventoryRepository extends JpaRepository<WarehouseInv
     """)
     List<WarehouseInventory> findAllWithProduct();
 
+    Optional<WarehouseInventory> findByProduct_ProductId(Long productId);
 }

@@ -32,4 +32,12 @@ public class OutboundDetail {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
+    public static OutboundDetail create(Outbound outbound, Product product, Integer qty) {
+        OutboundDetail d = new OutboundDetail();
+        d.outbound = outbound;
+        d.product = product;
+        d.outboundQty = qty;
+        return d;
+    }
+
 }
