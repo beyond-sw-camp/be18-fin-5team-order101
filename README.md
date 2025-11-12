@@ -151,6 +151,7 @@ AI 제안값의 근거(예측치, 안전재고, 최소/최대 발주수량)를 �
   <div markdown="1">
     <ul>
       <li>AI 예측 모듈</li>
+      <li>AI 스마트 발주 제안</li>
     </ul>
   </div>
 </details>
@@ -218,11 +219,12 @@ AI 제안값의 근거(예측치, 안전재고, 최소/최대 발주수량)를 �
 ![jwt](https://github.com/user-attachments/assets/83bddf8b-d556-4e60-8391-2074704103c4)
 <img src="https://img.shields.io/badge/SpringBoot-10B146?style=for-the-badge&logo=SpringBoot&logoColor=white">
 <img src="https://img.shields.io/badge/SpringSecurity-3B66BC?style=for-the-badge&logo=SpringSecurity&logoColor=white">
-
+<img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white">
+<img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white">
+<img src="https://img.shields.io/badge/Poetry-60A5FA?style=for-the-badge&logo=poetry&logoColor=white">
 
 ### AI
-<img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white"> 
-![lightbgm](https://img.shields.io/badge/lightbgm-5E6AD2?style=for-the-badge&logoColor=white)
+<img src="https://img.shields.io/badge/LightGBM-024F27?style=for-the-badge&logo=lightgbm&logoColor=white"> <img src="https://img.shields.io/badge/pandas-150458?style=for-the-badge&logo=pandas&logoColor=white"> <img src="https://img.shields.io/badge/numpy-013243?style=for-the-badge&logo=numpy&logoColor=white"> <img src="https://img.shields.io/badge/scikit--learn-F7931E?style=for-the-badge&logo=scikitlearn&logoColor=white"> <img src="https://img.shields.io/badge/matplotlib-11557C?style=for-the-badge&logo=plotly&logoColor=white"> <img src="https://img.shields.io/badge/joblib-0088CC?style=for-the-badge&logo=python&logoColor=white"> 
 
 
 ### FRONTEND
@@ -245,11 +247,8 @@ AI 제안값의 근거(예측치, 안전재고, 최소/최대 발주수량)를 �
 
 
 ### ETC
+<img src="https://img.shields.io/badge/apidog-FE4F19?style=for-the-badge&logoColor=white">
 
-
-![postman](https://github.com/user-attachments/assets/4bcd5043-6841-4cd1-b864-dec4dc39f918)
-<img src="https://img.shields.io/badge/SSE-FF6F00?style=for-the-badge&logo=serverfault&logoColor=white">
-<img src="https://img.shields.io/badge/WebSocket-008080?style=for-the-badge&logo=socket.io&logoColor=white">
 
 
 
