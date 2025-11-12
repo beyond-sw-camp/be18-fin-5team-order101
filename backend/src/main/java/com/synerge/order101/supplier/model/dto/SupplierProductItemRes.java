@@ -1,6 +1,5 @@
-package com.synerge.order101.product.model.dto;
+package com.synerge.order101.supplier.model.dto;
 
-import com.synerge.order101.product.model.entity.ProductCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,14 +11,11 @@ import java.math.BigDecimal;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductListRes {
+public class SupplierProductItemRes {
     private Long productId;
     private String productCode;
+    private String supplierProductCode;
     private String productName;
     private BigDecimal price;
-    private Boolean status;
-
-    private Long categoryId;
-    private String categoryName;
-    private String categoryLevel;
+    private Integer leadTimeDays;
 }
