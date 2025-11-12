@@ -59,7 +59,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     public List<PurchaseSummaryResponseDto> findPurchases(OrderStatus status, Integer page, Integer size) {
 
         int pageNumber = (page != null && page >= 0) ? page : 0;
-        int pageSize = 10; // 기본 페이지 크기 설정
+        int pageSize = (size != null && size > 0) ? size : 10;
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<PurchaseSummaryResponseDto> pageResult;
@@ -155,6 +155,7 @@ public class PurchaseServiceImpl implements PurchaseService {
 
 
     @Override
+    @Transactional
     public PurchaseUpdateStatusResponseDto updatePurchaseStatus(Long purchaseOrderId, OrderStatus newStatus) {
         Purchase purchase = purchaseRepository.findById(purchaseOrderId).orElseThrow(
                 () -> new CustomException(PurchaseErrorCode.PURCHASE_NOT_FOUND)
@@ -162,15 +163,9 @@ public class PurchaseServiceImpl implements PurchaseService {
 
         OrderStatus orderStatus = purchase.getOrderStatus();
 
-        switch (newStatus){
-            case CONFIRMED:
-                break;
-            case REJECTED:
-                break;
-            default:
-                throw new CustomException(PurchaseErrorCode.PURCHASE_CREATION_FAILED);
-        }
+        purchase.updateOrderStatus(newStatus);
 
+        OrderStatus curOrderStatus = purchase.getOrderStatus();
 
         return PurchaseUpdateStatusResponseDto.builder()
                 .purchaseId(purchase.getPurchaseId())

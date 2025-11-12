@@ -58,7 +58,7 @@ public class StoreOrderServiceImpl implements StoreOrderService {
     public List<StoreOrderSummaryResponseDto> findOrders(OrderStatus status, Integer page, Integer size) {
 
         int pageNum = (page == null || page < 0) ? 0 : page;
-        int pageSize = 10; // 기본 페이지 크기 설정
+        int pageSize = (size != null && size > 0) ? size : 10; // 기본 페이지 크기 설정
         Pageable pageable = PageRequest.of(pageNum, pageSize, Sort.by(Sort.Direction.DESC, "orderDatetime"));
         Page<StoreOrderSummaryResponseDto> pageResult;
 
@@ -157,16 +157,7 @@ public class StoreOrderServiceImpl implements StoreOrderService {
 
         OrderStatus prev = order.getOrderStatus();
 
-        switch (newStatus) {
-            case CONFIRMED:
-                order.approve();
-                break;
-            case REJECTED:
-                order.reject();
-                break;
-            default:
-                throw new CustomException(OrderErrorCode.INVALID_ORDER_STATUS);
-        }
+        order.updateOrderState(newStatus);
 
         OrderStatus curStatus = order.getOrderStatus();
 

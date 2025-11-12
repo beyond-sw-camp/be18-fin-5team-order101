@@ -79,4 +79,8 @@ public class Purchase {
         return "PO" + datePart + randomNum;
     }
 
+    public void updateOrderStatus(OrderStatus newOrderStatus) {
+        this.orderStatus = newOrderStatus;
+    }
+
 }
