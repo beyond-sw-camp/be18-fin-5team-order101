@@ -1,5 +1,6 @@
 package com.synerge.order101.order.model.service;
 
+import com.fasterxml.jackson.databind.util.ArrayBuilders;
 import com.synerge.order101.common.enums.OrderStatus;
 import com.synerge.order101.common.exception.CustomException;
 import com.synerge.order101.order.exception.errorcode.OrderErrorCode;
@@ -30,6 +31,11 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
+/** TODO : 페이지 조회 로직 성능 TEST 및 개선
+ *  TODO : 페이지 동적 쿼리 변경
+ *  #박진우
+*/
+
 @Service
 @RequiredArgsConstructor
 public class StoreOrderServiceImpl implements StoreOrderService {
@@ -48,31 +54,49 @@ public class StoreOrderServiceImpl implements StoreOrderService {
      */
     @Override
     @Transactional(readOnly = true)
-    public List<StoreOrderSummaryResponseDto> findOrders(OrderStatus status, Integer page) {
+
+    public List<StoreOrderSummaryResponseDto> findOrders(OrderStatus status, Integer page, Integer size) {
 
         int pageNum = (page == null || page < 0) ? 0 : page;
         int pageSize = 10; // 기본 페이지 크기 설정
         Pageable pageable = PageRequest.of(pageNum, pageSize, Sort.by(Sort.Direction.DESC, "orderDatetime"));
-        Page<StoreOrder> pageResult;
+        Page<StoreOrderSummaryResponseDto> pageResult;
+
         if (status == null) {
             pageResult = storeOrderRepository.findOrderAllStatus(pageable);
         } else {
             pageResult = storeOrderRepository.findByOrderStatus(status, pageable);
         }
 
-        return pageResult.stream()
-                .map(order -> StoreOrderSummaryResponseDto.builder()
-                        .storeOrderId(order.getStoreOrderId())
-                        .orderNo(order.getOrderNo())
-                        .storeName(order.getStore() == null ? null : order.getStore().getStoreName())
-                        .orderDate(order.getOrderDatetime())
-                        .orderStatus(order.getOrderStatus() == null ? null : order.getOrderStatus().name())
-                        .itemCount(order.getStoreOrderDetails() == null ? 0 : order.getStoreOrderDetails().size())
-                        .totalQTY(order.getStoreOrderDetails() == null ? 0 : order.getStoreOrderDetails().stream()
-                                .map(detail -> detail.getOrderQty() == null ? BigDecimal.ZERO : detail.getOrderQty())
-                                .reduce(BigDecimal.ZERO, BigDecimal::add).intValue())
-                        .build())
-                .toList();
+
+        return pageResult.getContent();
+    }
+
+
+    /**
+     * 특정 ID의 주문 상세 정보를 조회합니다.
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public StoreOrderDetailResponseDto findStoreOrderDetails(Long storeOrderId) {
+
+        StoreOrder order = storeOrderRepository.findById(storeOrderId).orElseThrow(() ->
+                new CustomException(OrderErrorCode.ORDER_NOT_FOUND));
+
+        List<StoreOrderDetail> details = storeOrderDetailRepository.findByStoreOrder_StoreOrderId(storeOrderId);
+
+        StoreOrderDetailResponseDto.OrderItemDto[] items = details.stream()
+                .map(StoreOrderDetailResponseDto.OrderItemDto::fromEntity)
+                .toArray(StoreOrderDetailResponseDto.OrderItemDto[]::new);
+
+        return StoreOrderDetailResponseDto.builder()
+                .storeOrderId(order.getStoreOrderId())
+                .storeName(order.getStore() == null ? null : order.getStore().getStoreName())
+                .status(order.getOrderStatus() == null ? null : order.getOrderStatus().name())
+                .orderDate(order.getOrderDatetime())
+                .orderItems(List.of(items))
+                .build();
+
     }
 
     /**
@@ -121,77 +145,28 @@ public class StoreOrderServiceImpl implements StoreOrderService {
                 .build();
     }
 
-    /**
-     * 특정 ID의 주문 상세 정보를 조회합니다.
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public StoreOrderDetailResponseDto findStoreOrderDetails(Long storeOrderId) {
-
-        StoreOrder order = storeOrderRepository.findById(storeOrderId).orElseThrow(() ->
-                new CustomException(OrderErrorCode.ORDER_NOT_FOUND));
-
-        List<StoreOrderDetail> details = storeOrderDetailRepository.findByStoreOrder_StoreOrderId(storeOrderId);
-
-        StoreOrderDetailResponseDto.OrderItemDto[] items = details.stream()
-                .map(StoreOrderDetailResponseDto.OrderItemDto::fromEntity)
-                .toArray(StoreOrderDetailResponseDto.OrderItemDto[]::new);
-
-        StoreOrderDetailResponseDto responseDto = StoreOrderDetailResponseDto.builder()
-                .storeOrderId(order.getStoreOrderId())
-                .storeName(order.getStore() == null ? null : order.getStore().getStoreName())
-                .status(order.getOrderStatus() == null ? null : order.getOrderStatus().name())
-                .orderDate(order.getOrderDatetime())
-                .orderItems(List.of(items))
-                .build();
-
-        return responseDto;
-
-    }
 
     /**
-     * 주문을 승인합니다.
+     * 주문 상태를 업데이트합니다.
      */
     @Override
     @Transactional
-    public StoreOrderUpdateStatusResponseDto approveOrder(Long storeOrderId) {
-
+    public StoreOrderUpdateStatusResponseDto updateOrderStatus(Long storeOrderId, OrderStatus newStatus) {
         StoreOrder order = storeOrderRepository.findById(storeOrderId).orElseThrow(() ->
                 new CustomException(OrderErrorCode.ORDER_NOT_FOUND));
 
         OrderStatus prev = order.getOrderStatus();
 
-        order.approve();
-
-        OrderStatus curStatus = order.getOrderStatus();
-
-        StoreOrderStatusLog log = StoreOrderStatusLog.builder()
-                .storeOrder(order)
-                .prevStatus(prev)
-                .curStatus(curStatus)
-                .build();
-        storeOrderStatusLogRepository.save(log);
-
-        return StoreOrderUpdateStatusResponseDto.builder()
-                .storeOrderId(order.getStoreOrderId())
-                .status(order.getOrderStatus().name())
-                .build();
-    }
-
-    /**
-     * 주문을 거부합니다.
-     */
-    @Override
-    @Transactional
-    public StoreOrderUpdateStatusResponseDto rejectOrder(Long storeOrderId) {
-        // 실제 구현 로직: ID로 주문 조회 -> 상태 업데이트 -> 저장 -> ResponseDto 반환
-        // 현재는 컴파일 가능하도록 더미 객체를 반환합니다.
-        StoreOrder order = storeOrderRepository.findById(storeOrderId).orElseThrow(() ->
-                new CustomException(OrderErrorCode.ORDER_NOT_FOUND));
-
-        OrderStatus prev = order.getOrderStatus();
-
-        order.reject();
+        switch (newStatus) {
+            case CONFIRMED:
+                order.approve();
+                break;
+            case REJECTED:
+                order.reject();
+                break;
+            default:
+                throw new CustomException(OrderErrorCode.INVALID_ORDER_STATUS);
+        }
 
         OrderStatus curStatus = order.getOrderStatus();
 

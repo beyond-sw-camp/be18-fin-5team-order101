@@ -65,6 +65,7 @@ public class Purchase {
         LocalDateTime now = LocalDateTime.now();
         if (createdAt == null) {
                 createdAt = now;
+                poDate = now;
         }
         poNo = this.generatePoNo();
 

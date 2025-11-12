@@ -53,14 +53,14 @@ public class StoreOrderDetailResponseDto {
     public static class OrderItemDto {
 
         private Long productId;
-        private BigDecimal orderQty;
+        private Integer orderQty;
         private BigDecimal unitPrice;
         private BigDecimal amount;
 
         public static OrderItemDto fromEntity(StoreOrderDetail detail) {
             return OrderItemDto.builder()
                     .productId(detail.getProduct()==null?null:detail.getProduct().getProductId())
-                    .orderQty(detail.getOrderQty())
+                    .orderQty(detail.getOrderQty().intValue())
                     .unitPrice(detail.getUnitPrice())
                     .amount(detail.getAmount())
                     .build();

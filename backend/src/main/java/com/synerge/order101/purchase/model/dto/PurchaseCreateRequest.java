@@ -4,6 +4,7 @@ import com.synerge.order101.order.model.dto.StoreOrderCreateRequest;
 import com.synerge.order101.purchase.model.entity.Purchase;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -12,19 +13,19 @@ import java.util.List;
 public class PurchaseCreateRequest {
 
     @NonNull
-    Long purchaseOrderId;
-
-    @NonNull
     Long supplierId;
 
     @NonNull
     Long userId;
 
     @NonNull
-    Long WarehouseId;
+    Long warehouseId;
 
     @NonNull
     Purchase.OrderType orderType;
+
+    @NonNull
+    LocalDateTime deadline;
 
     List<Item> items = List.of();
 
@@ -35,9 +36,6 @@ public class PurchaseCreateRequest {
     public static class Item {
         @NonNull
         private Long productId;
-
-        @NonNull
-        private Double productUnit;
 
         @NonNull
         private Double orderQty;
