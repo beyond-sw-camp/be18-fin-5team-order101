@@ -3,6 +3,7 @@ package com.synerge.order101.order.model.entity;
 import com.synerge.order101.product.model.entity.Product;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +16,7 @@ import static jakarta.persistence.FetchType.LAZY;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Table(name = "store_order_detail")
 public class  StoreOrderDetail {
 

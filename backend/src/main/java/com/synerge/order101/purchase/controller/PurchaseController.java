@@ -62,7 +62,7 @@ public class PurchaseController {
      * 4. 공급사 발주 처리
      * - 특정 발주에 대해 공급사의 승인을 처리한다.
      */
-    @PatchMapping("{purchaseOrderId}{status}")
+    @PatchMapping("/{purchaseOrderId}/{status}")
     public ResponseEntity<PurchaseUpdateStatusResponseDto> updatePurchase(
             @PathVariable Long purchaseOrderId,
             @PathVariable OrderStatus status) {
