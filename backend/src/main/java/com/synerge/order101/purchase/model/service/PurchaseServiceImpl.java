@@ -3,6 +3,7 @@ package com.synerge.order101.purchase.model.service;
 import com.synerge.order101.common.enums.OrderStatus;
 import com.synerge.order101.common.exception.CustomException;
 import com.synerge.order101.product.model.entity.Product;
+import com.synerge.order101.product.model.entity.ProductSupplier;
 import com.synerge.order101.product.model.repository.ProductRepository;
 import com.synerge.order101.product.model.repository.ProductSupplierRepository;
 import com.synerge.order101.purchase.exception.PurchaseErrorCode;
@@ -28,6 +29,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,6 +54,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     private final ProductRepository productRepository;
     private final SupplierRepository supplierRepository;
     private final WarehouseRepository warehouseRepository;
+    private final ProductSupplierRepository productSupplierRepository;
 
     // 발주 목록 조회
     @Override
@@ -134,15 +137,16 @@ public class PurchaseServiceImpl implements PurchaseService {
             Product product = productRepository.findById(item.getProductId()).orElseThrow(
                     () -> new CustomException(PurchaseErrorCode.PURCHASE_CREATION_FAILED));
 
-            // TODO : 가격 가져오는 로직 구현 필요  #박진우
-            //Double uniprice = productSupplierRepository
+            ProductSupplier productSupplier = productSupplierRepository
+                    .findByProductAndSupplier(product, supplier) // supplier 객체는 이미 상위에서 조회됨
+                    .orElseThrow(() -> new CustomException(PurchaseErrorCode.PURCHASE_NOT_FOUND));
 
             PurchaseDetail detail = PurchaseDetail.builder()
                     .product(product)
                     .purchase(purchase)
                     .orderQty(item.getOrderQty())
                     .deadline(request.getDeadline())
-                    .unitPrice(0.0)
+                    .unitPrice(productSupplier.getPurchasePrice())
                     .build();
 
             detailsToSave.add(detail);
