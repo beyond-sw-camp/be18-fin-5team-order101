@@ -38,6 +38,6 @@ public class PurchaseCreateRequest {
         private Long productId;
 
         @NonNull
-        private Double orderQty;
+        private Integer orderQty;
     }
 }
