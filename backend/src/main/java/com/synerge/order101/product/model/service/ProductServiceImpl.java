@@ -16,8 +16,13 @@ import com.synerge.order101.product.model.dto.ProductUpdateReq;
 import com.synerge.order101.product.model.entity.CategoryLevel;
 import com.synerge.order101.product.model.entity.Product;
 import com.synerge.order101.product.model.entity.ProductCategory;
+import com.synerge.order101.product.model.entity.ProductSupplier;
 import com.synerge.order101.product.model.repository.ProductCategoryRepository;
 import com.synerge.order101.product.model.repository.ProductRepository;
+import com.synerge.order101.product.model.repository.ProductSupplierRepository;
+import com.synerge.order101.supplier.exception.SupplierErrorCode;
+import com.synerge.order101.supplier.model.entity.Supplier;
+import com.synerge.order101.supplier.model.repository.SupplierRepository;
 import com.synerge.order101.warehouse.model.repository.WarehouseInventoryRepository;
 import com.synerge.order101.warehouse.model.repository.WarehouseRepository;
 import jakarta.persistence.criteria.Join;
@@ -46,6 +51,8 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final InboundDetailRepository inboundDetailRepository;
     private final WarehouseInventoryRepository warehouseInventoryRepository;
+    private final SupplierRepository supplierRepository;
+    private final ProductSupplierRepository productSupplierRepository;
     @Override
     public ProductCreateRes create(ProductCreateReq request) {
 
@@ -77,6 +84,28 @@ public class ProductServiceImpl implements ProductService {
                 .build();
 
         productRepository.save(product);
+
+        Supplier supplier = null;
+        if(request.getSupplierId() != null) {
+            supplier = supplierRepository.findById(request.getSupplierId()).orElseThrow(() ->
+                    new CustomException(SupplierErrorCode.SUPPLIER_NOT_FOUND));
+        }
+
+        if(supplier != null) {
+
+            String supplierProductCode = product.getProductCode() + "_" + supplier.getSupplierCode();
+
+            int leadTimeDays = java.util.concurrent.ThreadLocalRandom.current().nextInt(3, 8);
+
+            ProductSupplier ps = ProductSupplier.builder()
+                    .product(product)
+                    .supplier(supplier)
+                    .supplierProductCode(supplierProductCode)
+                    .purchasePrice(request.getPrice())
+                    .leadTimeDays(leadTimeDays)
+                    .build();
+            productSupplierRepository.save(ps);
+        }
         return new  ProductCreateRes(product.getProductId());
     }
 
