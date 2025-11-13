@@ -50,7 +50,7 @@ def _load_domain():
     }
     path = DOMAIN_CLEAN if DOMAIN_CLEAN.exists() else DOMAIN_RAW
     df = pd.read_csv(path, parse_dates=["target_date"], dtype=dtypes, low_memory=False)
-    print(f"📦 Loaded {path.name}: {len(df):,} rows")
+    print(f"Loaded {path.name}: {len(df):,} rows")
     return df
 
 def _load_catalog():
@@ -148,7 +148,7 @@ def main():
     allowed = set(sku["cat_low_norm"].dropna().tolist())
     keep = df["cat_low_norm"].isin(allowed) & (~df["cat_low_norm"].isin(MISC_KEYS))
     if (len(df) - keep.sum())>0:
-        print(f"🧹 Dropped by whitelist: {len(df)-keep.sum():,}/{len(df):,}")
+        print(f"Dropped by whitelist: {len(df)-keep.sum():,}/{len(df):,}")
     df = df[keep].copy()
 
     # 2) base_share 정규화(그룹합=1, 합=0이면 균등)
