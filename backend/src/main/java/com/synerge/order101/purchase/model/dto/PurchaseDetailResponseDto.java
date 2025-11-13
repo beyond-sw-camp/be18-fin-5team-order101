@@ -36,20 +36,17 @@ public class PurchaseDetailResponseDto {
     @Builder
     public static class PurchaseItemDto{
 
-        // SKU 이름 단가 수량 금액
+        // 코드 이름 단가 수량 금액
         private String productCode;
         private String productName;
         private BigDecimal unitPrice;
         private Integer orderQty;
-        private BigDecimal amount;
 
         public static PurchaseItemDto fromEntity(PurchaseDetail detail){
             return PurchaseItemDto.builder()
                     .productName(detail.getProduct().getProductName())
-//                    //TODO
-//                    .unitPrice
-//                    .orderQty(0.0)
-//                    .amount(0.0)
+                    .unitPrice(detail.getUnitPrice())
+                    .orderQty(detail.getOrderQty())
                     .build();
         }
 

@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 
@@ -34,7 +35,7 @@ public class PurchaseDetail {
     private Integer orderQty;
 
     @Column
-    private Double unitPrice;
+    private BigDecimal unitPrice;
 
     @Column
     private LocalDateTime deadline;
