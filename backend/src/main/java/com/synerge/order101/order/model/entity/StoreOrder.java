@@ -117,10 +117,12 @@ public class StoreOrder {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "shipment_status", nullable = false, length = 20)
+    @Builder.Default
     private ShipmentStatus shipmentStatus = ShipmentStatus.WAITING;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "order_status", nullable = false, length = 20)
+    @Builder.Default
     private OrderStatus orderStatus = OrderStatus.SUBMITTED;
 
     @Column(name = "remark")
@@ -133,6 +135,7 @@ public class StoreOrder {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "storeOrder")
+    @Builder.Default
     private List<StoreOrderDetail> storeOrderDetails = new ArrayList<>();
 
     public StoreOrder(Store store,

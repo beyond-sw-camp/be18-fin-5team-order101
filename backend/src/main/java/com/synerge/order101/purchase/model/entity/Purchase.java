@@ -50,9 +50,11 @@ public class Purchase {
     private LocalDateTime createdAt;
 
     @Column
+    @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
     @Column
+    @Enumerated(EnumType.STRING)
     private OrderType orderType;
 
     public enum OrderType {

@@ -31,7 +31,7 @@ public class PurchaseDetail {
     private Product product;
 
     @Column
-    private Double orderQty;
+    private Integer orderQty;
 
     @Column
     private Double unitPrice;

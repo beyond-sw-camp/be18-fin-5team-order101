@@ -41,6 +41,7 @@ public class Product {
     private String description;
 
     @Column(nullable = false)
+    @Builder.Default
     private Boolean status = true;
 
     @Column(name = "price", precision = 15, scale = 2, nullable = false)
