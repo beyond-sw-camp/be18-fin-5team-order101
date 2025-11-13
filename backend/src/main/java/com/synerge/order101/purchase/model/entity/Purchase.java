@@ -1,6 +1,7 @@
 package com.synerge.order101.purchase.model.entity;
 
 import com.synerge.order101.common.enums.OrderStatus;
+import com.synerge.order101.order.model.entity.StoreOrderDetail;
 import com.synerge.order101.supplier.model.entity.Supplier;
 import com.synerge.order101.user.model.entity.User;
 import com.synerge.order101.warehouse.model.entity.Warehouse;
@@ -13,6 +14,8 @@ import org.hibernate.query.Order;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -57,6 +60,9 @@ public class Purchase {
     @Column
     @Enumerated(EnumType.STRING)
     private OrderType orderType;
+
+    @OneToMany(mappedBy = "purchase")
+    private List<PurchaseDetail> purchaseDetails = new ArrayList<>();
 
     public enum OrderType {
         MANUAL,

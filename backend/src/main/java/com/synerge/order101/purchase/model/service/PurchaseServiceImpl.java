@@ -21,6 +21,7 @@ import com.synerge.order101.user.model.entity.User;
 import com.synerge.order101.user.model.repository.UserRepository;
 import com.synerge.order101.warehouse.model.entity.Warehouse;
 import com.synerge.order101.warehouse.model.repository.WarehouseRepository;
+import com.synerge.order101.warehouse.model.service.InventoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -55,6 +56,8 @@ public class PurchaseServiceImpl implements PurchaseService {
     private final SupplierRepository supplierRepository;
     private final WarehouseRepository warehouseRepository;
     private final ProductSupplierRepository productSupplierRepository;
+
+    private final InventoryService inventoryService;
 
     // 발주 목록 조회
     @Override
@@ -170,6 +173,11 @@ public class PurchaseServiceImpl implements PurchaseService {
         purchase.updateOrderStatus(newStatus);
 
         OrderStatus curOrderStatus = purchase.getOrderStatus();
+
+        // 입고 반영
+        if (newStatus == OrderStatus.CONFIRMED) {
+            inventoryService.increaseInventory(purchase);
+        }
 
         return PurchaseUpdateStatusResponseDto.builder()
                 .purchaseId(purchase.getPurchaseId())

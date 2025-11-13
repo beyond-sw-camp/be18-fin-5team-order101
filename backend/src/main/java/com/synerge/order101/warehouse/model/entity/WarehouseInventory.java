@@ -3,13 +3,16 @@ package com.synerge.order101.warehouse.model.entity;
 
 import com.synerge.order101.product.model.entity.Product;
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "warehouse_inventory")
 public class WarehouseInventory {
 
@@ -44,5 +47,9 @@ public class WarehouseInventory {
 
     public void increase(int qty) {
         this.onHandQuantity += qty;
+    }
+
+    public void updateSafetyQty(int safety) {
+        this.safetyQuantity = safety;
     }
 }

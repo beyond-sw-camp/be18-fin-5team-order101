@@ -27,18 +27,4 @@ public class InventoryController {
 
         return ResponseEntity.ok(new ItemsResponseDto<>(HttpStatus.OK, inventoryList, totalCount, page));
     }
-
-//    // 입고 수량 반영
-//    @PatchMapping("/inbound")
-//    public ResponseEntity<Void> inbound(@RequestBody InventoryQuantityChangeRequestDto request) {
-//        inventoryService.inbound(request);
-//        return ResponseEntity.ok().build();
-//    }
-//
-//    // 출고 수량 반영
-//    @PatchMapping("/outbound")
-//    public ResponseEntity<Void> outbound(@RequestBody InventoryQuantityChangeRequestDto request) {
-//        inventoryService.outbound(request);
-//        return ResponseEntity.ok().build();
-//    }
 }
