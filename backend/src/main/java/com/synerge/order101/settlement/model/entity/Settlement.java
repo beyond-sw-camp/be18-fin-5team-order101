@@ -77,7 +77,7 @@ public class Settlement {
 
     public enum SettlementStatus {
         DRAFT, //초안
-        ISSUED, //발행됌
+        ISSUED, //발행됨
         VOID, //확정
     }
 
