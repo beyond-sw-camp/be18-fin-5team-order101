@@ -31,7 +31,7 @@ public class SettlementController {
         return ResponseEntity.ok(results);
     }
 
-    @GetMapping("{settlementId}")
+    @GetMapping("/{settlementId}")
     public ResponseEntity<SettlementDetailResponseDto> getSettlementDetail(
             @PathVariable("settlementId") String settlementId) {
 
