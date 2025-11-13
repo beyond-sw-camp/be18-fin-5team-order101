@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.query.Order;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -70,6 +71,7 @@ public class Purchase {
                 poDate = now;
         }
         poNo = this.generatePoNo();
+        orderStatus = OrderStatus.SUBMITTED;
 
         this.createdAt = LocalDateTime.now();
     }
