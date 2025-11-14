@@ -1,4 +1,4 @@
-package com.synerge.order101.forecast.model.entity;
+package com.synerge.order101.ai.model.entity;
 
 import com.synerge.order101.product.model.entity.Product;
 import com.synerge.order101.store.model.entity.Store;
@@ -8,18 +8,31 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
-@Table(name = "demand_forecast")
+@Table(
+        name = "demand_forecast",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uq_demand_forecast_snapshot",
+                        columnNames = {"warehouse_id", "store_id", "product_id", "target_week", "snapshot_at"}
+                )
+        },
+        indexes = {
+                @Index(name = "idx_df_store_product_week", columnList = "store_id, product_id, target_week")
+        }
+)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-public class demandForecast {
+public class DemandForecast {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "demand_forecast_id")
     private Long demandForecastId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -35,24 +48,24 @@ public class demandForecast {
     private Product product;
 
     @Column(name = "target_week", nullable = false)
-    private Date targetWeek;
+    private LocalDate targetWeek;
 
     @Column(name = "y_pred", nullable = false)
-    private int yPred;
+    private Integer yPred;
 
     @Column(name = "actual_order_qty")
-    private int actualOrderQty;
+    private Integer actualOrderQty;
 
     @Column(name = "mape")
-    private int mape;
+    private Integer mape;
 
     @Lob
-    @Column(name = "external_factors", columnDefinition = "LONGBLOB")
-    private byte[] externalFactors;
+    @Column(name = "external_factors", columnDefinition = "json")
+    private String externalFactors;
 
 
     @CreationTimestamp
-    @Column(name = "snapshot_at")
+    @Column(name = "snapshot_at", nullable = false, updatable = false)
     private LocalDateTime snapshotAt;
 
     @UpdateTimestamp

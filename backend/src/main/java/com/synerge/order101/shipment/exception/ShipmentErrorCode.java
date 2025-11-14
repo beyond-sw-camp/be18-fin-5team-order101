@@ -1,4 +1,4 @@
-package com.synerge.order101.shipment.exception.errorcode;
+package com.synerge.order101.shipment.exception;
 
 import com.synerge.order101.common.exception.errorcode.ErrorCode;
 import org.springframework.http.HttpStatus;

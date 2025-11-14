@@ -7,7 +7,7 @@ import com.synerge.order101.order.model.entity.StoreOrder;
 import com.synerge.order101.order.model.entity.StoreOrderDetail;
 import com.synerge.order101.order.model.repository.StoreOrderDetailRepository;
 import com.synerge.order101.order.model.repository.StoreOrderRepository;
-import com.synerge.order101.shipment.exception.errorcode.ShipmentErrorCode;
+import com.synerge.order101.shipment.exception.ShipmentErrorCode;
 import com.synerge.order101.shipment.model.entity.Shipment;
 import com.synerge.order101.shipment.model.repository.ShipmentRepository;
 import com.synerge.order101.store.model.entity.StoreInventory;

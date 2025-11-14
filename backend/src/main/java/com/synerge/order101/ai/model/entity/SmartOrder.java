@@ -1,5 +1,7 @@
-package com.synerge.order101.forecast.model.entity;
+package com.synerge.order101.ai.model.entity;
 
+import com.synerge.order101.ai.exception.AiErrorCode;
+import com.synerge.order101.common.exception.CustomException;
 import com.synerge.order101.product.model.entity.Product;
 import com.synerge.order101.store.model.entity.Store;
 import jakarta.persistence.*;
@@ -11,12 +13,23 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
-@Table(name = "smart_order")
+@Table(
+        name = "smart_order",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uq_smart_order_forecast",
+                        columnNames = {"demand_forecast_id"}
+                )
+        },
+        indexes = {
+                @Index(name = "idx_so_store_product_week", columnList = "store_id, product_id, target_week")
+        }
+)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-public class smartOrder {
+public class SmartOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long smartOrderId;
@@ -31,7 +44,7 @@ public class smartOrder {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "demand_forecast_id")
-    private demandForecast demandForecast;
+    private DemandForecast demandForecast;
 
     @Column(name = "target_week", nullable = false)
     private Date targetWeek;
@@ -44,7 +57,7 @@ public class smartOrder {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "smart_order_status", nullable = false)
-    private SmartOrderStatus smartOrderStatus = SmartOrderStatus.NEW;
+    private SmartOrderStatus smartOrderStatus = SmartOrderStatus.DRAFT;
 
     @CreationTimestamp
     @Column(name = "snapshot_at")
@@ -58,9 +71,25 @@ public class smartOrder {
 
 
     public enum SmartOrderStatus{
-        NEW,
-        CONFIRMED,
-        REJECTED
+        DRAFT,
+        SUBMITTED,
+        APPROVED,
+        REJECTED,
+        CANCELLED
+    }
+
+
+    public void updateDraft(Integer newRecommendedQty){
+        if(this.smartOrderStatus != SmartOrderStatus.DRAFT){
+            throw new CustomException(AiErrorCode.SMART_ORDER_UPDATE_FAILED);
+        }
+    }
+
+    public void submit() {
+        if (this.smartOrderStatus != SmartOrderStatus.DRAFT) {
+            throw new CustomException(AiErrorCode.SMART_ORDER_SUBMIT_FAILED);
+        }
+        this.smartOrderStatus = SmartOrderStatus.SUBMITTED;
     }
 
 
