@@ -7,7 +7,10 @@ import com.synerge.order101.order.model.repository.StoreOrderRepository;
 import com.synerge.order101.product.model.entity.Product;
 import com.synerge.order101.product.model.entity.ProductSupplier;
 import com.synerge.order101.product.model.repository.ProductRepository;
+import com.synerge.order101.product.model.repository.ProductSupplierRepository;
+import com.synerge.order101.purchase.model.dto.CalculatedAutoItem;
 import com.synerge.order101.purchase.model.entity.Purchase;
+import com.synerge.order101.purchase.model.repository.PurchaseRepository;
 import com.synerge.order101.warehouse.model.dto.response.InventoryResponseDto;
 import com.synerge.order101.warehouse.model.entity.WarehouseInventory;
 import com.synerge.order101.warehouse.model.repository.WarehouseInventoryRepository;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -95,9 +99,52 @@ public class InventoryServiceImpl implements InventoryService {
         }
     }
 
-    // 자동 발주 생성
     @Override
-    public void triggerAutoPurchase() {
+    @Transactional
+    public List<CalculatedAutoItem> getAutoPurchaseItems() {
+        List<CalculatedAutoItem> result = new ArrayList<>();
 
+        List<WarehouseInventory> inventoryList = warehouseInventoryRepository.findAllWithProduct();
+
+        for (WarehouseInventory inv : inventoryList) {
+
+            Long productId = inv.getProduct().getProductId();
+            int currentQty = inv.getOnHandQuantity();
+            int safetyQty = inv.getSafetyQuantity();
+
+            // 최근 30일 판매량 조회
+            List<Integer> sales = storeOrderDetailRepository.findDailySalesQtySince(
+                    productId,
+                    LocalDateTime.now().minusDays(30)
+            );
+
+            if (sales.isEmpty()) continue;
+
+            double avgDailySales = sales.stream().mapToInt(i -> i).average().orElse(0);
+
+            // 리드타임 조회
+            List<ProductSupplier> psList = inv.getProduct().getProductSupplier();
+
+            ProductSupplier ps = psList.getFirst();
+            int leadTime = ps.getLeadTimeDays();
+
+            // 목표재고 계산
+            int targetStock = (int) Math.ceil(safetyQty + (avgDailySales * leadTime));
+
+            // 자동발주 필요 여부
+            if (currentQty < safetyQty) {
+                int orderQty = targetStock - currentQty;
+
+                if (orderQty > 0) {
+                    result.add(new CalculatedAutoItem(
+                            productId,
+                            orderQty,
+                            ps.getSupplier().getSupplierId()
+                    ));
+                }
+            }
+        }
+
+        return result;
     }
 }

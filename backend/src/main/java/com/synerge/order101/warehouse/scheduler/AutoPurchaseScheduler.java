@@ -1,5 +1,6 @@
 package com.synerge.order101.warehouse.scheduler;
 
+import com.synerge.order101.purchase.model.service.PurchaseService;
 import com.synerge.order101.warehouse.model.service.InventoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class AutoPurchaseScheduler {
     private final InventoryService inventoryService;
+    private final PurchaseService purchaseService;
 
     /**
      * 매일 새벽 3시 안전재고 업데이트 + 자동발주 트리거 수행
@@ -27,7 +29,7 @@ public class AutoPurchaseScheduler {
             log.info("1) 안전재고 업데이트 완료");
 
             log.info("2) 자동발주 트리거 시작");
-            inventoryService.triggerAutoPurchase();  // 자동발주 생성
+            purchaseService.createAutoPurchase();  // 자동발주 생성
             log.info("2) 자동발주 트리거 완료");
 
         } catch (Exception e) {

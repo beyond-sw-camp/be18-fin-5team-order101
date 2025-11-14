@@ -1,5 +1,6 @@
 package com.synerge.order101.purchase.model.dto;
 
+import com.synerge.order101.common.enums.OrderStatus;
 import com.synerge.order101.order.model.dto.StoreOrderCreateRequest;
 import com.synerge.order101.purchase.model.entity.Purchase;
 import lombok.*;
@@ -23,6 +24,9 @@ public class PurchaseCreateRequest {
 
     @NonNull
     Purchase.OrderType orderType;
+
+    @NonNull
+    OrderStatus orderStatus;
 
     @NonNull
     LocalDateTime deadline;
