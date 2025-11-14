@@ -10,7 +10,8 @@ public enum ProductErrorCode implements ErrorCode {
     MUST_BE_SMALL(HttpStatus.BAD_REQUEST, "BAD_REQUEST", "categorySmallId must be 소 level"),
     SMALL_MEDIUM(HttpStatus.NOT_ACCEPTABLE, "NOT_ACCEPTABLE", "중분류가 소분류의 부모와 일치하지 않습니다."),
     LARGE_MEDIUM(HttpStatus.NOT_ACCEPTABLE, "NOT_ACCEPTABLE", "대분류가 중분류의 부모와 일치하지 않습니다."),
-    PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "NOT_FOUND", "Product not found");
+    PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "NOT_FOUND", "Product not found"),
+    IMAGE_UPLOAD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_SERVER_ERROR", "Image upload fail");
 
 
 
