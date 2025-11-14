@@ -1,6 +1,7 @@
 package com.synerge.order101.ai.model.dto.response;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -8,6 +9,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
+@Builder
 public class DemandForecastResponseDto {
     private Long id;
     private Long warehouseId;

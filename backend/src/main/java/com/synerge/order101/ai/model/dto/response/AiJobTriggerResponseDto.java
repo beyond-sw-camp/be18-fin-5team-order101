@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 @Builder
-public class AiJobTriggerResponse {
+public class AiJobTriggerResponseDto {
     private String jobType;
     private String status;
     private String message;
