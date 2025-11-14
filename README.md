@@ -287,9 +287,9 @@ AI 제안값의 근거(예측치, 안전재고, 최소/최대 발주수량)를 �
 ## 6. 데이터베이스 설계 (ERD)
 
 ### ERD
-[ERD CLOUD](https://www.erdcloud.com/d/jWZc3FeZeT5W6F7EX)
+[ERD CLOUD](https://www.erdcloud.com/d/Lkxma6zWujnHvtvY3)
   
-<img width="3980" height="2392" alt="Copy of 오더101" src="https://github.com/user-attachments/assets/b5cb8f74-4ee5-4241-9672-2b2a03a929c2" />
+<img width="4300" height="2152" alt="오더101" src="https://github.com/user-attachments/assets/a503c409-89b1-44c2-933f-09988ddb806c" />
 
 
 <br>
