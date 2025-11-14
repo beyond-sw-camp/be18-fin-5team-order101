@@ -3,6 +3,7 @@ package com.synerge.order101.outbound.model.entity;
 
 import com.synerge.order101.product.model.entity.Product;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -31,5 +32,21 @@ public class OutboundDetail {
     @Column(columnDefinition = "DATETIME(6)")
     @CreationTimestamp
     private LocalDateTime createdAt;
+
+    protected OutboundDetail() {}
+
+    public OutboundDetail(Outbound outbound, Product product, Integer qty) {
+        this.outbound = outbound;
+        this.product = product;
+        this.outboundQty = qty;
+    }
+
+    public static OutboundDetail create(Outbound outbound, Product product, Integer qty) {
+        OutboundDetail d = new OutboundDetail();
+        d.outbound = outbound;
+        d.product = product;
+        d.outboundQty = qty;
+        return d;
+    }
 
 }

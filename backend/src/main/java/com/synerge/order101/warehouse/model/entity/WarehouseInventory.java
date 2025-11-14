@@ -3,13 +3,16 @@ package com.synerge.order101.warehouse.model.entity;
 
 import com.synerge.order101.product.model.entity.Product;
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "warehouse_inventory")
 public class WarehouseInventory {
 
@@ -34,4 +37,19 @@ public class WarehouseInventory {
     @Column(columnDefinition = "DATETIME(6)")
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    public void decrease(int qty) {
+        if (onHandQuantity < qty) {
+            throw new IllegalStateException("재고 부족: 요청 수량=" + qty + ", 보유 수량=" + onHandQuantity);
+        }
+        this.onHandQuantity -= qty;
+    }
+
+    public void increase(int qty) {
+        this.onHandQuantity += qty;
+    }
+
+    public void updateSafetyQty(int safety) {
+        this.safetyQuantity = safety;
+    }
 }

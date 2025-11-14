@@ -67,7 +67,8 @@ public class Purchase {
 
     public enum OrderType {
         MANUAL,
-        AUTO
+        AUTO,
+        SMART
     }
 
     @PrePersist
