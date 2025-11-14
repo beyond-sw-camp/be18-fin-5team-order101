@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -29,15 +28,15 @@ public class SettlementSummaryDto {
         if(settlement == null) {
             return null;
         }
-        // TODO : 금액 및 수량 집계 로직
+
         return SettlementSummaryDto.builder()
                 .settlementId(settlement.getSettlementId())
                 .settlementNo(settlement.getSettlementNo())
-                .supplierName(settlement.getSupplier().getSupplierName())
-                .storeName(settlement.getStore().getStoreName())
+                .supplierName(settlement.getSupplier() != null ? settlement.getSupplier().getSupplierName() : null)
+                .storeName(settlement.getStore() != null ? settlement.getStore().getStoreName() : null)
                 .createAt(settlement.getCreatedAt())
-                .settlementAmount(BigDecimal.ZERO)
-                .settlementQty(0)
+                .settlementAmount(settlement.getProductsAmount())
+                .settlementQty(settlement.getProductsQty())
                 .settlementStatus(settlement.getSettlementStatus().name())
                 .build();
     }

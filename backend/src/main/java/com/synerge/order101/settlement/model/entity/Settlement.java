@@ -1,14 +1,16 @@
 package com.synerge.order101.settlement.model.entity;
-
+import com.synerge.order101.common.enums.SettlementType;
+import com.synerge.order101.order.model.entity.StoreOrder;
+import com.synerge.order101.purchase.model.entity.Purchase;
 import com.synerge.order101.store.model.entity.Store;
 import com.synerge.order101.supplier.model.entity.Supplier;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ThreadLocalRandom;
@@ -19,6 +21,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "settlement")
+@Builder
 public class Settlement {
 
     @Id
@@ -26,32 +29,46 @@ public class Settlement {
     private Long settlementId;
 
     @ManyToOne
-    @JoinColumn(name = "supplier_id", nullable = false)
+    @JoinColumn(name = "supplier_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Supplier supplier;
 
     @ManyToOne
-    @JoinColumn(name = "store_id", nullable = false)
+    @JoinColumn(name = "store_id",  foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Store store;
 
-    @Column(nullable = false)
+    @OneToOne
+    @JoinColumn(name = "purchase_id",  foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Purchase purchase;
+
+    @OneToOne
+    @JoinColumn(name = "store_order_id",  foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private StoreOrder storeOrder;
+
+    @Column()
     private String settlementNo;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private SettlementType settlementType;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private SettlementStatus settlementStatus;
 
     @Column
     private String note;
 
     // 정산 완료 날짜
-    @Column(nullable = false)
+    @Column
     private LocalDateTime settledDate;
+
+    // 정산 물품 수량
+    @Column
+    private Integer productsQty;
 
     // 정산에 필요한 금액
     @Column(nullable = false)
-    private BigDecimal amountGoods;
+    private BigDecimal productsAmount;
 
     // 정산 요청 시각
     @Column(nullable = false)
@@ -61,6 +78,7 @@ public class Settlement {
     public void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.settlementNo = generateSettlementNo();
+        this.settlementStatus = SettlementStatus.DRAFT;
     }
 
     public String generateSettlementNo() {
@@ -70,10 +88,7 @@ public class Settlement {
         return "SETL-" + datePart + randomNum;
     }
 
-    public enum SettlementType {
-        AR, //가맹점 청구
-        AP // 공급사 지급
-    }
+
 
     public enum SettlementStatus {
         DRAFT, //초안

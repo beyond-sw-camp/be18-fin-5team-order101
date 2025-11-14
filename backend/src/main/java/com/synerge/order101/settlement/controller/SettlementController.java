@@ -1,5 +1,6 @@
 package com.synerge.order101.settlement.controller;
 
+import com.synerge.order101.settlement.model.dto.SettlementCreateRequest;
 import com.synerge.order101.settlement.model.dto.SettlementSearchCondition;
 import com.synerge.order101.settlement.model.dto.SettlementSummaryDto;
 import com.synerge.order101.settlement.model.dto.SettlementDetailResponseDto;
@@ -31,18 +32,10 @@ public class SettlementController {
         return ResponseEntity.ok(results);
     }
 
-    @GetMapping("{settlementId}")
+    @GetMapping("/{settlementId}")
     public ResponseEntity<SettlementDetailResponseDto> getSettlementDetail(
             @PathVariable("settlementId") String settlementId) {
 
         return null;
     }
-
-    @PostMapping()
-    public ResponseEntity<Void> createSettlement() {
-
-        return null;
-    }
-
-    // 정산 발행??
 }
