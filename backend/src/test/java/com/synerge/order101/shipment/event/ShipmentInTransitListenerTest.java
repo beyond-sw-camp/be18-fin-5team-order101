@@ -51,7 +51,7 @@ class ShipmentInTransitListenerTest {
         var product = mock(Product.class);
         var line = mock(com.synerge.order101.order.model.entity.StoreOrderDetail.class);
         given(line.getProduct()).willReturn(product);
-        given(line.getOrderQty()).willReturn(new BigDecimal("5"));
+        given(line.getOrderQty()).willReturn(5);
         given(storeOrderDetailRepository.findByStoreOrder_StoreOrderId(11L)).willReturn(List.of(line));
 
         // inventory

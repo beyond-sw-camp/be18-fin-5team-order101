@@ -2,6 +2,7 @@ package com.synerge.order101.order.model.entity;
 
 import com.synerge.order101.product.model.entity.Product;
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,7 +35,7 @@ public class  StoreOrderDetail {
     private Product product;
 
     @Column(name = "order_qty", nullable = false, precision = 15, scale = 3)
-    private BigDecimal orderQty;
+    private Integer orderQty;
 
     @Column(name = "unit_price", precision = 15, scale = 2)
     private BigDecimal unitPrice;
@@ -55,7 +56,7 @@ public class  StoreOrderDetail {
         this.createdAt = LocalDateTime.now();
     }
 
-    public StoreOrderDetail(StoreOrder storeOrder, Product product, BigDecimal orderQty, BigDecimal unitPrice, BigDecimal amount) {
+    public StoreOrderDetail(StoreOrder storeOrder, Product product, Integer orderQty, BigDecimal unitPrice, BigDecimal amount) {
         this.storeOrder = storeOrder;
         this.product = product;
         this.orderQty = orderQty;

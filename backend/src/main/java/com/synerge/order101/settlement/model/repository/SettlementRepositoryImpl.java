@@ -2,6 +2,7 @@ package com.synerge.order101.settlement.model.repository;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.synerge.order101.common.enums.SettlementType;
 import com.synerge.order101.settlement.model.dto.SettlementSearchCondition;
 import com.synerge.order101.settlement.model.entity.Settlement;
 import lombok.RequiredArgsConstructor;
@@ -66,7 +67,7 @@ public class SettlementRepositoryImpl implements SettlementRepositoryCustom {
             return null;
         }
         try {
-            Settlement.SettlementType settlementType = Settlement.SettlementType.valueOf(type.toUpperCase());
+            SettlementType settlementType = SettlementType.valueOf(type.toUpperCase());
             return settlement.settlementType.eq(settlementType);
         } catch (IllegalArgumentException e) {
             return null;

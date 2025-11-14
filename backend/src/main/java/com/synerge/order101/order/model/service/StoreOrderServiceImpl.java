@@ -1,6 +1,5 @@
 package com.synerge.order101.order.model.service;
 
-import com.fasterxml.jackson.databind.util.ArrayBuilders;
 import com.synerge.order101.common.enums.OrderStatus;
 import com.synerge.order101.common.exception.CustomException;
 import com.synerge.order101.order.exception.errorcode.OrderErrorCode;
@@ -13,6 +12,7 @@ import com.synerge.order101.order.model.repository.StoreOrderRepository;
 import com.synerge.order101.order.model.repository.StoreOrderStatusLogRepository;
 import com.synerge.order101.product.model.entity.Product;
 import com.synerge.order101.product.model.repository.ProductRepository;
+import com.synerge.order101.settlement.event.StoreOrderSettlementReqEvent;
 import com.synerge.order101.store.model.entity.Store;
 import com.synerge.order101.store.model.repository.StoreRepository;
 import com.synerge.order101.user.model.entity.User;
@@ -20,6 +20,7 @@ import com.synerge.order101.user.model.repository.UserRepository;
 import com.synerge.order101.warehouse.model.entity.Warehouse;
 import com.synerge.order101.warehouse.model.repository.WarehouseRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +29,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.List;
 
 /** TODO : 페이지 조회 로직 성능 TEST 및 개선
@@ -43,6 +43,7 @@ public class StoreOrderServiceImpl implements StoreOrderService {
     private final StoreOrderRepository storeOrderRepository;
     private final StoreOrderDetailRepository storeOrderDetailRepository;
     private final StoreOrderStatusLogRepository storeOrderStatusLogRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     private final StoreRepository storeRepository;
     private final ProductRepository productRepository;
@@ -131,7 +132,7 @@ public class StoreOrderServiceImpl implements StoreOrderService {
                         .orElseThrow(() -> new IllegalArgumentException("Product not found: " + item.getProductId()));
 
                 BigDecimal unitPrice = product.getPrice();
-                BigDecimal amount = unitPrice == null ? null : unitPrice.multiply(item.getOrderQty());
+                BigDecimal amount = unitPrice == null ? null : unitPrice.multiply(BigDecimal.valueOf(item.getOrderQty()));
 
                 StoreOrderDetail detail = new StoreOrderDetail(savedOrder, product, item.getOrderQty(), unitPrice, amount);
                 // TODO : saveALl로 수정. 박진우
@@ -160,6 +161,11 @@ public class StoreOrderServiceImpl implements StoreOrderService {
         order.updateOrderState(newStatus);
 
         OrderStatus curStatus = order.getOrderStatus();
+
+        if(curStatus == OrderStatus.CONFIRMED) {
+            // 주문 완료 이벤트 발행
+            eventPublisher.publishEvent(new StoreOrderSettlementReqEvent(order));
+        }
 
         StoreOrderStatusLog log = StoreOrderStatusLog.builder()
                 .storeOrder(order)
