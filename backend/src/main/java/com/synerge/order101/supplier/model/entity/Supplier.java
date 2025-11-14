@@ -20,7 +20,7 @@ public class Supplier {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long supplierId;
 
-    @Column(name = "supplier_code", nullable = false, length = 50)
+    @Column(name = "supplier_code", nullable = false, length = 50, unique = true)
     private String supplierCode;
 
     @Column(name = "supplier_name", nullable = false, length = 100)
