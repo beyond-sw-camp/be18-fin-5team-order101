@@ -1,0 +1,19 @@
+package com.synerge.order101.product.model.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class InventoryMovementRes {
+    private String movementNo;
+    private String type;
+    private long qty;
+    private LocalDateTime occurredAt;
+}

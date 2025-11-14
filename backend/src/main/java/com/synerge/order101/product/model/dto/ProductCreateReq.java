@@ -22,4 +22,6 @@ public class ProductCreateReq {
     private Long categorySmallId;      // 소분류 id (leaf)
     private Long categoryMediumId;     // (검증용/선택적으로 받고 parent 체인 확인)
     private Long categoryLargeId;
+
+    private Long supplierId;
 }
