@@ -15,6 +15,7 @@ import com.synerge.order101.purchase.model.entity.Purchase;
 import com.synerge.order101.purchase.model.entity.PurchaseDetail;
 import com.synerge.order101.purchase.model.repository.PurchaseDetailRepository;
 import com.synerge.order101.purchase.model.repository.PurchaseRepository;
+import com.synerge.order101.settlement.event.PurchaseSettlementReqEvent;
 import com.synerge.order101.supplier.model.entity.Supplier;
 import com.synerge.order101.supplier.model.repository.SupplierRepository;
 import com.synerge.order101.user.model.entity.User;
@@ -22,6 +23,7 @@ import com.synerge.order101.user.model.repository.UserRepository;
 import com.synerge.order101.warehouse.model.entity.Warehouse;
 import com.synerge.order101.warehouse.model.repository.WarehouseRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -49,6 +51,7 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     private final PurchaseRepository purchaseRepository;
     private final PurchaseDetailRepository purchaseDetailRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
@@ -155,9 +158,8 @@ public class PurchaseServiceImpl implements PurchaseService {
         purchaseDetailRepository.saveAll(detailsToSave);
 
     }
-
-
-
+    
+    // 발주 상태 변경
     @Override
     @Transactional
     public PurchaseUpdateStatusResponseDto updatePurchaseStatus(Long purchaseOrderId, OrderStatus newStatus) {
@@ -170,6 +172,11 @@ public class PurchaseServiceImpl implements PurchaseService {
         purchase.updateOrderStatus(newStatus);
 
         OrderStatus curOrderStatus = purchase.getOrderStatus();
+
+        if(curOrderStatus == OrderStatus.CONFIRMED) {
+            // 발주 완료 이벤트 발행
+            eventPublisher.publishEvent(new PurchaseSettlementReqEvent(purchase));
+        }
 
         return PurchaseUpdateStatusResponseDto.builder()
                 .purchaseId(purchase.getPurchaseId())
