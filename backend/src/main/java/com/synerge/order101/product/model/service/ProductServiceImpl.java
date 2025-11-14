@@ -2,17 +2,29 @@ package com.synerge.order101.product.model.service;
 
 import com.synerge.order101.common.dto.ItemsResponseDto;
 import com.synerge.order101.common.exception.CustomException;
+import com.synerge.order101.inbound.model.repository.InboundDetailRepository;
+import com.synerge.order101.inbound.model.repository.InboundRepository;
 import com.synerge.order101.product.exception.ProductErrorCode;
+import com.synerge.order101.product.model.dto.InventoryMovementRes;
+import com.synerge.order101.product.model.dto.InventorySummaryRes;
 import com.synerge.order101.product.model.dto.ProductCreateReq;
 import com.synerge.order101.product.model.dto.ProductCreateRes;
+import com.synerge.order101.product.model.dto.ProductInventoryDetailRes;
 import com.synerge.order101.product.model.dto.ProductListRes;
 import com.synerge.order101.product.model.dto.ProductRes;
 import com.synerge.order101.product.model.dto.ProductUpdateReq;
 import com.synerge.order101.product.model.entity.CategoryLevel;
 import com.synerge.order101.product.model.entity.Product;
 import com.synerge.order101.product.model.entity.ProductCategory;
+import com.synerge.order101.product.model.entity.ProductSupplier;
 import com.synerge.order101.product.model.repository.ProductCategoryRepository;
 import com.synerge.order101.product.model.repository.ProductRepository;
+import com.synerge.order101.product.model.repository.ProductSupplierRepository;
+import com.synerge.order101.supplier.exception.SupplierErrorCode;
+import com.synerge.order101.supplier.model.entity.Supplier;
+import com.synerge.order101.supplier.model.repository.SupplierRepository;
+import com.synerge.order101.warehouse.model.repository.WarehouseInventoryRepository;
+import com.synerge.order101.warehouse.model.repository.WarehouseRepository;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
@@ -25,6 +37,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +49,10 @@ import java.util.List;
 public class ProductServiceImpl implements ProductService {
     private final ProductCategoryRepository productCategoryRepository;
     private final ProductRepository productRepository;
+    private final InboundDetailRepository inboundDetailRepository;
+    private final WarehouseInventoryRepository warehouseInventoryRepository;
+    private final SupplierRepository supplierRepository;
+    private final ProductSupplierRepository productSupplierRepository;
     @Override
     public ProductCreateRes create(ProductCreateReq request) {
 
@@ -67,6 +84,28 @@ public class ProductServiceImpl implements ProductService {
                 .build();
 
         productRepository.save(product);
+
+        Supplier supplier = null;
+        if(request.getSupplierId() != null) {
+            supplier = supplierRepository.findById(request.getSupplierId()).orElseThrow(() ->
+                    new CustomException(SupplierErrorCode.SUPPLIER_NOT_FOUND));
+        }
+
+        if(supplier != null) {
+
+            String supplierProductCode = product.getProductCode() + "_" + supplier.getSupplierCode();
+
+            int leadTimeDays = java.util.concurrent.ThreadLocalRandom.current().nextInt(3, 8);
+
+            ProductSupplier ps = ProductSupplier.builder()
+                    .product(product)
+                    .supplier(supplier)
+                    .supplierProductCode(supplierProductCode)
+                    .purchasePrice(request.getPrice())
+                    .leadTimeDays(leadTimeDays)
+                    .build();
+            productSupplierRepository.save(ps);
+        }
         return new  ProductCreateRes(product.getProductId());
     }
 
@@ -113,6 +152,47 @@ public class ProductServiceImpl implements ProductService {
                 .imageUrl(request.getImageUrl())
                 .build();
 
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ProductInventoryDetailRes getProductInventory(Long productId, int page, int numOfRows) {
+        Product product = productRepository.findById(productId).orElseThrow(() ->
+                new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
+        long currentQty = warehouseInventoryRepository.sumOnHandAll(productId);
+        long safetyQty = warehouseInventoryRepository.sumSafetyAll(productId);
+
+        InventorySummaryRes summary = InventorySummaryRes.builder()
+                .productId(product.getProductId())
+                .productCode(product.getProductCode())
+                .productName(product.getProductName())
+                .currentQty(currentQty)
+                .safetyQty(safetyQty)
+                .build();
+
+        int pageIndex = Math.max(0, page - 1);
+        int limit = numOfRows;
+        int offset = pageIndex * numOfRows;
+
+        List<Object[]> rows = inboundDetailRepository.findMovements(productId, limit, offset);
+        long total =  inboundDetailRepository.countMovements(productId);
+
+        List<InventoryMovementRes> items = rows.stream()
+                .map(r -> InventoryMovementRes.builder()
+                        .movementNo((String) r[0])
+                        .type((String) r[1])
+                        .qty(((Number) r[2]).longValue())
+                        .occurredAt(((Timestamp) r[3]).toLocalDateTime())
+                        .build())
+                .toList();
+        System.out.println(items);
+        return ProductInventoryDetailRes.builder()
+                .summary(summary)
+                .items(items)
+                .page(page)
+                .numOfRows(numOfRows)
+                .totalCount((int) total)
+                .build();
     }
 
     @Override
@@ -192,6 +272,8 @@ public class ProductServiceImpl implements ProductService {
         // cascade, orphan
         productRepository.delete(product);
     }
+
+
 
 
 }

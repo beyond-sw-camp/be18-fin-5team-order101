@@ -35,6 +35,6 @@ public class StoreOrderCreateRequest {
         private Long productId;
 
         @NonNull
-        private BigDecimal orderQty;
+        private Integer orderQty;
     }
 }

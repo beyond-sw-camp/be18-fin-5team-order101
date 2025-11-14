@@ -4,6 +4,7 @@ import com.synerge.order101.common.dto.BaseResponseDto;
 import com.synerge.order101.common.dto.ItemsResponseDto;
 import com.synerge.order101.product.model.dto.ProductCreateReq;
 import com.synerge.order101.product.model.dto.ProductCreateRes;
+import com.synerge.order101.product.model.dto.ProductInventoryDetailRes;
 import com.synerge.order101.product.model.dto.ProductListRes;
 import com.synerge.order101.product.model.dto.ProductRes;
 import com.synerge.order101.product.model.dto.ProductUpdateReq;
@@ -68,5 +69,13 @@ public class ProductController {
         productService.deleteProduct(productId);
 
         return ResponseEntity.ok(new BaseResponseDto<>(HttpStatus.OK, "상품이 삭제되었습니다."));
+    }
+
+    @GetMapping("/{productId}/inventory")
+    public ResponseEntity<BaseResponseDto<ProductInventoryDetailRes>> getInventory(@PathVariable Long productId,
+                                                                                   @RequestParam(defaultValue = "1") int page,
+                                                                                   @RequestParam(defaultValue = "10") int numOfRows) {
+        var res = productService.getProductInventory(productId, page, numOfRows);
+        return ResponseEntity.ok(new BaseResponseDto<>(HttpStatus.OK, res));
     }
 }

@@ -62,6 +62,7 @@ public class Purchase {
     private OrderType orderType;
 
     @OneToMany(mappedBy = "purchase")
+    @Builder.Default
     private List<PurchaseDetail> purchaseDetails = new ArrayList<>();
 
     public enum OrderType {

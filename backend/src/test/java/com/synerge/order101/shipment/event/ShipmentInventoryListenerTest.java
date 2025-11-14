@@ -65,7 +65,7 @@ class ShipmentInventoryListenerTest {
         Product product = mock(Product.class);
         StoreOrderDetail line = mock(StoreOrderDetail.class);
         given(line.getProduct()).willReturn(product);
-        given(line.getOrderQty()).willReturn(new BigDecimal("5"));
+        given(line.getOrderQty()).willReturn(5);
         given(storeOrderDetailRepository.findByStoreOrder_StoreOrderId(11L)).willReturn(List.of(line));
 
         // 기존 재고: 입고예정 5, 현재고 0
@@ -103,7 +103,7 @@ class ShipmentInventoryListenerTest {
         Product product = mock(Product.class);
         StoreOrderDetail line = mock(StoreOrderDetail.class);
         given(line.getProduct()).willReturn(product);
-        given(line.getOrderQty()).willReturn(new BigDecimal("3"));
+        given(line.getOrderQty()).willReturn(3);
         given(storeOrderDetailRepository.findByStoreOrder_StoreOrderId(21L)).willReturn(List.of(line));
 
         // 기존 재고: 입고예정 0, 현재고 0

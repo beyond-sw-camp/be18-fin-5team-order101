@@ -76,87 +76,59 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
 
-const rows = ref([
-  {
-    id: 'SETL001',
-    type: 'AR',
-    entity: '서울 본점',
-    period: '2023-01',
-    qty: 150,
-    total: 1500000,
-    net: 1450000,
-    status: '발행됨',
-    created: '2023-01-05',
-  },
-  {
-    id: 'SETL002',
-    type: 'AP',
-    entity: '부산 지점',
-    period: '2023-01',
-    qty: 80,
-    total: 800000,
-    net: 780000,
-    status: '초안',
-    created: '2023-01-07',
-  },
-  {
-    id: 'SETL003',
-    type: 'AR',
-    entity: '대구 지점',
-    period: '2023-02',
-    qty: 200,
-    total: 2000000,
-    net: 1900000,
-    status: '잠김',
-    created: '2023-02-01',
-  },
-  {
-    id: 'SETL004',
-    type: 'AP',
-    entity: '광주 공급사',
-    period: '2023-02',
-    qty: 120,
-    total: 1200000,
-    net: 1180000,
-    status: '무효',
-    created: '2023-02-10',
-  },
-  {
-    id: 'SETL005',
-    type: 'AR',
-    entity: '인천 물류',
-    period: '2023-03',
-    qty: 90,
-    total: 900000,
-    net: 870000,
-    status: '발행됨',
-    created: '2023-03-01',
-  },
-  {
-    id: 'SETL006',
-    type: 'AR',
-    entity: '제주도 가맹점',
-    period: '2023-03',
-    qty: 180,
-    total: 1800000,
-    net: 1750000,
-    status: '초안',
-    created: '2023-03-10',
-  },
-  {
-    id: 'SETL007',
-    type: 'AP',
-    entity: '대전 협력사',
-    period: '2023-04',
-    qty: 70,
-    total: 700000,
-    net: 680000,
-    status: '잠김',
-    created: '2023-04-01',
-  },
-])
+const searchConditions = ref({
+  types: ['AR', 'AP'],
+  statuses: ['DRAFT', 'ISSUED', 'VOID'],
+  period: '2025-06',
+  searchText: '',
+})
+
+const rows = ref([])
+
+const fetchSettlements = async () => {
+  try {
+
+    const url = '/api/v1/settlements';
+    const params = {
+      ...searchConditions.value,
+      page: 0,
+      size: 10,
+      sort: 'createdAt,desc',
+    };
+
+    const response = await axios.get(url, { params });
+
+    const transformedData = response.data.content.map(item => ({
+            id: item.settlementNo, // 정산번호를 ID로 사용
+            type: item.settlementType === 'AP' ? 'AP' : 'AR', // 유형
+            entity: item.supplierName === null ? item.storeName : item.supplierName, // 상점/공급사 이름
+            period: '2023-01', // 기간 (YYYY-MM 형식 가정)
+            qty: item.settlementQty, // 총 수량
+            total: item.settlementAmount, // 총 금액
+            net: item.settlementAmount, // 순 금액
+            status: mapStatus(item.settlementStatus), // 상태 매핑 함수 사용
+            created: item.createdAt,
+    }));
+
+    rows.value = transformedData
+  } catch (error) {
+    console.error('Error fetching settlements:', error)
+  }
+};
+const mapStatus = (backendStatus) => {
+    switch (backendStatus) {
+        case 'ISSUED': return '발행됨';
+        case 'DRAFT': return '초안';
+        case 'VOID': return '무효';
+        default: return '잠김'; // 백엔드에서 '잠김' 상태에 해당하는 ENUM이 필요
+    }
+};
+onMounted(() => {
+    fetchSettlements();
+});
 </script>
 
 <style scoped>
