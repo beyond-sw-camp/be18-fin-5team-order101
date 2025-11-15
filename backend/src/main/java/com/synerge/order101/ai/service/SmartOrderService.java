@@ -30,7 +30,7 @@ public class SmartOrderService {
     //재고/안전재고 반영해야함
 
     @Transactional
-    public List<SmartOrderResponseDto> getSmartOrders(LocalDate targetWeek){
+    public List<SmartOrderResponseDto> generateSmartOrders(LocalDate targetWeek){
         List<DemandForecast> forecasts = demandForecastRepository.findByTargetWeek(targetWeek);
         if (forecasts.isEmpty()){
             throw new CustomException(AiErrorCode.FORECAST_NOT_FOUND);
