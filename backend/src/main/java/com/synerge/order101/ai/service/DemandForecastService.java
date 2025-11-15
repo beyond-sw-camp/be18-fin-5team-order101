@@ -1,6 +1,7 @@
 package com.synerge.order101.ai.service;
 
 import com.synerge.order101.ai.exception.AiErrorCode;
+import com.synerge.order101.ai.model.dto.request.ForecastTriggerRequest;
 import com.synerge.order101.ai.model.dto.response.AiJobTriggerResponseDto;
 import com.synerge.order101.ai.model.dto.response.AiMetricResponseDto;
 import com.synerge.order101.ai.model.dto.response.DemandForecastResponseDto;
@@ -10,6 +11,8 @@ import com.synerge.order101.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -20,18 +23,29 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class DemandForecastService {
     private final DemandForecastRepository demandForecastRepository;
-
+    private final WebClient webClient;
     @Transactional
     public AiJobTriggerResponseDto triggerForecast(LocalDate targetWeek){
-        // TODO
-        //파이썬 AI 서버 호출
-        //webclient/TestTemplate등 사용
-        //결과를 CSV/JSON을 받아서 수요예측 엔티티로 저장
+        ForecastTriggerRequest request =
+                new ForecastTriggerRequest(targetWeek.toString());
+
+        try {
+            webClient.post()
+                    .uri("/internal/ai/forecasts") //파이썬 엔드포인트
+                    .bodyValue(request)
+                    .retrieve()
+                    .toBodilessEntity()
+                    .block();
+        } catch (WebClientResponseException ex) {
+            throw new CustomException(AiErrorCode.AI_SERVER_ERROR);
+        } catch (Exception ex) {
+            throw new CustomException(AiErrorCode.AI_SERVER_ERROR);
+        }
 
         return AiJobTriggerResponseDto.builder()
                 .jobType("FORECAST")
                 .status("ACCEPTED")
-                .message("예측 작업 큐에 등록 완. targetWeek = " + targetWeek)
+                .message("Python AI 서버에 예측 요청 전송 완료. targetWeek = " + targetWeek)
                 .build();
     }
 
@@ -39,12 +53,22 @@ public class DemandForecastService {
     //모델 재학습
     @Transactional
     public AiJobTriggerResponseDto triggerRetrain(){
-        //TODO
-        //파이썬 서버에 재학습 요청
+        try {
+            webClient.post()
+                    .uri("/internal/ai/model/retrain") //파이썬 엔드포인트
+                    .retrieve()
+                    .toBodilessEntity()
+                    .block();
+        } catch (WebClientResponseException ex) {
+            throw new CustomException(AiErrorCode.AI_SERVER_ERROR);
+        } catch (Exception ex) {
+            throw new CustomException(AiErrorCode.AI_SERVER_ERROR);
+        }
+
         return AiJobTriggerResponseDto.builder()
                 .jobType("RETRAIN")
                 .status("ACCEPTED")
-                .message("모델 재학습 작업 큐에 등록 완.")
+                .message("Python AI 서버에 재학습 요청 전송 완료.")
                 .build();
     }
 
