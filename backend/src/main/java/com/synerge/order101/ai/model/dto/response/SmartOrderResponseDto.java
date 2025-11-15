@@ -17,7 +17,7 @@ public class SmartOrderResponseDto {
     private Long storeId;
     private Long productId;
     private Long demandForecastId;
-    private Date targetWeek;
+    private LocalDate targetWeek;
     private Integer recommendedOrderQty;
     private Integer forecastQty;
     private SmartOrder.SmartOrderStatus smartOrderStatus;

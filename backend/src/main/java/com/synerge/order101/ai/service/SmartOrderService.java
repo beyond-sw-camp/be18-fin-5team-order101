@@ -37,12 +37,11 @@ public class SmartOrderService {
         }
         List<SmartOrder> saved = forecasts.stream()
                 .map(df -> SmartOrder.builder()
-                        .storeId(df.getStore().getStoreId())
-                        .productId(df.getProduct())
+                        .store(df.getStore())
+                        .product(df.getProduct())
                         .demandForecast(df)
                         .targetWeek(df.getTargetWeek())
                         .forecastQty(df.getYPred())
-                        // TODO: 재고/안전재고 고려 로직
                         .recommendedOrderQty(df.getYPred())
                         .smartOrderStatus(SmartOrder.SmartOrderStatus.DRAFT)
                         .build())
@@ -56,9 +55,9 @@ public class SmartOrderService {
     public List<SmartOrderResponseDto> getSmartOrders(Long storeId, SmartOrder.SmartOrderStatus status) {
         List<SmartOrder> list;
         if (storeId != null && status != null) {
-            list = smartOrderRepository.findByStoreIdAndSmartOrderStatus(storeId, status);
+            list = smartOrderRepository.findByStore_StoreIdAndSmartOrderStatus(storeId, status);
         } else if (storeId != null) {
-            list = smartOrderRepository.findByStoreIdOrderByTargetWeek(storeId);
+            list = smartOrderRepository.findByStore_StoreIdOrderByTargetWeekDesc(storeId);
         } else {
             list = smartOrderRepository.findAll();
         }

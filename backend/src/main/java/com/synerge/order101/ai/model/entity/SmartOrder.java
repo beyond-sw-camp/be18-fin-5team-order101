@@ -9,6 +9,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -47,7 +48,7 @@ public class SmartOrder {
     private DemandForecast demandForecast;
 
     @Column(name = "target_week", nullable = false)
-    private Date targetWeek;
+    private LocalDate targetWeek;
 
     @Column(name = "recommended_order_qty", nullable = false)
     private int recommendedOrderQty;
@@ -83,6 +84,7 @@ public class SmartOrder {
         if(this.smartOrderStatus != SmartOrderStatus.DRAFT){
             throw new CustomException(AiErrorCode.SMART_ORDER_UPDATE_FAILED);
         }
+        this.recommendedOrderQty = newRecommendedQty;
     }
 
     public void submit() {

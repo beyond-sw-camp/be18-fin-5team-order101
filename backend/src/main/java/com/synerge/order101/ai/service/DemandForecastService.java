@@ -51,7 +51,7 @@ public class DemandForecastService {
 
     public List<LocalDateTime> getSnapshotList() {
         return demandForecastRepository
-                .findDistinctBySnapshotAt()
+                .findDistinctBySnapshotAtIsNotNullOrderBySnapshotAtDesc()
                 .stream()
                 .map(DemandForecast::getSnapshotAt)
                 .distinct()

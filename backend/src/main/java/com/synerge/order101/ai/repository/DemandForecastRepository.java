@@ -10,11 +10,10 @@ import java.util.List;
 public interface DemandForecastRepository extends JpaRepository<DemandForecast, Long> {
     List<DemandForecast> findByTargetWeek(LocalDate targetWeek);
 
-    List<DemandForecast> findByStoreIdAndTargetWeek(Long storeId, LocalDate targetWeek);
+    List<DemandForecast> findByStore_StoreIdAndTargetWeek(Long storeId, LocalDate targetWeek);
 
-    List<DemandForecast> findBySnapshotAt(LocalDateTime start, LocalDateTime end);
+    List<DemandForecast> findBySnapshotAtBetween(LocalDateTime start, LocalDateTime end);
 
-    //내림차순. notnull, orderby 스냅샷 at
-    List<DemandForecast> findDistinctBySnapshotAt();
+    List<DemandForecast> findDistinctBySnapshotAtIsNotNullOrderBySnapshotAtDesc();
 }
 

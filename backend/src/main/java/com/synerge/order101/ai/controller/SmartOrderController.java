@@ -39,9 +39,9 @@ public class SmartOrderController {
     }
 
     //스마트 발주 상세 조회
-    @GetMapping("/{SmartOrderId}")
+    @GetMapping("/{smartOrderId}")
     public ResponseEntity<SmartOrderResponseDto> getSmartOrder(
-            @PathVariable Long smartOrderId
+            @PathVariable("smartOrderId") Long smartOrderId
     ){
         return ResponseEntity.ok(smartOrderService.getSmartOrder(smartOrderId));
     }
@@ -49,7 +49,7 @@ public class SmartOrderController {
     //스마트 발주 수정
     @PatchMapping("/{SmartOrderId}")
     public ResponseEntity<SmartOrderResponseDto> updateDraft(
-            @PathVariable Long smartOrderId,
+            @PathVariable("smartOrderId") Long smartOrderId,
             @RequestBody SmartOrderUpdateRequest request
     ) {
         return ResponseEntity.ok(smartOrderService.updateDraft(smartOrderId, request));
