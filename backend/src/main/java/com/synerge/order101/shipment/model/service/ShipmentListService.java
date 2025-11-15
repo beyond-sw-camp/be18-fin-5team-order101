@@ -3,7 +3,7 @@ package com.synerge.order101.shipment.model.service;
 import com.synerge.order101.common.enums.ShipmentStatus;
 import com.synerge.order101.common.exception.CustomException;
 import com.synerge.order101.common.exception.errorcode.CommonErrorCode;
-import com.synerge.order101.shipment.exception.errorcode.ShipmentErrorCode;
+import com.synerge.order101.shipment.exception.ShipmentErrorCode;
 import com.synerge.order101.shipment.model.dto.response.ShipmentResponseDto;
 import com.synerge.order101.shipment.model.repository.ShipmentListRepository;
 import lombok.RequiredArgsConstructor;
