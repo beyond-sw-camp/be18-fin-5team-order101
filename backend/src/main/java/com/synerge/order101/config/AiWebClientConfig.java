@@ -21,15 +21,6 @@ public class AiWebClientConfig {
                                 .defaultCodecs()
                                 .maxInMemorySize(10 * 1024 * 1024))  // 10MB
                         .build())
-                // TODO
-                //  내부 토큰 쓰면 여기서 헤더 넣으면 됨
-                // .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + getInternalToken())
                 .build();
-    }
-
-    // TODO
-    // AUTH
-    private String getInternalToken() {
-        return null;
     }
 }
