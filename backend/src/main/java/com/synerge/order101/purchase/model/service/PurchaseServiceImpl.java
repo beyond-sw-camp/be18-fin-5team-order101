@@ -7,10 +7,7 @@ import com.synerge.order101.product.model.entity.ProductSupplier;
 import com.synerge.order101.product.model.repository.ProductRepository;
 import com.synerge.order101.product.model.repository.ProductSupplierRepository;
 import com.synerge.order101.purchase.exception.PurchaseErrorCode;
-import com.synerge.order101.purchase.model.dto.PurchaseCreateRequest;
-import com.synerge.order101.purchase.model.dto.PurchaseDetailResponseDto;
-import com.synerge.order101.purchase.model.dto.PurchaseSummaryResponseDto;
-import com.synerge.order101.purchase.model.dto.PurchaseUpdateStatusResponseDto;
+import com.synerge.order101.purchase.model.dto.*;
 import com.synerge.order101.purchase.model.entity.Purchase;
 import com.synerge.order101.purchase.model.entity.PurchaseDetail;
 import com.synerge.order101.purchase.model.repository.PurchaseDetailRepository;
@@ -22,6 +19,7 @@ import com.synerge.order101.user.model.entity.User;
 import com.synerge.order101.user.model.repository.UserRepository;
 import com.synerge.order101.warehouse.model.entity.Warehouse;
 import com.synerge.order101.warehouse.model.repository.WarehouseRepository;
+import com.synerge.order101.warehouse.model.service.InventoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -31,9 +29,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -58,6 +58,8 @@ public class PurchaseServiceImpl implements PurchaseService {
     private final SupplierRepository supplierRepository;
     private final WarehouseRepository warehouseRepository;
     private final ProductSupplierRepository productSupplierRepository;
+
+    private final InventoryService inventoryService;
 
     // 발주 목록 조회
     @Override
@@ -130,6 +132,7 @@ public class PurchaseServiceImpl implements PurchaseService {
                 .supplier(supplier)
                 .user(user)
                 .warehouse(warehouse)
+                .orderStatus(request.getOrderStatus())
                 .orderType(request.getOrderType())
                 .build();
 
@@ -158,7 +161,7 @@ public class PurchaseServiceImpl implements PurchaseService {
         purchaseDetailRepository.saveAll(detailsToSave);
 
     }
-    
+
     // 발주 상태 변경
     @Override
     @Transactional
@@ -176,11 +179,50 @@ public class PurchaseServiceImpl implements PurchaseService {
         if(curOrderStatus == OrderStatus.CONFIRMED) {
             // 발주 완료 이벤트 발행
             eventPublisher.publishEvent(new PurchaseSettlementReqEvent(purchase));
+            // 입고 반영
+            inventoryService.increaseInventory(purchase);
         }
 
         return PurchaseUpdateStatusResponseDto.builder()
                 .purchaseId(purchase.getPurchaseId())
                 .status(purchase.getOrderStatus().name())
                 .build();
+    }
+
+    // 자동 발주 생성
+    @Override
+    @Transactional
+    public void createAutoPurchase() {
+
+        List<CalculatedAutoItem> autoItems = inventoryService.getAutoPurchaseItems();
+        if (autoItems.isEmpty()) return;
+
+        Map<Long, List<CalculatedAutoItem>> groupedBySupplier =
+                autoItems.stream().collect(Collectors.groupingBy(CalculatedAutoItem::getSupplierId));
+
+        Long systemUserId = 1L;
+        Long warehouseId = 1L;
+
+        for (Map.Entry<Long, List<CalculatedAutoItem>> entry : groupedBySupplier.entrySet()) {
+
+            Long supplierId = entry.getKey();
+
+            List<PurchaseCreateRequest.Item> items =
+                    entry.getValue().stream()
+                            .map(i -> new PurchaseCreateRequest.Item(i.getProductId(), i.getOrderQty()))
+                            .toList();
+
+            PurchaseCreateRequest request = new PurchaseCreateRequest(
+                    supplierId,
+                    systemUserId,
+                    warehouseId,
+                    Purchase.OrderType.AUTO,
+                    OrderStatus.DRAFT_AUTO,      // 자동초안
+                    LocalDateTime.now().plusDays(7),
+                    items
+            );
+
+            createPurchase(request);
+        }
     }
 }

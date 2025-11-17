@@ -21,6 +21,17 @@ public interface WarehouseInventoryRepository extends JpaRepository<WarehouseInv
     """)
     List<WarehouseInventory> findAllWithProduct();
 
+    Optional<WarehouseInventory> findByProduct_ProductId(Long productId);
+
+    @Query("""
+        SELECT wi
+        FROM WarehouseInventory wi
+        JOIN FETCH wi.product p
+        JOIN FETCH p.productSupplier ps
+        JOIN FETCH ps.supplier s
+    """)
+    List<WarehouseInventory> findAllWithProductAndSupplier();
+
     @Query("select coalesce(sum(w.onHandQuantity), 0) from WarehouseInventory w " +
             "where w.product.productId = :pid")
     long sumOnHandAll(@Param("pid") Long productId);

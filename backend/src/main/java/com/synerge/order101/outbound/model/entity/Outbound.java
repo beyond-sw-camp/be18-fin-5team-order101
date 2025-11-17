@@ -35,4 +35,13 @@ public class Outbound {
 
     private String createdBy;
 
+    public static Outbound create(Warehouse warehouse, Store store, String outboundNo, String createdBy) {
+        Outbound outbound = new Outbound();
+        outbound.warehouse = warehouse;
+        outbound.store = store;
+        outbound.outboundNo = outboundNo;
+        outbound.createdBy = createdBy;
+        return outbound;
+    }
+
 }
