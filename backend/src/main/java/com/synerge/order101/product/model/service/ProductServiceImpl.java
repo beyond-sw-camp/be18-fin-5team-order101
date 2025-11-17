@@ -84,22 +84,7 @@ public class ProductServiceImpl implements ProductService {
         String imageUrl = request.getImageUrl();
 
         if(imageFile != null && !imageFile.isEmpty()) {
-            try {
-                String uploadDir = "/uploads/product-images";
-                Files.createDirectories(Path.of(uploadDir));
-
-                String ext = Optional.ofNullable(imageFile.getOriginalFilename()).filter(f -> f.contains("."))
-                        .map(f -> f.substring(f.lastIndexOf("."))).orElse("");
-
-                String savedName = UUID.randomUUID() + ext;
-                Path targetPath =  Path.of(uploadDir, savedName);
-
-                Files.copy(imageFile.getInputStream(), targetPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-
-                imageUrl = "/static/product-images/" + savedName;
-            } catch (IOException e) {
-                throw new CustomException(ProductErrorCode.IMAGE_UPLOAD_FAIL);
-            }
+            imageUrl = saveProductImage(imageFile);
         }
 
         Product product = Product.builder()
@@ -349,7 +334,10 @@ public class ProductServiceImpl implements ProductService {
 
         try {
             String fileName = Paths.get(imageUrl).getFileName().toString();
-            Path filePath = Paths.get(UPLOAD_ROOT, "product-images", fileName);
+            Path filePath = Paths.get(System.getProperty("user.dir"),
+                    UPLOAD_ROOT,
+                    "product-images",
+                    fileName);
 
             if(Files.exists(filePath)) {
                 Files.delete(filePath);
