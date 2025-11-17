@@ -322,7 +322,9 @@ public class ProductServiceImpl implements ProductService {
         }
 
         try {
-            Path uploadDir = Paths.get(UPLOAD_ROOT, "product_images");
+            Path uploadDir = Paths.get(System.getProperty("user.dir"),
+                    UPLOAD_ROOT,
+                    "product-images");
             if(!Files.exists(uploadDir)) {
                 Files.createDirectories(uploadDir);
             }
