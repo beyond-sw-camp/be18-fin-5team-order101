@@ -7,29 +7,30 @@
         <div>
           <label>정산 유형</label>
           <div class="checkboxes">
-            <label><input type="checkbox" checked /> AR</label>
-            <label><input type="checkbox" checked /> AP</label>
+            <label><input type="checkbox" v-model="searchConditions.types" value="AR" /> AR</label>
+            <label><input type="checkbox" v-model="searchConditions.types" value="AP" /> AP</label>
           </div>
         </div>
 
         <div>
           <label>상태</label>
           <div class="checkboxes">
-            <label><input type="checkbox" checked /> 초안</label>
-            <label><input type="checkbox" checked /> 발행</label>
-            <label><input type="checkbox" checked /> 무효</label>
+            <label><input type="checkbox" v-model="searchConditions.statuses" value="DRAFT" /> 초안</label>
+            <label><input type="checkbox" v-model="searchConditions.statuses" value="ISSUED" /> 발행</label>
+            <label><input type="checkbox" v-model="searchConditions.statuses" value="VOID" /> 무효</label>
           </div>
         </div>
 
         <div>
           <label>기간</label>
-          <input type="month" class="input" />
+          <input type="month" v-model="searchConditions.period" class="input" />
         </div>
 
         <div class="search-wrapper">
           <label>검색</label>
-          <input placeholder="ID 또는 공급업체 검색..." class="input" />
+          <input placeholder="ID 또는 공급업체 검색..." v-model="searchConditions.searchText" class="input" />
         </div>
+        <button @click="fetchSettlements" class = "search-button">검색</button>
       </div>
     </div>
 
@@ -78,6 +79,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
+import qs from 'qs'
 
 const searchConditions = ref({
   types: ['AR', 'AP'],
@@ -99,7 +101,13 @@ const fetchSettlements = async () => {
       sort: 'createdAt,desc',
     };
 
-    const response = await axios.get(url, { params });
+      const response = await axios.get(url, { 
+            params: params,
+            // ⭐⭐⭐ 배열 직렬화 설정을 추가하여 Spring 형식에 맞춥니다.
+            paramsSerializer: params => {
+                return qs.stringify(params, { arrayFormat: 'repeat' })
+            }
+        });
 
     const transformedData = response.data.content.map(item => ({
             id: item.settlementNo, // 정산번호를 ID로 사용
@@ -110,7 +118,9 @@ const fetchSettlements = async () => {
             total: item.settlementAmount, // 총 금액
             net: item.settlementAmount, // 순 금액
             status: mapStatus(item.settlementStatus), // 상태 매핑 함수 사용
-            created: item.createdAt,
+            created: item.createdAt 
+                ? String(item.createdAt).substring(0, 10) 
+                : '날짜정보없음',
     }));
 
     rows.value = transformedData
@@ -129,6 +139,8 @@ const mapStatus = (backendStatus) => {
 onMounted(() => {
     fetchSettlements();
 });
+
+
 </script>
 
 <style scoped>
@@ -136,6 +148,7 @@ onMounted(() => {
   font-size: 22px;
   margin-bottom: 12px;
 }
+
 .filter-card {
   padding: 16px;
   margin-bottom: 18px;
@@ -144,6 +157,20 @@ onMounted(() => {
   display: flex;
   gap: 24px;
   align-items: flex-end;
+}
+.search-button {
+    padding: 8px 15px;
+    background-color: #4f46e5; /* 발행 상태와 유사한 색상 사용 */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    height: 38px; /* 입력 필드와 높이 맞추기 */
+    white-space: nowrap; /* 텍스트가 줄바꿈되지 않도록 */
+}
+.search-button:hover {
+    background-color: #4338ca;
 }
 .checkboxes label {
   margin-right: 8px;

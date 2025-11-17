@@ -22,5 +22,8 @@ public interface PurchaseService {
 
     // 발주 상태 업데이트
     PurchaseUpdateStatusResponseDto updatePurchaseStatus(Long purchaseOrderId, OrderStatus status);
+
+    // 자동 발주 생성
+    void createAutoPurchase();
 }
 
