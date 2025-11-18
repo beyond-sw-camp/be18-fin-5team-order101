@@ -31,6 +31,14 @@ const adminSidebar = [
     ],
   },
   {
+    id: 'product',
+    title: '상품 관리',
+    children: [
+      { title: '상품 목록', path: '/hq/product/list' },
+      { title: '상품 등록', path: '/hq/product/register' },
+    ],
+  },
+  {
     id: 'settlement',
     title: '정산 관리',
     children: [

@@ -26,6 +26,9 @@ const FranchiseOrderApprovalView = () =>
 const FranchiseOrderListView = () => import('../views/hq/franchise/FranchiseOrderListView.vue')
 const FranchiseOrderDetailView = () => import('../views/hq/franchise/FranchiseOrderDetailView.vue')
 const FranchiseDeliveryView = () => import('../views/hq/franchise/FranchiseDeliveryView.vue')
+const ProductListView = () => import('../views/hq/store/ProductListView.vue')
+const ProductRegisterView = () => import('../views/hq/store/ProductRegisterView.vue')
+const ProductDetailView = () => import('../views/hq/store/ProductDetailView.vue')
 
 const hqRoutes = [
   {
@@ -81,6 +84,30 @@ const hqRoutes = [
     name: 'hq-inventory-movements',
     component: MovementsView,
     meta: { title: '입출고 조회' },
+  },
+  {
+    path: '/hq/product/list',
+    name: 'hq-products-list',
+    component: ProductListView,
+    meta: { title: '상품 목록' },
+  },
+  {
+    path: '/hq/product/register',
+    name: 'hq-product-register',
+    component: ProductRegisterView,
+    meta: { title: '상품 등록' },
+  },
+  {
+    path: '/hq/product/:code',
+    name: 'hq-product-detail',
+    component: ProductDetailView,
+    meta: { title: '상품 상세' },
+  },
+  {
+    path: '/hq/inventory/stock',
+    name: 'hq-inventory-stock',
+    component: PagePlaceholder,
+    meta: { title: '상품 목록' },
   },
   {
     path: '/hq/settlement/daily',
