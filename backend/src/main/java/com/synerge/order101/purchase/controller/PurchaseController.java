@@ -1,5 +1,7 @@
 package com.synerge.order101.purchase.controller;
 
+import com.synerge.order101.common.dto.BaseResponseDto;
+import com.synerge.order101.common.dto.ItemsResponseDto;
 import com.synerge.order101.common.enums.OrderStatus;
 import com.synerge.order101.purchase.model.dto.*;
 import com.synerge.order101.purchase.model.entity.Purchase;
@@ -71,5 +73,39 @@ public class PurchaseController {
 
         return ResponseEntity.ok(responseDto);
     }
+
+    // 자동 발주 목록 조회
+    @GetMapping("/auto")
+    public ResponseEntity<ItemsResponseDto<AutoPurchaseListResponseDto>> getAutoPurchases(
+            @RequestParam(required = false) OrderStatus status,
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "5") Integer numOfRows
+    ) {
+
+        List<AutoPurchaseListResponseDto> response = purchaseService.getAutoPurchases(status, page, numOfRows);
+        int totalCount = response.size();
+
+        return ResponseEntity.ok(new ItemsResponseDto<>(HttpStatus.OK, response, page, totalCount));
+    }
+
+    // 자동 발주 상세 조회
+    @GetMapping("/auto/{purchaseId}")
+    public ResponseEntity<BaseResponseDto<AutoPurchaseDetailResponseDto>> getAutoPurchaseDetail(@PathVariable Long purchaseId) {
+
+        AutoPurchaseDetailResponseDto response = purchaseService.getAutoPurchaseDetail(purchaseId);
+
+        return ResponseEntity.ok(new BaseResponseDto<>(HttpStatus.OK, response));
+    }
+
+    // 자동 발주 수정 & 제출
+    @PatchMapping("/auto/{purchaseId}/submit")
+    public ResponseEntity<BaseResponseDto<AutoPurchaseDetailResponseDto>> updateAutoPurchaseDetail(@PathVariable Long purchaseId,
+                                                                                                   @RequestBody AutoPurchaseSubmitRequestDto request) {
+
+        AutoPurchaseDetailResponseDto response = purchaseService.submitAutoPurchase(purchaseId, request);
+
+        return ResponseEntity.ok(new BaseResponseDto<>(HttpStatus.OK, response));
+    }
+
 }
 

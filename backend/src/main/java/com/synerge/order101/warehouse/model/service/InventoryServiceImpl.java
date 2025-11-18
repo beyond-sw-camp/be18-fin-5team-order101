@@ -99,6 +99,7 @@ public class InventoryServiceImpl implements InventoryService {
         }
     }
 
+    // 자동 발주 대상 조회
     @Override
     @Transactional
     public List<CalculatedAutoItem> getAutoPurchaseItems() {

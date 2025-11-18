@@ -1,0 +1,70 @@
+package com.synerge.order101.user.model.service;
+
+import com.synerge.order101.common.exception.CustomException;
+import com.synerge.order101.user.exception.UserErrorCode;
+import com.synerge.order101.user.model.dto.UpdateProfileRequestDto;
+import com.synerge.order101.user.model.dto.UserProfile;
+import com.synerge.order101.user.model.dto.UserRegisterRequestDto;
+import com.synerge.order101.user.model.entity.Role;
+import com.synerge.order101.user.model.entity.User;
+import com.synerge.order101.user.model.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+public class UserServiceImpl implements UserService {
+
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    @Override
+    @Transactional
+    public User registerUser(UserRegisterRequestDto userRequestDto) {
+        String email = userRequestDto.getEmail().trim();
+        if (checkEmailExists(email)) {
+            throw new CustomException(UserErrorCode.DUPLICATE_EMAIL);
+        }
+
+        String rawPassword = userRequestDto.getPassword() == null ? "" : userRequestDto.getPassword().trim();
+        String encoded = passwordEncoder.encode(rawPassword);
+
+        Role role = userRequestDto.getRole() == null ? Role.STORE_ADMIN : userRequestDto.getRole();
+
+        User user = User.create(email, encoded, userRequestDto.getName(), role, userRequestDto.getPhone());
+
+        return userRepository.save(user);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserProfile getUserProfileById(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(UserErrorCode.USER_NOT_FOUND));
+
+        return UserProfile.builder()
+                .userId(user.getUserId())
+                .email(user.getEmail())
+                .name(user.getName())
+                .role(user.getRole())
+                .phone(user.getPhone())
+                .createdAt(user.getCreatedAt())
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean checkEmailExists(String email) {
+        if (email == null) return false;
+        return userRepository.findByEmail(email.trim()).isPresent();
+    }
+}

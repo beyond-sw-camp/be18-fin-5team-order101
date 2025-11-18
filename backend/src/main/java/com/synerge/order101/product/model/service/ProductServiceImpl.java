@@ -36,11 +36,18 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Optional;
+import java.util.UUID;
 
 
 @Service
@@ -53,8 +60,9 @@ public class ProductServiceImpl implements ProductService {
     private final WarehouseInventoryRepository warehouseInventoryRepository;
     private final SupplierRepository supplierRepository;
     private final ProductSupplierRepository productSupplierRepository;
+    private static final String UPLOAD_ROOT = "uploads";
     @Override
-    public ProductCreateRes create(ProductCreateReq request) {
+    public ProductCreateRes create(ProductCreateReq request, MultipartFile imageFile) {
 
         ProductCategory small = productCategoryRepository.findById(request.getCategorySmallId()).orElseThrow(() ->
                 new CustomException(ProductErrorCode.INVALID_SMALL_CATEGORY));
@@ -73,13 +81,19 @@ public class ProductServiceImpl implements ProductService {
             throw new CustomException(ProductErrorCode.LARGE_MEDIUM);
         }
 
+        String imageUrl = request.getImageUrl();
+
+        if(imageFile != null && !imageFile.isEmpty()) {
+            imageUrl = saveProductImage(imageFile);
+        }
+
         Product product = Product.builder()
                 .productCode(request.getProductCode())
                 .productName(request.getProductName())
                 .status(Boolean.TRUE.equals(request.getStatus()))
                 .description(request.getDescription())
                 .price(request.getPrice())
-                .imageUrl(request.getImageUrl())
+                .imageUrl(imageUrl)
                 .productCategory(small)
                 .build();
 
@@ -110,7 +124,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductRes update(Long productId, ProductUpdateReq request) {
+    public ProductRes update(Long productId, ProductUpdateReq request, MultipartFile imageFile) {
         Product product = productRepository.findById(productId).orElseThrow(() ->
                 new CustomException(ProductErrorCode.PRODUCT_NOT_FOUND));
 
@@ -131,12 +145,26 @@ public class ProductServiceImpl implements ProductService {
             throw new CustomException(ProductErrorCode.LARGE_MEDIUM);
         }
 
+        String newImageUrl = product.getImageUrl();
+
+        if(imageFile != null && !imageFile.isEmpty()) {
+            if(newImageUrl != null) {
+                deleteProductImage(newImageUrl);
+            }
+            newImageUrl = saveProductImage(imageFile);
+        } else if (Boolean.TRUE.equals(request.getRemoveImage())) {
+            if(newImageUrl != null) {
+                deleteProductImage(newImageUrl);
+            }
+            newImageUrl = null;
+        }
+
         product.update(
                 request.getProductCode(),
                 request.getProductName(),
                 request.getDescription(),
                 request.getPrice(),
-                request.getImageUrl(),
+                newImageUrl,
                 request.getStatus(),
                 small
         );
@@ -147,9 +175,9 @@ public class ProductServiceImpl implements ProductService {
                 .categorySmallName(small.getCategoryName())
                 .categoryMediumName(medium != null ? medium.getCategoryName() : null)
                 .categoryLargeName(large !=  null ? large.getCategoryName() : null)
-                .price(request.getPrice())
-                .description(request.getDescription())
-                .imageUrl(request.getImageUrl())
+                .price(product.getPrice())
+                .description(product.getDescription())
+                .imageUrl(product.getImageUrl())
                 .build();
 
     }
@@ -273,6 +301,51 @@ public class ProductServiceImpl implements ProductService {
         productRepository.delete(product);
     }
 
+    private String saveProductImage(MultipartFile imageFile) {
+        if(imageFile == null || imageFile.isEmpty()) {
+            return null;
+        }
+
+        try {
+            Path uploadDir = Paths.get(System.getProperty("user.dir"),
+                    UPLOAD_ROOT,
+                    "product-images");
+            if(!Files.exists(uploadDir)) {
+                Files.createDirectories(uploadDir);
+            }
+
+            String originalName = imageFile.getOriginalFilename();
+            String ext = StringUtils.getFilenameExtension(originalName);
+            String fileName = "product-" + UUID.randomUUID() + (ext != null ? "." + ext : "");
+
+            Path target = uploadDir.resolve(fileName);
+            imageFile.transferTo(target.toFile());
+
+            return "/product-images/" + fileName;
+        } catch (IOException e) {
+            throw new CustomException(ProductErrorCode.IMAGE_UPLOAD_FAIL);
+        }
+    }
+
+    private void deleteProductImage(String imageUrl) {
+        if(imageUrl == null || imageUrl.isBlank()) {
+            return;
+        }
+
+        try {
+            String fileName = Paths.get(imageUrl).getFileName().toString();
+            Path filePath = Paths.get(System.getProperty("user.dir"),
+                    UPLOAD_ROOT,
+                    "product-images",
+                    fileName);
+
+            if(Files.exists(filePath)) {
+                Files.delete(filePath);
+            }
+        } catch (IOException e) {
+            throw new CustomException(ProductErrorCode.IMAGE_UPLOAD_FAIL);
+        }
+    }
 
 
 

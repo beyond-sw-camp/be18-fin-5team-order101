@@ -25,6 +25,6 @@ public class InventoryController {
         List<InventoryResponseDto> inventoryList = inventoryService.getInventoryList();
         int totalCount = inventoryList.size();
 
-        return ResponseEntity.ok(new ItemsResponseDto<>(HttpStatus.OK, inventoryList, totalCount, page));
+        return ResponseEntity.ok(new ItemsResponseDto<>(HttpStatus.OK, inventoryList, page, totalCount));
     }
 }
