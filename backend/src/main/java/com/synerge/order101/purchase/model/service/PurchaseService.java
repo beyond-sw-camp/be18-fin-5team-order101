@@ -26,5 +26,7 @@ public interface PurchaseService {
     List<AutoPurchaseListResponseDto> getAutoPurchases(OrderStatus status, Integer page, Integer size);
 
     AutoPurchaseDetailResponseDto getAutoPurchaseDetail(Long purchaseOrderId);
+
+    AutoPurchaseDetailResponseDto submitAutoPurchase(Long purchaseId, AutoPurchaseSubmitRequestDto request);
 }
 

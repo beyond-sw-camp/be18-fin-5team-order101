@@ -97,7 +97,15 @@ public class PurchaseController {
         return ResponseEntity.ok(new BaseResponseDto<>(HttpStatus.OK, response));
     }
 
-    // 자동 발주 수정
+    // 자동 발주 수정 & 제출
+    @PatchMapping("/auto/{purchaseId}/submit")
+    public ResponseEntity<BaseResponseDto<AutoPurchaseDetailResponseDto>> updateAutoPurchaseDetail(@PathVariable Long purchaseId,
+                                                                                                   @RequestBody AutoPurchaseSubmitRequestDto request) {
+
+        AutoPurchaseDetailResponseDto response = purchaseService.submitAutoPurchase(purchaseId, request);
+
+        return ResponseEntity.ok(new BaseResponseDto<>(HttpStatus.OK, response));
+    }
 
 }
 

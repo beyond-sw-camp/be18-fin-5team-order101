@@ -52,4 +52,8 @@ public class PurchaseDetail {
 
         this.createdAt = LocalDateTime.now();
     }
+
+    public void updateOrderQty(Integer newQty) {
+        this.orderQty = newQty;
+    }
 }
