@@ -10,6 +10,8 @@ import com.synerge.order101.purchase.exception.PurchaseErrorCode;
 import com.synerge.order101.purchase.model.dto.*;
 import com.synerge.order101.purchase.model.entity.Purchase;
 import com.synerge.order101.purchase.model.entity.PurchaseDetail;
+import com.synerge.order101.purchase.model.entity.PurchaseDetailHistory;
+import com.synerge.order101.purchase.model.repository.PurchaseDetailHistoryRepository;
 import com.synerge.order101.purchase.model.repository.PurchaseDetailRepository;
 import com.synerge.order101.purchase.model.repository.PurchaseRepository;
 import com.synerge.order101.settlement.event.PurchaseSettlementReqEvent;
@@ -29,6 +31,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +56,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     private final PurchaseRepository purchaseRepository;
     private final PurchaseDetailRepository purchaseDetailRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final PurchaseDetailHistoryRepository purchaseDetailHistoryRepository;
 
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
@@ -218,11 +223,149 @@ public class PurchaseServiceImpl implements PurchaseService {
                     warehouseId,
                     Purchase.OrderType.AUTO,
                     OrderStatus.DRAFT_AUTO,      // 자동초안
-                    LocalDateTime.now().plusDays(7),
+                    LocalDate.now(),
                     items
             );
 
             createPurchase(request);
         }
+    }
+
+    // 자동발주 목록 조회
+    @Override
+    @Transactional(readOnly = true)
+    public List<AutoPurchaseListResponseDto> getAutoPurchases(OrderStatus status, Integer page, Integer size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<AutoPurchaseListResponseDto> pageResult;
+
+        if(status == null){
+            pageResult = purchaseRepository.findAutoOrderAllStatus(pageable);
+        }
+        else{
+            pageResult = purchaseRepository.findByAutoOrderStatus(status, pageable);
+        }
+        System.out.println(pageResult.getContent());
+
+        return pageResult.getContent();
+    }
+
+    // 자동발주 상세 조회
+    @Override
+    @Transactional(readOnly = true)
+    public AutoPurchaseDetailResponseDto getAutoPurchaseDetail(Long purchaseId) {
+
+        Purchase purchase = purchaseRepository.findById(purchaseId).orElseThrow(
+                ()-> new CustomException(PurchaseErrorCode.PURCHASE_NOT_FOUND));
+
+        // PurchaseDetail + safetyQty 조회
+        List<Object[]> results = purchaseDetailRepository.findDetailsWithSafetyQty(purchaseId);
+
+        // DTO 변환
+        List<AutoPurchaseDetailResponseDto.AutoPurchaseItemDto> items = results.stream()
+                .map(r -> {
+                    PurchaseDetail detail = (PurchaseDetail) r[0];
+                    Integer safetyQty = (Integer) r[1];
+
+                    return AutoPurchaseDetailResponseDto.AutoPurchaseItemDto.fromEntity(detail, safetyQty);
+                })
+                .toList();
+
+        return AutoPurchaseDetailResponseDto.builder()
+                .purchaseId(purchase.getPurchaseId())
+                .poNo(purchase.getPoNo())
+                .supplierName(purchase.getSupplier().getSupplierName())
+                .requestedAt(purchase.getCreatedAt())
+                .purchaseItems(items)
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public AutoPurchaseDetailResponseDto submitAutoPurchase(Long purchaseId, AutoPurchaseSubmitRequestDto request) {
+
+
+        Purchase purchase = purchaseRepository.findById(purchaseId)
+                .orElseThrow(() -> new CustomException(PurchaseErrorCode.PURCHASE_NOT_FOUND));
+
+        List<PurchaseDetail> existingDetails = purchaseDetailRepository.findByPurchase_PurchaseId(purchaseId);
+
+        Map<Long, Integer> requestedMap = request.items().stream()
+                .collect(Collectors.toMap(AutoPurchaseSubmitRequestDto.Item::productId,
+                                          AutoPurchaseSubmitRequestDto.Item::orderQty));
+
+        List<PurchaseDetailHistory> historyList = new ArrayList<>();
+
+        // 1) UPDATE & DELETE
+        for (PurchaseDetail detail : existingDetails) {
+            Long productId = detail.getProduct().getProductId();
+            Integer newQty = requestedMap.get(productId);
+
+            if (newQty == null) {
+                // 삭제
+                historyList.add(
+                        PurchaseDetailHistory.builder()
+                                .purchaseId(purchaseId)
+                                .purchaseOrderLineId(detail.getPurchaseOrderLineId())
+                                .productId(productId)
+                                .beforeQty(detail.getOrderQty())
+                                .afterQty(0)
+                                .changedBy(purchase.getUser().getUserId())
+                                .build()
+                );
+                purchaseDetailRepository.delete(detail);
+                continue;
+            }
+
+            Integer oldQty = detail.getOrderQty();
+            if (!oldQty.equals(newQty)) {
+                historyList.add(PurchaseDetailHistory.builder()
+                        .purchaseId(purchaseId)
+                        .purchaseOrderLineId(detail.getPurchaseOrderLineId())
+                        .productId(productId)
+                        .beforeQty(oldQty)
+                        .afterQty(newQty)
+                        .changedBy(purchase.getUser().getUserId())
+                        .build()
+                );
+                detail.updateOrderQty(newQty);
+            }
+
+            requestedMap.remove(productId);
+        }
+
+        // 2) ADD
+        for (Map.Entry<Long, Integer> entry : requestedMap.entrySet()) {
+            Long productId = entry.getKey();
+            Integer qty = entry.getValue();
+
+            Product product = productRepository.findById(productId)
+                    .orElseThrow(() -> new CustomException(PurchaseErrorCode.PURCHASE_CREATION_FAILED));
+
+            PurchaseDetail newDetail = PurchaseDetail.builder()
+                    .purchase(purchase)
+                    .product(product)
+                    .orderQty(qty)
+                    .unitPrice(product.getPrice())
+                    .build();
+
+            purchaseDetailRepository.save(newDetail);
+
+            historyList.add(PurchaseDetailHistory.builder()
+                    .purchaseId(purchaseId)
+                    .purchaseOrderLineId(newDetail.getPurchaseOrderLineId())
+                    .productId(productId)
+                    .beforeQty(0)
+                    .afterQty(qty)
+                    .changedBy(purchase.getUser().getUserId())
+                    .build()
+            );
+        }
+
+        purchaseDetailHistoryRepository.saveAll(historyList);
+
+        purchase.updateOrderStatus(OrderStatus.SUBMITTED);
+
+        return getAutoPurchaseDetail(purchaseId);
     }
 }

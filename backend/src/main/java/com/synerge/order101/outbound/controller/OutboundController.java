@@ -24,9 +24,9 @@ public class OutboundController {
                                                                               @RequestParam(defaultValue = "20") int size) {
 
         List<OutboundResponseDto> outboundList = outboundService.getOutboundList(page, size);
-        int totalCount = outboundList.size(); // 참고: 실제 총 개수를 서비스에서 받아오는 것이 더 정확합니다.
+        int totalCount = outboundList.size();
 
-        return ResponseEntity.ok(new ItemsResponseDto<>(HttpStatus.OK, outboundList, totalCount, page));
+        return ResponseEntity.ok(new ItemsResponseDto<>(HttpStatus.OK, outboundList, page, totalCount));
     }
 
     // 출고 상세 조회

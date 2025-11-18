@@ -2,17 +2,20 @@ package com.synerge.order101.auth.jwt;
 
 import com.synerge.order101.user.model.entity.Role;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtTokenProvider {
@@ -58,17 +61,57 @@ public class JwtTokenProvider {
     }
 
     public boolean isUsableAccessToken(String accessToken) {
-        return accessToken != null
-                && jwtUtil.validateToken(accessToken)
-                && !isBlacklist(accessToken)
-                && isAccessToken(accessToken);
+        if (accessToken == null) {
+            log.debug("[JwtTokenProvider] accessToken is null");
+            return false;
+        }
+
+        boolean valid = jwtUtil.validateToken(accessToken);
+        if (!valid) {
+            log.debug("[JwtTokenProvider] token validation failed");
+            return false;
+        }
+
+        if (isBlacklist(accessToken)) {
+            log.debug("[JwtTokenProvider] token is blacklisted");
+            return false;
+        }
+
+        boolean isAccess = false;
+        try {
+            isAccess = isAccessToken(accessToken);
+        } catch (Exception e) {
+            log.debug("[JwtTokenProvider] failed to determine token type: {}", e.getMessage());
+            return false;
+        }
+
+        if (!isAccess) {
+            log.debug("[JwtTokenProvider] not an access token");
+            return false;
+        }
+
+        return true;
     }
 
     public Authentication createAuthentication(String accessToken) {
         String userId = jwtUtil.getUserId(accessToken);
-        UserDetails userDetails= userDetailsService.loadUserByUsername(userId);
+        log.debug("[JwtTokenProvider] creating authentication for userId={}", userId);
+        try {
+            UserDetails userDetails= userDetailsService.loadUserByUsername(userId);
+            log.debug("[JwtTokenProvider] loaded userDetails class={}, username={}", userDetails.getClass().getName(), userDetails.getUsername());
 
-        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            Object principal = userDetails;
+            // if CustomUserDetails is used, expose the underlying User entity as principal so
+            // @AuthenticationPrincipal User injection works in controllers
+            if (userDetails instanceof com.synerge.order101.auth.model.service.CustomUserDetails) {
+                principal = ((com.synerge.order101.auth.model.service.CustomUserDetails) userDetails).getUser();
+            }
+
+            return new UsernamePasswordAuthenticationToken(principal, null, userDetails.getAuthorities());
+        } catch (UsernameNotFoundException e) {
+            log.warn("[JwtTokenProvider] user not found for id={}", userId);
+            throw e;
+        }
     }
 
     private boolean isAccessToken(String accessToken) {
