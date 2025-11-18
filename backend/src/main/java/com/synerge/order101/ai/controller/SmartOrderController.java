@@ -3,8 +3,8 @@ package com.synerge.order101.ai.controller;
 
 import com.synerge.order101.ai.model.dto.request.SmartOrderUpdateRequest;
 import com.synerge.order101.ai.model.dto.response.SmartOrderResponseDto;
-import com.synerge.order101.ai.model.entity.SmartOrder;
 import com.synerge.order101.ai.service.SmartOrderService;
+import com.synerge.order101.common.enums.OrderStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -32,16 +32,15 @@ public class SmartOrderController {
     //스마트 발주 목록 조회
     @GetMapping
     public ResponseEntity<List<SmartOrderResponseDto>> getSmartOrders(
-            @RequestParam(value = "storeId", required = false) Long storeId,
-            @RequestParam(value = "status", required = false) SmartOrder.SmartOrderStatus status
+            @RequestParam(value = "status", required = false) OrderStatus status
     ) {
-        return ResponseEntity.ok(smartOrderService.getSmartOrders(storeId, status));
+        return ResponseEntity.ok(smartOrderService.getSmartOrders(status));
     }
 
     //스마트 발주 상세 조회
     @GetMapping("/{smartOrderId}")
     public ResponseEntity<SmartOrderResponseDto> getSmartOrder(
-            @PathVariable("smartOrderId") Long smartOrderId
+            @PathVariable Long smartOrderId
     ){
         return ResponseEntity.ok(smartOrderService.getSmartOrder(smartOrderId));
     }
@@ -49,7 +48,7 @@ public class SmartOrderController {
     //스마트 발주 수정
     @PatchMapping("/{SmartOrderId}")
     public ResponseEntity<SmartOrderResponseDto> updateDraft(
-            @PathVariable("smartOrderId") Long smartOrderId,
+            @PathVariable Long smartOrderId,
             @RequestBody SmartOrderUpdateRequest request
     ) {
         return ResponseEntity.ok(smartOrderService.updateDraft(smartOrderId, request));

@@ -7,7 +7,10 @@ import com.synerge.order101.ai.model.entity.DemandForecast;
 import com.synerge.order101.ai.model.entity.SmartOrder;
 import com.synerge.order101.ai.repository.DemandForecastRepository;
 import com.synerge.order101.ai.repository.SmartOrderRepository;
+import com.synerge.order101.common.enums.OrderStatus;
 import com.synerge.order101.common.exception.CustomException;
+import com.synerge.order101.product.model.repository.ProductRepository;
+import com.synerge.order101.product.model.repository.ProductSupplierRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +24,7 @@ import java.util.List;
 public class SmartOrderService {
     private final SmartOrderRepository smartOrderRepository;
     private final DemandForecastRepository demandForecastRepository;
+    private final ProductSupplierRepository productSupplierRepository;
 
     //AI가 스마트 발주 초안 작성
     // targetWeek을 기준 demand_forecst 조회해서 smart_order DRAFT 생성함
@@ -36,15 +40,21 @@ public class SmartOrderService {
             throw new CustomException(AiErrorCode.FORECAST_NOT_FOUND);
         }
         List<SmartOrder> saved = forecasts.stream()
-                .map(df -> SmartOrder.builder()
-                        .store(df.getStore())
-                        .product(df.getProduct())
-                        .demandForecast(df)
-                        .targetWeek(df.getTargetWeek())
-                        .forecastQty(df.getYPred())
-                        .recommendedOrderQty(df.getYPred())
-                        .smartOrderStatus(SmartOrder.SmartOrderStatus.DRAFT)
-                        .build())
+                .map(df -> {
+                    var ps = productSupplierRepository.findByProduct(df.getProduct())
+                            .orElseThrow(() ->
+                                    new CustomException(AiErrorCode.SUPPLIER_NOT_FOUND)); // 이 에러코드는 enum에 하나 추가해줘
+
+                    return SmartOrder.builder()
+                            .supplier(ps.getSupplier())
+                            .product(df.getProduct())
+                            .demandForecast(df)
+                            .targetWeek(df.getTargetWeek())
+                            .forecastQty(df.getYPred())
+                            .recommendedOrderQty(df.getYPred())
+                            .smartOrderStatus(OrderStatus.DRAFT_AUTO)
+                            .build();
+                })
                 .map(smartOrderRepository::save)
                 .toList();
 
@@ -52,21 +62,21 @@ public class SmartOrderService {
     }
 
 
-    public List<SmartOrderResponseDto> getSmartOrders(Long storeId, SmartOrder.SmartOrderStatus status) {
+    public List<SmartOrderResponseDto> getSmartOrders(OrderStatus status) {
         List<SmartOrder> list;
-        if (storeId != null && status != null) {
-            list = smartOrderRepository.findByStore_StoreIdAndSmartOrderStatus(storeId, status);
-        } else if (storeId != null) {
-            list = smartOrderRepository.findByStore_StoreIdOrderByTargetWeekDesc(storeId);
+
+        if (status != null) {
+            list = smartOrderRepository.findBySmartOrderStatus(status);
         } else {
-            list = smartOrderRepository.findAll();
+            list = smartOrderRepository.findAllByOrderByTargetWeekDesc();
         }
+
         return list.stream().map(this::toResponse).toList();
     }
 
 
 
-    public SmartOrderResponseDto getSmartOrder(Long id){
+    public SmartOrderResponseDto getSmartOrder(Long id) {
         SmartOrder entity = smartOrderRepository.findById(id)
                 .orElseThrow(() -> new CustomException(AiErrorCode.SMART_ORDER_NOT_FOUND));
         return toResponse(entity);
@@ -95,8 +105,8 @@ public class SmartOrderService {
     private SmartOrderResponseDto toResponse(SmartOrder so) {
         return SmartOrderResponseDto.builder()
                 .id(so.getSmartOrderId())
-                .storeId(so.getStore().getStoreId())
                 .productId(so.getProduct().getProductId())
+                .supplierId(so.getSupplier().getSupplierId())
                 .demandForecastId(so.getDemandForecast().getDemandForecastId())
                 .targetWeek(so.getTargetWeek())
                 .recommendedOrderQty(so.getRecommendedOrderQty())
