@@ -6,7 +6,8 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public enum NotificationErrorCode implements ErrorCode {
-    NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "NOT_FOUND", "Notification not found");
+    NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "NOT_FOUND", "Notification not found"),
+    FORBIDDEN_NOTIFICATION_DELETE(HttpStatus.FORBIDDEN, "FORBIDDEN_NOTIFICATION_DELETE", "Forbidden");
 
 
 

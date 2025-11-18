@@ -1,5 +1,6 @@
 package com.synerge.order101.notification.controller;
 
+import com.sun.security.auth.UserPrincipal;
 import com.synerge.order101.common.dto.BaseResponseDto;
 import com.synerge.order101.common.dto.ItemsResponseDto;
 import com.synerge.order101.notification.model.entity.Notification;
@@ -8,6 +9,7 @@ import com.synerge.order101.notification.model.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,39 +30,35 @@ public class NotificationController {
     private final NotificationService notificationService;
 
     @GetMapping
-    public ResponseEntity<ItemsResponseDto<Notification>> getNotifications(/* @AuthenticationPrincipal UserDetailsImpl userDetails ,*/
+    public ResponseEntity<ItemsResponseDto<Notification>> getNotifications(@AuthenticationPrincipal UserPrincipal userPrincipal ,
                                                                            @RequestParam(defaultValue = "0") int page,
                                                                            @RequestParam(defaultValue = "20") int size) {
-        ItemsResponseDto<Notification> notifications = notificationService.getNotifications( /*userDetails,*/ page, size);
+        ItemsResponseDto<Notification> notifications = notificationService.getNotifications( userPrincipal, page, size);
         return ResponseEntity.ok(notifications);
     }
 
     @GetMapping("/unread-count")
-    public ResponseEntity<BaseResponseDto<Map<String, Integer>>> unreadCount(/*@AuthenticationPrincipal UserDetailsImpl userDetails*/) {
+    public ResponseEntity<BaseResponseDto<Map<String, Integer>>> unreadCount(@AuthenticationPrincipal UserPrincipal userPrincipal) {
 
-//        int count = notificationService.getUnreadCount(userDetails);
-        int count = notificationService.getUnreadCount();
+        int count = notificationService.getUnreadCount(userPrincipal);
         Map<String, Integer> map = Map.of("count", count);
         return ResponseEntity.ok(new BaseResponseDto<>(HttpStatus.OK, map));
     }
 
     @PostMapping("/read-all")
     @Transactional
-//    public ResponseEntity<BaseResponseDto<Map<String, Integer>>> markAllRead(@AuthenticationPrincipal UserDetailsImpl me) {
-    public ResponseEntity<BaseResponseDto<Map<String, Integer>>> markAllRead() {
-//        int updated = notificationService.readAll(me);
-        int updated = notificationService.readAll();
+    public ResponseEntity<BaseResponseDto<Map<String, Integer>>> markAllRead(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+
+        int updated = notificationService.readAll(userPrincipal);
 
         return ResponseEntity.ok(new BaseResponseDto<>(HttpStatus.OK,Map.of("updated", updated)));
     }
 
     @DeleteMapping("/{notificationId}")
     @Transactional
-//    public ResponseEntity<BaseResponseDto<String>> delete(@PathVariable int notificationId, @AuthenticationPrincipal UserDetailsImpl userDetails) throws AccessDeniedException {
-    public ResponseEntity<BaseResponseDto<String>> delete(@PathVariable int notificationId) throws AccessDeniedException {
+    public ResponseEntity<BaseResponseDto<String>> delete(@PathVariable int notificationId, @AuthenticationPrincipal UserPrincipal userPrincipal) throws AccessDeniedException {
 
-//        notificationService.deleteNotification(notificationId, userDetails);
-        notificationService.deleteNotification(notificationId);
+        notificationService.deleteNotification(notificationId, userPrincipal);
 
         return ResponseEntity.ok(new BaseResponseDto<>(HttpStatus.OK, "삭제가 완료되었습니다."));
     }

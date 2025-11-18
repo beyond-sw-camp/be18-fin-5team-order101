@@ -13,11 +13,11 @@ import java.util.List;
 
 public interface NotificationRepository extends JpaRepository<Notification, Integer> {
     List<Notification> findByUserIdOrderByCreatedAtDesc(int userId);
-    Page<Notification> findByUserIdOrderByCreatedAtDesc(int userId, Pageable pageable);
+    Page<Notification> findByUserIdOrderByCreatedAtDesc(long userId, Pageable pageable);
 
-    int countByUserIdAndReadAtIsNull(int userId);
+    int countByUserIdAndReadAtIsNull(long userId);
 
     @Modifying
     @Query("update Notification n set n.readAt = :now where n.userId = :uid and n.readAt is null")
-    int markAllReadByUserId(@Param("uid") Integer uid, @Param("now") LocalDateTime now);
+    int markAllReadByUserId(@Param("uid") Long uid, @Param("now") LocalDateTime now);
 }

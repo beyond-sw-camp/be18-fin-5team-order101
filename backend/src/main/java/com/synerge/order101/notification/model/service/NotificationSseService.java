@@ -20,17 +20,17 @@ public class NotificationSseService {
 
     private final Map<String, Map<String, Object>> eventCache = new ConcurrentHashMap<>();
 
-    public SseEmitter subscribe(String loginId, String lastEventId) {
+    public SseEmitter subscribe(String userID, String lastEventId) {
         SseEmitter emitter = new SseEmitter(TIMEOUT);
-        emitters.computeIfAbsent(loginId, k -> new CopyOnWriteArrayList<>()).add(emitter);
+        emitters.computeIfAbsent(userID, k -> new CopyOnWriteArrayList<>()).add(emitter);
 
-        Runnable cleanup = () -> removeEmitter(loginId, emitter);
+        Runnable cleanup = () -> removeEmitter(userID, emitter);
         emitter.onCompletion(cleanup);
         emitter.onTimeout(cleanup);
         emitter.onError(e -> cleanup.run());
 
         if(lastEventId != null && !lastEventId.isBlank()) {
-            Map<String, Object> cached = eventCache.getOrDefault(loginId, Collections.emptyMap());
+            Map<String, Object> cached = eventCache.getOrDefault(userID, Collections.emptyMap());
 
             cached.entrySet().stream()
                     .filter(e -> e.getKey().compareTo(lastEventId) > 0)
