@@ -1,5 +1,6 @@
 package com.synerge.order101.settlement.model.dto;
 
+import com.synerge.order101.common.enums.SettlementType;
 import com.synerge.order101.settlement.model.entity.Settlement;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,11 +15,11 @@ import java.time.LocalDateTime;
 public class SettlementSummaryDto {
 
     Long settlementId;
-
+    SettlementType settlementType;
     String settlementNo;
     String supplierName;
     String storeName;
-    LocalDateTime createAt;
+    LocalDateTime createdAt;
     BigDecimal settlementAmount;
     Integer settlementQty;
     String settlementStatus;
@@ -32,9 +33,10 @@ public class SettlementSummaryDto {
         return SettlementSummaryDto.builder()
                 .settlementId(settlement.getSettlementId())
                 .settlementNo(settlement.getSettlementNo())
+                .settlementType(settlement.getSettlementType())
                 .supplierName(settlement.getSupplier() != null ? settlement.getSupplier().getSupplierName() : null)
                 .storeName(settlement.getStore() != null ? settlement.getStore().getStoreName() : null)
-                .createAt(settlement.getCreatedAt())
+                .createdAt(settlement.getCreatedAt())
                 .settlementAmount(settlement.getProductsAmount())
                 .settlementQty(settlement.getProductsQty())
                 .settlementStatus(settlement.getSettlementStatus().name())

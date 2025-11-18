@@ -31,6 +31,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -222,7 +223,7 @@ public class PurchaseServiceImpl implements PurchaseService {
                     warehouseId,
                     Purchase.OrderType.AUTO,
                     OrderStatus.DRAFT_AUTO,      // 자동초안
-                    LocalDateTime.now().plusDays(7),
+                    LocalDate.now(),
                     items
             );
 

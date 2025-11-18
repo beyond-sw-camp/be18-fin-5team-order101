@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.synerge.order101.settlement.model.entity.QSettlement.settlement;
 
@@ -27,9 +28,9 @@ public class SettlementRepositoryImpl implements SettlementRepositoryCustom {
         List<Settlement> content = queryFactory
                 .selectFrom(settlement)
                 .where(
-                        statusEq(cond.getSettlementStatus()),
-                        typeEq(cond.getSettlementType()),
-                        numberEq(cond.getSettlementNumber())
+                    statusIn(cond.getStatuses()),
+                    typeIn(cond.getTypes()),
+                    searchTextContains(cond.getSearchText())
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -40,9 +41,9 @@ public class SettlementRepositoryImpl implements SettlementRepositoryCustom {
                 .select(settlement.count())
                 .from(settlement)
                 .where(
-                        statusEq(cond.getSettlementStatus()),
-                        typeEq(cond.getSettlementType()),
-                        numberEq(cond.getSettlementNumber())
+                        statusIn(cond.getStatuses()),
+                        typeIn(cond.getTypes()),
+                        searchTextContains(cond.getSearchText())
                 )
                 .fetchOne();
 
@@ -50,38 +51,38 @@ public class SettlementRepositoryImpl implements SettlementRepositoryCustom {
     }
 
     // --- 동적 쿼리 조건을 생성하는 BooleanExpression 메소드들 ---}
-    private BooleanExpression statusEq(String status) {
-        if(!StringUtils.hasText(status)){
+    private BooleanExpression statusIn(List<String> statuses) {
+        if (statuses == null || statuses.isEmpty()) {
             return null;
         }
-        try {
-            Settlement.SettlementStatus settlementStatus = Settlement.SettlementStatus.valueOf(status.toUpperCase());
-            return settlement.settlementStatus.eq(settlementStatus);
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
+        List<Settlement.SettlementStatus> enumStatues = statuses.stream()
+                .map(Settlement.SettlementStatus::valueOf)
+                .toList();
+        return settlement.settlementStatus.in(enumStatues);
     }
 
-    private  BooleanExpression typeEq(String type) {
-        if(!StringUtils.hasText(type)){
+    private BooleanExpression typeIn(List<String> types) {
+        if (types == null || types.isEmpty()) {
             return null;
         }
-        try {
-            SettlementType settlementType = SettlementType.valueOf(type.toUpperCase());
-            return settlement.settlementType.eq(settlementType);
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
+        List<SettlementType> enumTypes = types.stream()
+                .map(SettlementType::valueOf)
+                .collect(Collectors.toList());
+
+        return settlement.settlementType.in(enumTypes);
     }
 
-    private BooleanExpression numberEq(String number) {
-        if(!StringUtils.hasText(number)){
+    // SettlementNumber 필드명 불일치 수정 (searchText로 통합 가정)
+    private BooleanExpression searchTextContains(String searchText) {
+        if (!StringUtils.hasText(searchText)) {
             return null;
         }
-        try{
-            return settlement.settlementId.eq(Long.parseLong(number));
-        } catch (NumberFormatException e) {
-            return null;
-        }
+        // 검색어(ID 또는 공급사 이름)를 OR 조건으로 처리
+        // settlement_no (DB), supplier_id/store_id (DB)를 사용해야 함
+        return settlement.settlementNo.contains(searchText)
+                .or(settlement.supplier.supplierName.contains(searchText));
+        // 관계 엔티티 조회는 복잡할 수 있으므로, 실제 DB 스키마에 따라 JOIN 필요
     }
+
+
 }

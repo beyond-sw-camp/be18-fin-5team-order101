@@ -7,9 +7,10 @@ import com.synerge.order101.product.model.dto.ProductInventoryDetailRes;
 import com.synerge.order101.product.model.dto.ProductListRes;
 import com.synerge.order101.product.model.dto.ProductRes;
 import com.synerge.order101.product.model.dto.ProductUpdateReq;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface ProductService {
-    ProductCreateRes create(ProductCreateReq request);
+    ProductCreateRes create(ProductCreateReq request, MultipartFile imageFile);
 
     ItemsResponseDto<ProductListRes> getProducts(int page, int numOfRows, String keyword,
                                                  Long largeCategoryId, Long mediumCategoryId, Long smallCategoryId);
@@ -18,7 +19,7 @@ public interface ProductService {
 
     ProductRes getProduct(Long productId);
 
-    ProductRes update(Long productId, ProductUpdateReq request);
+    ProductRes update(Long productId, ProductUpdateReq request, MultipartFile imageFile);
 
     ProductInventoryDetailRes getProductInventory(Long productId, int page, int numOfRows);
 }

@@ -22,4 +22,6 @@ public class ProductUpdateReq {
     private Long categoryLargeId;
     private Long categoryMediumId;
     private Long categorySmallId;
+
+    private Boolean removeImage;
 }
