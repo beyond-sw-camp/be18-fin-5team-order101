@@ -17,10 +17,7 @@ public class SettlementSearchCondition extends BaseSearchCondition {
     // 상태: 체크된 값들(DRAFT, ISSUED, VOID)을 리스트로 받습니다.
     private List<String> statuses;
 
-    // 3. 기간 (From, To 필드를 명확히 나누는 것이 좋습니다.)
-    private String period; // Vue에서 YYYY-MM 형식으로 오면 이를 처리합니다.
-
-    // 4. 검색어
+    // 검색어
     private String searchText; // ID 또는 공급사 이름 검색
 
 }

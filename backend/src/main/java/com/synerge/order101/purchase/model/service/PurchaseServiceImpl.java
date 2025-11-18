@@ -29,6 +29,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +58,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     private final SupplierRepository supplierRepository;
     private final WarehouseRepository warehouseRepository;
     private final ProductSupplierRepository productSupplierRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     private final InventoryService inventoryService;
 
@@ -217,7 +219,7 @@ public class PurchaseServiceImpl implements PurchaseService {
                     warehouseId,
                     Purchase.OrderType.AUTO,
                     OrderStatus.DRAFT_AUTO,      // 자동초안
-                    LocalDateTime.now().plusDays(7),
+                    LocalDate.now(),
                     items
             );
 
