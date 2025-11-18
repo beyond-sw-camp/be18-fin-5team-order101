@@ -4,12 +4,11 @@ import com.synerge.order101.config.JwtProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
-import lombok.RequiredArgsConstructor;
+import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Map;
@@ -23,22 +22,20 @@ public class JwtUtil {
     public JwtUtil(JwtProperties jwtProperties) {
 
         this.issuer = jwtProperties.getIssuer();
-        this.secretKey = new SecretKeySpec(
-                jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8),
-                Jwts.SIG.HS256.key().build().getAlgorithm()
-        );
+        byte[] keyBytes = jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8);
+        this.secretKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
 
     public String createJwtToken(Map<String, Object> claims, long expiration) {
 
         return Jwts.builder()
-                .header().add("typ","JWT").and()
-                .claims(claims)
-                .id(Long.toHexString(System.nanoTime()))
-                .issuer(issuer) // 발급 주체
-                .issuedAt(new Date()) // 발급 시간
-                .expiration(new Date(System.currentTimeMillis() + expiration)) // 만료 시간
+                .setHeaderParam("typ","JWT")
+                .setClaims(claims)
+                .setId(Long.toHexString(System.nanoTime()))
+                .setIssuer(issuer) // 발급 주체
+                .setIssuedAt(new Date()) // 발급 시간
+                .setExpiration(new Date(System.currentTimeMillis() + expiration)) // 만료 시간
                 .signWith(secretKey) // 서명을 생성
                 .compact();
 
@@ -46,7 +43,12 @@ public class JwtUtil {
 
     // 클래임에서 username을 추출하는 메소드
     public String getUserId(String token) {
-        return String.valueOf(getClaims(token).get("userId", Long.class));
+        Object userIdObj = getClaims(token).get("userId");
+        if (userIdObj == null) return null;
+        if (userIdObj instanceof Number) {
+            return String.valueOf(((Number) userIdObj).longValue());
+        }
+        return userIdObj.toString();
     }
 
     // 클래임에서 토큰 타입(Token Type)을 추출하는 메소드
@@ -75,9 +77,13 @@ public class JwtUtil {
 
     // 토큰이 유효한지 확인하는 메소드 (토큰이 유효하면 true, 만료되었으면 false 반환)
     public boolean validateToken(String token) {
-
-        // JWT의 만료 시간(Expiration)을 가져와서 현재 시간과 비교하여 토큰이 만료되었는지 확인
-        return !getClaims(token).getExpiration().before(new Date());
+        try {
+            Claims claims = getClaims(token);
+            return !claims.getExpiration().before(new Date());
+        } catch (Exception e) {
+            log.debug("[JwtUtil] token validation failed: {}", e.getMessage());
+            return false;
+        }
     }
 
 
@@ -94,6 +100,9 @@ public class JwtUtil {
                     .getPayload();
         } catch (ExpiredJwtException e) {
             return e.getClaims();
+        } catch (Exception e) {
+            log.error("[JwtUtil] failed to parse claims: {}", e.getMessage(), e);
+            throw e;
         }
     }
 }
