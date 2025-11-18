@@ -33,15 +33,15 @@ public class NotificationService {
     private final NotificationSseService notificationSseService;
     private final UserRepository userRepository;
 
-    public ItemsResponseDto<Notification> getNotifications(UserPrincipal userPrincipal, int page, int size) {
-        System.out.println(userPrincipal);
-        if(userPrincipal == null) {
+    public ItemsResponseDto<Notification> getNotifications(User user, int page, int size) {
+        System.out.println(user);
+        if(user == null) {
             throw new CustomException(CommonErrorCode.ACCESS_DENIED);
         }
         int safePage = Math.max(0, page);
         int safeSize = Math.max(1, Math.min(size, 100));
 
-        long userId = Long.parseLong(userPrincipal.getName());
+        long userId = user.getUserId();
         var pageable = PageRequest.of(safePage, safeSize, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<Notification> p = notificationRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable);
         return new ItemsResponseDto<>(
@@ -52,30 +52,30 @@ public class NotificationService {
         );
     }
 
-    public int getUnreadCount( UserPrincipal userPrincipal) {
-        if(userPrincipal == null) {
+    public int getUnreadCount(User user) {
+        if(user == null) {
             throw new CustomException(CommonErrorCode.ACCESS_DENIED);
         }
-        long userId = Long.parseLong(userPrincipal.getName());
+        long userId = user.getUserId();
 
         return notificationRepository.countByUserIdAndReadAtIsNull(userId);
     }
 
     @Transactional
-    public int readAll(UserPrincipal userPrincipal) {
-        if(userPrincipal == null) {
+    public int readAll(User user) {
+        if(user == null) {
             throw new CustomException(CommonErrorCode.ACCESS_DENIED);
         }
-        long userId = Long.parseLong(userPrincipal.getName());
+        long userId = user.getUserId();
         return notificationRepository.markAllReadByUserId(userId, LocalDateTime.now());
     }
 
     @Transactional
-    public void deleteNotification(int notificationId, UserPrincipal userPrincipal) {
-        if(userPrincipal == null) {
+    public void deleteNotification(int notificationId, User user) {
+        if(user == null) {
             throw new CustomException(CommonErrorCode.ACCESS_DENIED);
         }
-        long userId = Long.parseLong(userPrincipal.getName());
+        long userId = user.getUserId();
         Notification notification = notificationRepository.findById(notificationId).orElseThrow(() ->
                 new CustomException(NotificationErrorCode.NOTIFICATION_NOT_FOUND));
 

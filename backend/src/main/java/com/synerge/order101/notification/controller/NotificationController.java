@@ -6,6 +6,7 @@ import com.synerge.order101.common.dto.ItemsResponseDto;
 import com.synerge.order101.notification.model.entity.Notification;
 import com.synerge.order101.notification.model.repository.NotificationRepository;
 import com.synerge.order101.notification.model.service.NotificationService;
+import com.synerge.order101.user.model.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,35 +31,35 @@ public class NotificationController {
     private final NotificationService notificationService;
 
     @GetMapping
-    public ResponseEntity<ItemsResponseDto<Notification>> getNotifications(@AuthenticationPrincipal UserPrincipal userPrincipal ,
+    public ResponseEntity<ItemsResponseDto<Notification>> getNotifications(@AuthenticationPrincipal User user ,
                                                                            @RequestParam(defaultValue = "0") int page,
                                                                            @RequestParam(defaultValue = "20") int size) {
-        ItemsResponseDto<Notification> notifications = notificationService.getNotifications( userPrincipal, page, size);
+        ItemsResponseDto<Notification> notifications = notificationService.getNotifications( user, page, size);
         return ResponseEntity.ok(notifications);
     }
 
     @GetMapping("/unread-count")
-    public ResponseEntity<BaseResponseDto<Map<String, Integer>>> unreadCount(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+    public ResponseEntity<BaseResponseDto<Map<String, Integer>>> unreadCount(@AuthenticationPrincipal User user) {
 
-        int count = notificationService.getUnreadCount(userPrincipal);
+        int count = notificationService.getUnreadCount(user);
         Map<String, Integer> map = Map.of("count", count);
         return ResponseEntity.ok(new BaseResponseDto<>(HttpStatus.OK, map));
     }
 
     @PostMapping("/read-all")
     @Transactional
-    public ResponseEntity<BaseResponseDto<Map<String, Integer>>> markAllRead(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+    public ResponseEntity<BaseResponseDto<Map<String, Integer>>> markAllRead(@AuthenticationPrincipal User user) {
 
-        int updated = notificationService.readAll(userPrincipal);
+        int updated = notificationService.readAll(user);
 
         return ResponseEntity.ok(new BaseResponseDto<>(HttpStatus.OK,Map.of("updated", updated)));
     }
 
     @DeleteMapping("/{notificationId}")
     @Transactional
-    public ResponseEntity<BaseResponseDto<String>> delete(@PathVariable int notificationId, @AuthenticationPrincipal UserPrincipal userPrincipal) throws AccessDeniedException {
+    public ResponseEntity<BaseResponseDto<String>> delete(@PathVariable int notificationId, @AuthenticationPrincipal User user) throws AccessDeniedException {
 
-        notificationService.deleteNotification(notificationId, userPrincipal);
+        notificationService.deleteNotification(notificationId, user);
 
         return ResponseEntity.ok(new BaseResponseDto<>(HttpStatus.OK, "삭제가 완료되었습니다."));
     }
