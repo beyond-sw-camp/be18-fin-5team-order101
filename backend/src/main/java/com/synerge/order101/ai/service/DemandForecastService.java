@@ -24,14 +24,14 @@ public class DemandForecastService {
     private final WebClient webClient;
 
     @Transactional
-    public AiJobTriggerResponseDto triggerForecast(LocalDate targetWeek){
-        ForecastTriggerRequest request =
-                new ForecastTriggerRequest(targetWeek.toString());
+    public AiJobTriggerResponseDto triggerForecast(LocalDate targetWeek) {
 
         try {
             webClient.post()
-                    .uri("/internal/ai/forecasts") //파이썬 엔드포인트
-                    .bodyValue(request)
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/internal/ai/forecasts")         //파이썬
+                            .queryParam("target_week", targetWeek.toString())
+                            .build())
                     .retrieve()
                     .toBodilessEntity()
                     .block();
