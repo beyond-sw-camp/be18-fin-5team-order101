@@ -1,8 +1,8 @@
 package com.synerge.order101.ai.controller;
 
 
-import com.synerge.order101.ai.model.dto.request.SmartOrderUpdateRequest;
-import com.synerge.order101.ai.model.dto.response.SmartOrderDashboardSummaryDto;
+import com.synerge.order101.ai.model.dto.request.SmartOrderUpdateRequestDto;
+import com.synerge.order101.ai.model.dto.response.SmartOrderDashboardResponseDto;
 import com.synerge.order101.ai.model.dto.response.SmartOrderResponseDto;
 import com.synerge.order101.ai.service.SmartOrderService;
 import com.synerge.order101.common.enums.OrderStatus;
@@ -56,7 +56,7 @@ public class SmartOrderController {
     @PatchMapping("/{smartOrderId}")
     public ResponseEntity<SmartOrderResponseDto> updateDraft(
             @PathVariable Long smartOrderId,
-            @RequestBody SmartOrderUpdateRequest request
+            @RequestBody SmartOrderUpdateRequestDto request
     ) {
         return ResponseEntity.ok(smartOrderService.updateDraft(smartOrderId, request));
     }
@@ -71,7 +71,7 @@ public class SmartOrderController {
 
     //대시보드 상단 요약
     @GetMapping("/summary")
-    public ResponseEntity<SmartOrderDashboardSummaryDto> getSmartOrderSummary(
+    public ResponseEntity<SmartOrderDashboardResponseDto> getSmartOrderSummary(
             @RequestParam("targetWeek")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
             LocalDate targetWeek

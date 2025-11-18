@@ -1,33 +1,44 @@
 import subprocess
 from pathlib import Path
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import JSONResponse
 from datetime import date
 
-from .schemas import ForecastTriggerRequest, ForecastTriggerResponse, RetrainResponse
+from fastapi import FastAPI, HTTPException, Query
+from .schemas import ForecastTriggerResponse, RetrainResponse
 from .service.forecast_service import run_forecast_pipeline
 from .service.train_service import retrain_model
 from app.ops.make_product_master_from_sku import main as build_master
 from app.service.product_loader import load_product_master_once
 
 
-# app = FastAPI()
 
 BASE = Path(__file__).resolve().parent
-def create_app():
-    app = FastAPI()
 
-    build_master()
-    load_product_master_once()
+app = FastAPI()
 
-    return app
+# 서버 시작하면 한번 실행됨
+# 필요 파일들 생성
+@app.on_event("startup")
+def startup_tasks():
+    """
+    1) sku_catalog.csv -> product_master_load.csv 생성
+    2) product_master_load.csv 를 DB product 테이블에 seed
+    """
+    try:
+        print("[STARTUP] build product_master_load from sku_catalog...")
+        build_master()
+    except FileNotFoundError as e:
+        print(f"[WARN] sku_catalog.csv not found. skip build_master(): {e}")
+    except Exception as e:
+        print(f"[ERROR] build_master() failed: {e}")
+
+    try:
+        print("[STARTUP] load product_master_load.csv into DB...")
+        load_product_master_once()
+    except Exception as e:
+        print(f"[ERROR] load_product_master_once() failed: {e}")
 
 
-app = create_app()
-
-
-
-
+# 02, 05, 07 순서대로 실행
 @app.get("/api/v1/ai/train")
 def run_full_pipeline():
     scripts = [
@@ -35,7 +46,7 @@ def run_full_pipeline():
         BASE / "data_pipeline" / "05_make_features.py",
         BASE / "modeling" / "07_train_eval.py"
     ]
-    logs = []
+    logs: list[str] = []
     for script in scripts:
         try:
             res = subprocess.run(
@@ -57,20 +68,29 @@ def run_full_pipeline():
     response_model=ForecastTriggerResponse,
     status_code=202,
 )
-def trigger_forecasts(req: ForecastTriggerRequest):
+def trigger_forecasts(
+    target_week: date | None = Query(None, alias="target_week"),
+    targetWeek: date | None = Query(None, alias="targetWeek"),
+):
     """
     Java to Python: 수요 예측 실행 요청
     body: { "targetWeek": "YYYY-MM-DD" }
     """
+    wk = target_week or targetWeek
+    if wk is None:
+        raise HTTPException(
+            status_code=400,
+            detail="query param 'target_week' 또는 'targetWeek' 가 필요합니다.",
+        )
     try:
-        inserted = run_forecast_pipeline(req.targetWeek)
+        inserted = run_forecast_pipeline(wk)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Forecast failed: {e}")
 
     return ForecastTriggerResponse(
         jobType="FORECAST",
         status="ACCEPTED",
-        message=f"Inserted {inserted} demand_forecast rows for targetWeek={req.targetWeek}",
+        message=f"Inserted {inserted} demand_forecast rows for targetWeek={wk}",
     )
 
 

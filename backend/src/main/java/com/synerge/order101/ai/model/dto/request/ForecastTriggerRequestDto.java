@@ -5,6 +5,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class ForecastTriggerRequest {
+public class ForecastTriggerRequestDto {
     private String targetWeek;
 }

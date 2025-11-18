@@ -1,8 +1,8 @@
 package com.synerge.order101.ai.service;
 
 import com.synerge.order101.ai.exception.AiErrorCode;
-import com.synerge.order101.ai.model.dto.request.SmartOrderUpdateRequest;
-import com.synerge.order101.ai.model.dto.response.SmartOrderDashboardSummaryDto;
+import com.synerge.order101.ai.model.dto.request.SmartOrderUpdateRequestDto;
+import com.synerge.order101.ai.model.dto.response.SmartOrderDashboardResponseDto;
 import com.synerge.order101.ai.model.dto.response.SmartOrderResponseDto;
 import com.synerge.order101.ai.model.entity.DemandForecast;
 import com.synerge.order101.ai.model.entity.SmartOrder;
@@ -10,7 +10,6 @@ import com.synerge.order101.ai.repository.DemandForecastRepository;
 import com.synerge.order101.ai.repository.SmartOrderRepository;
 import com.synerge.order101.common.enums.OrderStatus;
 import com.synerge.order101.common.exception.CustomException;
-import com.synerge.order101.product.model.repository.ProductRepository;
 import com.synerge.order101.product.model.repository.ProductSupplierRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -111,7 +110,7 @@ public class SmartOrderService {
 
     //스마트 발주 수정
     @Transactional
-    public SmartOrderResponseDto updateDraft(Long smartOrderId, SmartOrderUpdateRequest request) {
+    public SmartOrderResponseDto updateDraft(Long smartOrderId, SmartOrderUpdateRequestDto request) {
         SmartOrder entity = smartOrderRepository.findById(smartOrderId)
                 .orElseThrow(() -> new CustomException(AiErrorCode.SMART_ORDER_NOT_FOUND));
 
@@ -131,7 +130,7 @@ public class SmartOrderService {
     }
 
     // 대시보드 상단 요약 카드
-    public SmartOrderDashboardSummaryDto getSmartOrderSummary(LocalDate targetWeek) {
+    public SmartOrderDashboardResponseDto getSmartOrderSummary(LocalDate targetWeek) {
         List<SmartOrder> list = smartOrderRepository.findByTargetWeek(targetWeek);
 
         long totalRecommended = list.stream()
@@ -150,7 +149,7 @@ public class SmartOrderService {
                 .filter(so -> so.getSmartOrderStatus() == OrderStatus.SUBMITTED)
                 .count();
 
-        return SmartOrderDashboardSummaryDto.builder()
+        return SmartOrderDashboardResponseDto.builder()
                 .targetWeek(targetWeek)
                 .totalRecommendedQty(totalRecommended)
                 .totalForecastQty(totalForecast)

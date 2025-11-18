@@ -1,7 +1,6 @@
 package com.synerge.order101.ai.service;
 
 import com.synerge.order101.ai.exception.AiErrorCode;
-import com.synerge.order101.ai.model.dto.request.ForecastTriggerRequest;
 import com.synerge.order101.ai.model.dto.response.*;
 import com.synerge.order101.ai.model.entity.DemandForecast;
 import com.synerge.order101.ai.repository.DemandForecastRepository;
@@ -111,12 +110,12 @@ public class DemandForecastService {
     }
 
     //차트용 시계열 -  판매 내역 + 예측
-    public List<ForecastSeriesPointDto> getForecastSeries(LocalDate from, LocalDate to) {
+    public List<ForecastSeriesResponseDto> getForecastSeries(LocalDate from, LocalDate to) {
         List<DemandForecast> list =
                 demandForecastRepository.findByTargetWeekBetween(from, to);
 
         return list.stream()
-                .map(df -> ForecastSeriesPointDto.builder()
+                .map(df -> ForecastSeriesResponseDto.builder()
                         .week(df.getTargetWeek())
                         .actualQty(df.getActualOrderQty() != null
                                 ? df.getActualOrderQty().doubleValue()

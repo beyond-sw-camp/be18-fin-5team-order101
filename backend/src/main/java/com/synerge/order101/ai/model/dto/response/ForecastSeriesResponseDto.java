@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 @Getter
 @Builder
-public class ForecastSeriesPointDto {
+public class ForecastSeriesResponseDto {
     private LocalDate week;
     private Double actualQty;
     private Double forecastQty;

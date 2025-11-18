@@ -53,7 +53,7 @@ public class DemandForecastController {
 
     // 차트용 시계열
     @GetMapping("/forecasts/series")
-    public ResponseEntity<List<ForecastSeriesPointDto>> getForecastSeries(
+    public ResponseEntity<List<ForecastSeriesResponseDto>> getForecastSeries(
             @RequestParam("from")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
             LocalDate from,

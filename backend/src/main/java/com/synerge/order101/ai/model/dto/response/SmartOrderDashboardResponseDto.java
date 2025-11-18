@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 @Getter
 @Builder
-public class SmartOrderDashboardSummaryDto {
+public class SmartOrderDashboardResponseDto {
     private LocalDate targetWeek;
     private long totalRecommendedQty;
     private long totalForecastQty;
