@@ -2,6 +2,7 @@ package com.synerge.order101.ai.service;
 
 import com.synerge.order101.ai.exception.AiErrorCode;
 import com.synerge.order101.ai.model.dto.request.SmartOrderUpdateRequest;
+import com.synerge.order101.ai.model.dto.response.SmartOrderDashboardSummaryDto;
 import com.synerge.order101.ai.model.dto.response.SmartOrderResponseDto;
 import com.synerge.order101.ai.model.entity.DemandForecast;
 import com.synerge.order101.ai.model.entity.SmartOrder;
@@ -34,20 +35,33 @@ public class SmartOrderService {
     //재고/안전재고 반영해야함
 
     @Transactional
-    public List<SmartOrderResponseDto> generateSmartOrders(LocalDate targetWeek){
+    public List<SmartOrderResponseDto> generateSmartOrders(LocalDate targetWeek) {
+
+        // 같은 주차에 이미 스마트발주 존재하는 경우
+        List<SmartOrder> existing = smartOrderRepository.findByTargetWeek(targetWeek);
+        if (!existing.isEmpty()) {
+            throw new CustomException(AiErrorCode.SMART_ORDER_ALREADY_EXISTS);
+        }
+
+        // 1) 해당 주차의 수요 예측 조회
         List<DemandForecast> forecasts = demandForecastRepository.findByTargetWeek(targetWeek);
-        if (forecasts.isEmpty()){
+        if (forecasts.isEmpty()) {
             throw new CustomException(AiErrorCode.FORECAST_NOT_FOUND);
         }
+
+        // 2) 상품  공급사 매핑 후 스마트 발주 생성
         List<SmartOrder> saved = forecasts.stream()
                 .map(df -> {
-                    var ps = productSupplierRepository.findByProduct(df.getProduct())
+                    var product = df.getProduct();
+
+                    var mapping = productSupplierRepository.findByProduct(product)
                             .orElseThrow(() ->
-                                    new CustomException(AiErrorCode.SUPPLIER_NOT_FOUND)); // 이 에러코드는 enum에 하나 추가해줘
+                                    new CustomException(AiErrorCode.SUPPLIER_MAPPING_NOT_FOUND)
+                            );
 
                     return SmartOrder.builder()
-                            .supplier(ps.getSupplier())
-                            .product(df.getProduct())
+                            .supplier(mapping.getSupplier())
+                            .product(product)
                             .demandForecast(df)
                             .targetWeek(df.getTargetWeek())
                             .forecastQty(df.getYPred())
@@ -58,15 +72,28 @@ public class SmartOrderService {
                 .map(smartOrderRepository::save)
                 .toList();
 
-        return saved.stream().map(this::toResponse).toList();
+        return saved.stream()
+                .map(this::toResponse)
+                .toList();
     }
 
 
-    public List<SmartOrderResponseDto> getSmartOrders(OrderStatus status) {
+    // 스마트 발주 목록 조회
+    public List<SmartOrderResponseDto> getSmartOrders(
+            OrderStatus status, LocalDate from, LocalDate to
+    ) {
         List<SmartOrder> list;
 
-        if (status != null) {
+        boolean hasStatus = (status != null);
+        boolean hasRange = (from != null && to != null);
+
+        if (hasStatus && hasRange) {
+            list = smartOrderRepository
+                    .findBySmartOrderStatusAndTargetWeekBetween(status, from, to);
+        } else if (hasStatus) {
             list = smartOrderRepository.findBySmartOrderStatus(status);
+        } else if (hasRange) {
+            list = smartOrderRepository.findByTargetWeekBetween(from, to);
         } else {
             list = smartOrderRepository.findAllByOrderByTargetWeekDesc();
         }
@@ -75,13 +102,14 @@ public class SmartOrderService {
     }
 
 
-
+    // 스마트 발주 상세 조회
     public SmartOrderResponseDto getSmartOrder(Long id) {
         SmartOrder entity = smartOrderRepository.findById(id)
                 .orElseThrow(() -> new CustomException(AiErrorCode.SMART_ORDER_NOT_FOUND));
         return toResponse(entity);
     }
 
+    //스마트 발주 수정
     @Transactional
     public SmartOrderResponseDto updateDraft(Long smartOrderId, SmartOrderUpdateRequest request) {
         SmartOrder entity = smartOrderRepository.findById(smartOrderId)
@@ -92,6 +120,7 @@ public class SmartOrderService {
         return toResponse(entity);
     }
 
+    // 제출
     @Transactional
     public SmartOrderResponseDto submit(Long smartOrderId) {
         SmartOrder entity = smartOrderRepository.findById(smartOrderId)
@@ -101,12 +130,42 @@ public class SmartOrderService {
         return toResponse(entity);
     }
 
+    // 대시보드 상단 요약 카드
+    public SmartOrderDashboardSummaryDto getSmartOrderSummary(LocalDate targetWeek) {
+        List<SmartOrder> list = smartOrderRepository.findByTargetWeek(targetWeek);
+
+        long totalRecommended = list.stream()
+                .mapToLong(so -> (long) so.getRecommendedOrderQty())
+                .sum();
+
+        long totalForecast = list.stream()
+                .mapToLong(so -> (long) so.getForecastQty())
+                .sum();
+
+        long draftCount = list.stream()
+                .filter(so -> so.getSmartOrderStatus() == OrderStatus.DRAFT_AUTO)
+                .count();
+
+        long submittedCount = list.stream()
+                .filter(so -> so.getSmartOrderStatus() == OrderStatus.SUBMITTED)
+                .count();
+
+        return SmartOrderDashboardSummaryDto.builder()
+                .targetWeek(targetWeek)
+                .totalRecommendedQty(totalRecommended)
+                .totalForecastQty(totalForecast)
+                .draftCount((int) draftCount)
+                .submittedCount((int) submittedCount)
+                .build();
+    }
+
+
 
     private SmartOrderResponseDto toResponse(SmartOrder so) {
         return SmartOrderResponseDto.builder()
                 .id(so.getSmartOrderId())
-                .productId(so.getProduct().getProductId())
                 .supplierId(so.getSupplier().getSupplierId())
+                .productId(so.getProduct().getProductId())
                 .demandForecastId(so.getDemandForecast().getDemandForecastId())
                 .targetWeek(so.getTargetWeek())
                 .recommendedOrderQty(so.getRecommendedOrderQty())

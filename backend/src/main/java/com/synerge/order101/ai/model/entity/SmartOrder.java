@@ -25,7 +25,7 @@ import java.util.Date;
                 )
         },
         indexes = {
-                @Index(name = "idx_so_store_product_week", columnList = "store_id, product_id, target_week")
+                @Index(name = "idx_so_product_week", columnList = "product_id, target_week")
         }
 )
 @Getter
