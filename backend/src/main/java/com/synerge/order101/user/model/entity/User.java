@@ -55,5 +55,9 @@ public class User {
     @Column(name = "phone", nullable = false, length = 20)
     private String phone;
 
+    // 개발/테스트 용도: 비밀번호 해시 업데이트 메서드
+    public void changePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
 
 }
