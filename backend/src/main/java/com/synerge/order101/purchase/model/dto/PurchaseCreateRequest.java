@@ -1,11 +1,10 @@
 package com.synerge.order101.purchase.model.dto;
 
 import com.synerge.order101.common.enums.OrderStatus;
-import com.synerge.order101.order.model.dto.StoreOrderCreateRequest;
 import com.synerge.order101.purchase.model.entity.Purchase;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -29,7 +28,7 @@ public class PurchaseCreateRequest {
     OrderStatus orderStatus;
 
     @NonNull
-    LocalDateTime deadline;
+    LocalDate deadline;
 
     List<Item> items = List.of();
 
