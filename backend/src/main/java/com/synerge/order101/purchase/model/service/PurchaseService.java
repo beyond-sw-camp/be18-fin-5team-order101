@@ -1,10 +1,7 @@
 package com.synerge.order101.purchase.model.service;
 
 import com.synerge.order101.common.enums.OrderStatus;
-import com.synerge.order101.purchase.model.dto.PurchaseCreateRequest;
-import com.synerge.order101.purchase.model.dto.PurchaseDetailResponseDto;
-import com.synerge.order101.purchase.model.dto.PurchaseSummaryResponseDto;
-import com.synerge.order101.purchase.model.dto.PurchaseUpdateStatusResponseDto;
+import com.synerge.order101.purchase.model.dto.*;
 
 import java.util.List;
 
@@ -25,5 +22,9 @@ public interface PurchaseService {
 
     // 자동 발주 생성
     void createAutoPurchase();
+
+    List<AutoPurchaseListResponseDto> getAutoPurchases(OrderStatus status, Integer page, Integer size);
+
+    AutoPurchaseDetailResponseDto getAutoPurchaseDetail(Long purchaseOrderId);
 }
 

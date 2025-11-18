@@ -225,4 +225,53 @@ public class PurchaseServiceImpl implements PurchaseService {
             createPurchase(request);
         }
     }
+
+    // 자동발주 목록 조회
+    @Override
+    @Transactional(readOnly = true)
+    public List<AutoPurchaseListResponseDto> getAutoPurchases(OrderStatus status, Integer page, Integer size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<AutoPurchaseListResponseDto> pageResult;
+
+        if(status == null){
+            pageResult = purchaseRepository.findAutoOrderAllStatus(pageable);
+        }
+        else{
+            pageResult = purchaseRepository.findByAutoOrderStatus(status, pageable);
+        }
+        System.out.println(pageResult.getContent());
+
+        return pageResult.getContent();
+    }
+
+    // 자동발주 상세 조회
+    @Override
+    @Transactional(readOnly = true)
+    public AutoPurchaseDetailResponseDto getAutoPurchaseDetail(Long purchaseId) {
+
+        Purchase purchase = purchaseRepository.findById(purchaseId).orElseThrow(
+                ()-> new CustomException(PurchaseErrorCode.PURCHASE_NOT_FOUND));
+
+        // PurchaseDetail + safetyQty 조회
+        List<Object[]> results = purchaseDetailRepository.findDetailsWithSafetyQty(purchaseId);
+
+        // DTO 변환
+        List<AutoPurchaseDetailResponseDto.AutoPurchaseItemDto> items = results.stream()
+                .map(r -> {
+                    PurchaseDetail detail = (PurchaseDetail) r[0];
+                    Integer safetyQty = (Integer) r[1];
+
+                    return AutoPurchaseDetailResponseDto.AutoPurchaseItemDto.fromEntity(detail, safetyQty);
+                })
+                .toList();
+
+        return AutoPurchaseDetailResponseDto.builder()
+                .purchaseId(purchase.getPurchaseId())
+                .poNo(purchase.getPoNo())
+                .supplierName(purchase.getSupplier().getSupplierName())
+                .requestedAt(purchase.getCreatedAt())
+                .purchaseItems(items)
+                .build();
+    }
 }
