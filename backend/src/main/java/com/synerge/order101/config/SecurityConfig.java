@@ -37,16 +37,6 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/logout").authenticated()
 
-                        // 2) 사용자 정보 관련
-                        .requestMatchers(HttpMethod.GET, "/api/v1/users/me").authenticated()
-                        .requestMatchers(HttpMethod.PATCH, "/api/v1/users/me").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/users/me").authenticated()
-
-                        // 2) 게시물, 좋아요, 댓글 등록 및 내가 작성한 게시물 조회; 로그인 필요
-                        .requestMatchers(HttpMethod.POST, "/api/v1/board/posts").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/board/posts/{postId}/like").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/board/posts/{postId}/comments").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/board/me").authenticated()
                         // 나머지 요청은 일단 모두 허용.
                         .anyRequest().permitAll()
                 )
