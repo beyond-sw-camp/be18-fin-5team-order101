@@ -6,6 +6,7 @@ import com.synerge.order101.common.exception.CustomException;
 import com.synerge.order101.product.model.entity.Product;
 import com.synerge.order101.store.model.entity.Store;
 import com.synerge.order101.supplier.model.entity.Supplier;
+import com.synerge.order101.user.model.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -49,6 +50,10 @@ public class SmartOrder {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "demand_forecast_id", nullable = false)
     private DemandForecast demandForecast;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(name = "target_week", nullable = false)
     private LocalDate targetWeek;

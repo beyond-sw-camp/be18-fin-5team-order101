@@ -5,4 +5,5 @@ import lombok.Getter;
 @Getter
 public class SmartOrderUpdateRequestDto {
     private Integer recommendedOrderQty;
+    private Boolean submit;
 }

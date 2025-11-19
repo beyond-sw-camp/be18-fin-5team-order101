@@ -27,12 +27,6 @@ public class SmartOrderService {
     private final ProductSupplierRepository productSupplierRepository;
 
     //AI가 스마트 발주 초안 작성
-    // targetWeek을 기준 demand_forecst 조회해서 smart_order DRAFT 생성함
-    //TODO
-    //실제 추천 수량 로직
-    //지금은 예측 수요량 = forecast_qty = recommended_order_qty
-    //재고/안전재고 반영해야함
-
     @Transactional
     public List<SmartOrderResponseDto> generateSmartOrders(LocalDate targetWeek) {
 
