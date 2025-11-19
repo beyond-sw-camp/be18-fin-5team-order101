@@ -25,7 +25,9 @@
               <td class="po">{{ row.id }}</td>
               <td>{{ row.vendor }}</td>
               <td class="numeric">{{ row.items }}</td>
-              <td class="numeric"><Money :value="row.amount" /></td>
+              <td class="numeric">
+                <Money :value="row.amount" />
+              </td>
               <td>{{ row.requestedAt }}</td>
               <td>
                 <span :class="['chip', statusClass(row.status)]">{{ row.status }}</span>
@@ -49,6 +51,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import Money from '@/components/global/Money.vue'
+import { } from '@/components//'
 
 const router = useRouter()
 
@@ -107,58 +110,72 @@ function statusClass(s) {
 .page-shell {
   padding: 24px 32px;
 }
+
 .page-header {
   margin-bottom: 18px;
 }
+
 .card {
   background: #fff;
   border: 1px solid #f0f0f3;
   border-radius: 12px;
   padding: 16px;
 }
+
 .card-title {
   font-size: 16px;
   margin-bottom: 12px;
 }
+
 .table-wrap {
   margin-top: 12px;
 }
+
 .approval-table {
   width: 100%;
   border-collapse: collapse;
 }
+
 .approval-table th,
 .approval-table td {
   padding: 16px 12px;
   border-bottom: 1px solid #f0f0f3;
   text-align: left;
 }
+
 .approval-table td.numeric {
   text-align: right;
 }
+
 .po {
   font-weight: 600;
 }
+
 .chip {
   padding: 6px 10px;
   border-radius: 12px;
   color: #fff;
   font-size: 13px;
 }
+
 .s-accepted {
   background: #16a34a;
 }
+
 .s-waiting {
   background: #6b46ff;
 }
+
 .s-rejected {
   background: #ef4444;
 }
+
 .actions {
   display: flex;
   gap: 8px;
   justify-content: flex-end;
 }
+
 .btn-accept {
   background: #6b46ff;
   color: #fff;
@@ -167,6 +184,7 @@ function statusClass(s) {
   border-radius: 8px;
   cursor: pointer;
 }
+
 .btn-reject {
   background: #fff;
   color: #6b46ff;
@@ -175,9 +193,11 @@ function statusClass(s) {
   border-radius: 8px;
   cursor: pointer;
 }
+
 .clickable-row {
   cursor: pointer;
 }
+
 .no-data {
   text-align: center;
   color: #999;
