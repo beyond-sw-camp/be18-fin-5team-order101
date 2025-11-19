@@ -52,12 +52,12 @@ public class NotificationSseService {
         return emitter;
     }
 
-    public void send(String loginId, Object payload) {
+    public void send(String userID, Object payload) {
         String evenId = createEventId();
 
-        eventCache.computeIfAbsent(loginId, k -> new ConcurrentHashMap<>()).put(evenId, payload);
+        eventCache.computeIfAbsent(userID, k -> new ConcurrentHashMap<>()).put(evenId, payload);
 
-        CopyOnWriteArrayList<SseEmitter> list = emitters.getOrDefault(loginId, new CopyOnWriteArrayList<>());
+        CopyOnWriteArrayList<SseEmitter> list = emitters.getOrDefault(userID, new CopyOnWriteArrayList<>());
 
         List<SseEmitter> dead = new ArrayList<>();
 
@@ -76,7 +76,7 @@ public class NotificationSseService {
             list.removeAll(dead);
         }
 
-        Map<String, Object> cache = eventCache.get(loginId);
+        Map<String, Object> cache = eventCache.get(userID);
         if (cache != null && cache.size() > 500) {
             cache.entrySet().stream()
                     .sorted(Map.Entry.comparingByKey())

@@ -2,6 +2,7 @@ package com.synerge.order101.purchase.model.service;
 
 import com.synerge.order101.common.enums.OrderStatus;
 import com.synerge.order101.common.exception.CustomException;
+import com.synerge.order101.notification.model.service.NotificationService;
 import com.synerge.order101.product.model.entity.Product;
 import com.synerge.order101.product.model.entity.ProductSupplier;
 import com.synerge.order101.product.model.repository.ProductRepository;
@@ -17,6 +18,7 @@ import com.synerge.order101.purchase.model.repository.PurchaseRepository;
 import com.synerge.order101.settlement.event.PurchaseSettlementReqEvent;
 import com.synerge.order101.supplier.model.entity.Supplier;
 import com.synerge.order101.supplier.model.repository.SupplierRepository;
+import com.synerge.order101.user.model.entity.Role;
 import com.synerge.order101.user.model.entity.User;
 import com.synerge.order101.user.model.repository.UserRepository;
 import com.synerge.order101.warehouse.model.entity.Warehouse;
@@ -65,6 +67,8 @@ public class PurchaseServiceImpl implements PurchaseService {
     private final ProductSupplierRepository productSupplierRepository;
 
     private final InventoryService inventoryService;
+
+    private final NotificationService notificationService;
 
     // 발주 목록 조회
     @Override
@@ -164,6 +168,23 @@ public class PurchaseServiceImpl implements PurchaseService {
         }
 
         purchaseDetailRepository.saveAll(detailsToSave);
+
+        if (request.getOrderType() == Purchase.OrderType.AUTO) {
+            // HQ 일반 사원 조회 (Role 이름/필드명은 실제 코드에 맞게 수정)
+            List<User> hqStaffList = userRepository.findByRole(Role.HQ);
+
+            if (!hqStaffList.isEmpty()) {
+                notificationService.notifyAutoPurchaseCreatedToHqStaff(purchase, hqStaffList);
+            }
+        }
+
+        if(request.getOrderType() == Purchase.OrderType.MANUAL){
+            // 일반 발주 관리자한테 알림 (테스트 X)
+            List<User> admins = userRepository.findByRole(Role.HQ_ADMIN);
+
+            notificationService.notifyPurchaseCreatedToAllAdmins(purchase, admins);
+        }
+
 
     }
 
@@ -365,6 +386,11 @@ public class PurchaseServiceImpl implements PurchaseService {
         purchaseDetailHistoryRepository.saveAll(historyList);
 
         purchase.updateOrderStatus(OrderStatus.SUBMITTED);
+
+        // 자동 발주 알림 (테스트 완)
+        List<User> admins = userRepository.findByRole(Role.HQ_ADMIN);
+
+        notificationService.notifyPurchaseCreatedToAllAdmins(purchase, admins);
 
         return getAutoPurchaseDetail(purchaseId);
     }

@@ -3,11 +3,15 @@ package com.synerge.order101.notification.model.service;
 
 import com.sun.security.auth.UserPrincipal;
 import com.synerge.order101.common.dto.ItemsResponseDto;
+import com.synerge.order101.common.enums.OrderStatus;
 import com.synerge.order101.common.exception.CustomException;
 import com.synerge.order101.common.exception.errorcode.CommonErrorCode;
 import com.synerge.order101.notification.exception.NotificationErrorCode;
+import com.synerge.order101.notification.model.NotificationType;
 import com.synerge.order101.notification.model.entity.Notification;
 import com.synerge.order101.notification.model.repository.NotificationRepository;
+import com.synerge.order101.order.model.entity.StoreOrder;
+import com.synerge.order101.purchase.model.entity.Purchase;
 import com.synerge.order101.user.model.entity.User;
 import com.synerge.order101.user.model.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -86,237 +90,149 @@ public class NotificationService {
         notificationRepository.delete(notification);
     }
 
-//    @Transactional(propagation = Propagation.REQUIRES_NEW)
-//    public void sendMatchConfirmed(Integer matchId, Integer chatRoomId,
-//                                   String sport, String region, LocalDate date,
-//                                   String start, String end,
-//                                   List<Integer> userIds) {
-//        String title = "매칭 성사!";
-//        String body = "%s %s %s %s-%s 채팅방이 열렸어요."
-//                .formatted(sport, region, date, start, end);
-//
-//        LocalDateTime now = LocalDateTime.now();
-//
-//        List<Notification> rows = new ArrayList<>();
-//        for(Integer userId : userIds){
-//            rows.add(Notification.builder()
-//                    .userId(userId)
-//                    .type("MATCH_CONFIRMED")
-//                    .title(title)
-//                    .body(body)
-//                    .matchId(matchId)
-//                    .chatRoomId(chatRoomId)
-//                    .createdAt(now)
-//                    .build());
-//        }
-//        notificationRepository.saveAll(rows);
-//
-//        Map<Integer, Integer> notifIdByUserId =
-//                rows.stream().collect(Collectors.toMap(Notification::getUserId, Notification::getNotificationId, (a, b)->b));
-//        for(Integer userId : userIds){
-//            String loginId = userRepository.findLoginIdByUserId(userId).orElseThrow(()->
-//                    new ChatException(ExceptionMessage.LOGINID_NOT_FOUND));
-//            if(loginId == null){
-//                continue;
-//            }
-//            Map<String, Object> payload = Map.of(
-//                    "id", notifIdByUserId.get(userId),
-//                    "type", "MATCH_CONFIRMED",
-//                    "matchId", matchId,
-//                    "chatRoomId", chatRoomId,
-//                    "title", title,
-//                    "body", body,
-//                    "createdAt", now.toString()
-//            );
-//            notificationSseService.send(loginId, "match-confirmed", payload);
-//        }
-//    }
-//
-//    @Transactional(propagation = Propagation.REQUIRES_NEW)
-//    public void sendMatchCancelled(Integer matchId, Integer chatRoomId,
-//                                   String sport, String region, LocalDate date,
-//                                   String start, String end,
-//                                   List<Integer> remainUserIds) {
-//        String title = "매칭이 취소되어 대기 중으로 돌아갔습니다.";
-//        String body = "%s %s %s %s-%s 매칭이 취소되었습니다."
-//                .formatted(sport, region, date, start, end);
-//
-//        LocalDateTime now = LocalDateTime.now();
-//
-//        List<Notification> rows = new ArrayList<>();
-//        for(Integer remainUserId : remainUserIds){
-//            rows.add(Notification.builder()
-//                    .userId(remainUserId)
-//                    .type("MATCH_CANCELLED")
-//                    .matchId(matchId)
-//                    .title(title)
-//                    .body(body)
-//                    .createdAt(now)
-//                    .build());
-//        }
-//        List<Notification> saved = notificationRepository.saveAll(rows);
-//
-//        Map<Integer, Integer> notifIdByUserId =
-//                saved.stream().collect(Collectors.toMap(Notification::getUserId, Notification::getNotificationId, (a, b)->b));
-//        for(Integer remainUserId: remainUserIds){
-//            String loginId = userRepository.findLoginIdByUserId(remainUserId).orElseThrow(()->
-//                    new ChatException(ExceptionMessage.LOGINID_NOT_FOUND));
-//            if(loginId == null){
-//                continue;
-//            }
-//            Map<String, Object> payload = Map.of(
-//                    "id", notifIdByUserId.get(remainUserId),
-//                    "type", "MATCH_CANCELLED",
-//                    "title", title,
-//                    "body", body,
-//                    "matchId", matchId,
-//                    "createdAt", now.toString()
-//            );
-//            notificationSseService.send(loginId, "match-cancelled", payload);
-//        }
-//    }
-//
-//    @Transactional(propagation = Propagation.REQUIRES_NEW)
-//    public void sendMatchEnded(MatchCompleted match) {
-//        String title = "경기 결과를 등록해주세요!";
-//        String body = "%s %s에서 진행된 경기의 결과를 등록하세요!"
-//                .formatted(
-//                        match.getMatchDate().toString(),
-//                        match.getRegion()
-//                );
-//
-//        LocalDateTime now = LocalDateTime.now();
-//        List<Integer> userIds = match.getParticipants().stream().map(User::getUserId).toList();
-//
-//        List<Notification> rows = new ArrayList<>();
-//        for(Integer userId : userIds){
-//            rows.add(Notification.builder()
-//                    .userId(userId)
-//                    .type("REQUEST_MATCH_RESULT")
-//                    .title(title)
-//                    .body(body)
-//                    .matchId(match.getMatchId())
-//                    .createdAt(now)
-//                    .build());
-//        }
-//        notificationRepository.saveAll(rows);
-//
-//        Map<Integer, Integer> notifIdByUserId =
-//                rows.stream().collect(Collectors.toMap(Notification::getUserId, Notification::getNotificationId, (a, b)->b));
-//        for(Integer userId : userIds){
-//            String loginId = userRepository.findLoginIdByUserId(userId).orElseThrow(()->
-//                    new ChatException(ExceptionMessage.LOGINID_NOT_FOUND));
-//            if(loginId == null){
-//                continue;
-//            }
-//            Map<String, Object> payload = Map.of(
-//                    "id", notifIdByUserId.get(userId),
-//                    "type", "REQUEST_MATCH_RESULT",
-//                    "matchId", match.getMatchId(),
-//                    "title", title,
-//                    "body", body,
-//                    "createdAt", now.toString()
-//            );
-//            notificationSseService.send(loginId, "request-match-result", payload);
-//        }
-//    }
-//
-//    // 게시글 좋아요
-//    @Transactional
-//    public void notifyPostLiked(int postOwnerId, int postId, String likerNickname) {
-//        Notification notif = Notification.builder()
-//                .userId(postOwnerId)
-//                .type("LIKE")
-//                .title("게시글 좋아요")
-//                .body(likerNickname + "님이 회원님의 게시글을 좋아합니다.")
-//                .postId(postId)
-//                .createdAt(LocalDateTime.now())
-//                .build();
-//
-//        LocalDateTime now = LocalDateTime.now();
-//        Map<String, Object> payload = Map.of(
-//                "id", notif.getPostId(),
-//                "type", notif.getType(),
-//                "title", notif.getTitle(),
-//                "body", notif.getBody(),
-//                "createdAt", now.toString()
-//        );
-//        notificationRepository.save(notif);
-//        notificationSseService.send(postRepository.findLoginIdByUserId(postOwnerId).orElseThrow(), "toggle-like", payload);
-//    }
-//
-//    // 게시글 댓글
-//    @Transactional
-//    public void notifyPostCommented(int postOwnerId, int postId, int commentId, String commenterNickname) {
-//        Notification notif = Notification.builder()
-//                .userId(postOwnerId)
-//                .type("COMMENT")
-//                .title("게시글 댓글")
-//                .body(commenterNickname + "님이 회원님의 게시글에 댓글을 남겼습니다.")
-//                .postId(postId)
-//                .commentId(commentId)
-//                .createdAt(LocalDateTime.now())
-//                .build();
-//
-//        LocalDateTime now = LocalDateTime.now();
-//        Map<String, Object> payload = Map.of(
-//                "id", notif.getPostId(),
-//                "type", notif.getType(),
-//                "title", notif.getTitle(),
-//                "body", notif.getBody(),
-//                "createdAt", now.toString()
-//        );
-//        notificationRepository.save(notif);
-//        notificationSseService.send(postRepository.findLoginIdByUserId(postOwnerId).orElseThrow(), "post-commented", payload);
-//
-//    }
-//
-//    // 댓글 답글
-//    @Transactional
-//    public void notifyCommentReplied(int commentOwnerId, int postId, int replyId, String replierNickname) {
-//        Notification notif = Notification.builder()
-//                .userId(commentOwnerId)
-//                .type("REPLY")
-//                .title("댓글 답글")
-//                .body(replierNickname + "님이 회원님의 댓글에 답글을 남겼습니다.")
-//                .postId(postId)
-//                .commentId(replyId)
-//                .createdAt(LocalDateTime.now())
-//                .build();
-//
-//        LocalDateTime now = LocalDateTime.now();
-//        Map<String, Object> payload = Map.of(
-//                "id", notif.getPostId(),
-//                "type", notif.getType(),
-//                "title", notif.getTitle(),
-//                "body", notif.getBody(),
-//                "createdAt", now.toString()
-//        );
-//        notificationRepository.save(notif);
-//        notificationSseService.send(commentRepository.findLoginIdByCommentId(commentOwnerId).orElseThrow(), "comment-replied", payload);
-//    }
-//
-//    @Transactional
-//    public void notifyReceivedFriendRequest(Integer senderUserId, Integer receiverId, String senderNickname) {
-//        Notification notif = Notification.builder()
-//                .userId(receiverId)
-//                .type("FRIEND_REQUEST")
-//                .title("친구 요청")
-//                .body(senderNickname + "님이 회원님에게 친구 요청을 보냈습니다.")
-//                .senderUserId(senderUserId)
-//                .createdAt(LocalDateTime.now())
-//                .build();
-//
-//        notif = notificationRepository.save(notif);
-//
-//        LocalDateTime now = LocalDateTime.now();
-//        Map<String, Object> payload = Map.of(
-//                "id", notif.getNotificationId(),
-//                "type", notif.getType(),
-//                "title", notif.getTitle(),
-//                "body", notif.getBody(),
-//                "createdAt", notif.getCreatedAt().toString()
-//        );
-//        notificationSseService.send(friendRequestRepository.findLoginIdByReceiverId(receiverId).orElseThrow(), "friend-request", payload);
-//    }
+    // 발주 컨펌 시 어드민들에게 승인 요청 알림(테스트 안함)
+    @Transactional
+    public void notifyPurchaseCreatedToAdmin(User admin, Purchase purchase) {
+        String orderType;
+        if(String.valueOf(purchase.getOrderType()).equals("MANUAL")) {
+            orderType = "일반";
+        } else if (String.valueOf(purchase.getOrderType()).equals("AUTO")) {
+            orderType = "자동";
+        } else {
+            orderType = "스마트";
+        }
+        Notification noification = Notification.builder()
+                .userId(admin.getUserId())
+                .purchaseOrderId(purchase.getPurchaseId())
+                .poNo(purchase.getPoNo())
+                .orderType(String.valueOf(purchase.getOrderType()))
+                .supplierId(purchase.getSupplier().getSupplierId())
+                .title("발주 승인 요청!")
+                .body("승인 요청이 필요한 " + orderType + "발주서가 있습니다.")
+                .type(NotificationType.PURCHASE_APPROVAL_REQUEST)
+                .build();
+
+        notificationRepository.save(noification);
+
+        notificationSseService.send(String.valueOf(admin.getUserId()), noification);
+
+    }
+
+    @Transactional
+    public void notifyPurchaseCreatedToAllAdmins(Purchase purchase, List<User> admins) {
+        for (User admin : admins) {
+            notifyPurchaseCreatedToAdmin(admin, purchase);
+        }
+    }
+
+    // 가맹점 주문 생성 시 알림(테스트 X)
+    @Transactional
+    public void notifyOrderCreatedToHQ(List<User> hqList, StoreOrder storeOrder) {
+
+        String storeName = storeOrder.getStore().getStoreName();
+        Long storeId = storeOrder.getStore().getStoreId();
+        Long orderId = storeOrder.getStoreOrderId();
+
+        String title = "가맹점 주문 승인 요청!";
+        String body = String.format(
+                "승인 요청이 필요한 %s 가맹점 주문이 있습니다. (%s)\n- 주문ID: %d\n- 가맹점ID: %d",
+                storeName, storeName, orderId, storeId
+        );
+
+        for (User hq : hqList) {
+            Notification notification = Notification.builder()
+                    .userId(hq.getUserId())
+                    .storeId(storeId)
+                    .storeOrderId(orderId)
+                    .title(title)
+                    .body(body)
+                    .type(NotificationType.STORE_ORDER_APPROVAL_REQUEST)
+                    .orderStatus(storeOrder.getOrderStatus().name())
+                    .createdAt(LocalDateTime.now())
+                    .build();
+
+            notificationRepository.save(notification);
+
+            notificationSseService.send(String.valueOf(hq.getUserId()), notification);
+        }
+    }
+
+    // 가맹점 승인/반려 알림 (테스트 X)
+    @Transactional
+    public void notifyStoreOrderResult(StoreOrder order) {
+
+        User storeOwner = order.getUser();
+
+        Long userId = storeOwner.getUserId();
+        Long orderId = order.getStoreOrderId();
+        String orderNo = order.getOrderNo();
+        String statusName = order.getOrderStatus().name();
+
+        boolean approved = order.getOrderStatus() == OrderStatus.CONFIRMED;
+
+        String title = "주문 승인 결과";
+        String body = String.format(
+                "%s 주문건이 %s되었습니다.\n- 주문ID: %d\n- 주문번호: %s\n- 주문상태: %s",
+                orderNo,
+                approved ? "승인" : "반려",
+                orderId,
+                orderNo,
+                statusName
+        );
+
+        Notification notification = Notification.builder()
+                .userId(userId)
+                .storeId(order.getStore().getStoreId())
+                .storeOrderId(orderId)
+                .orderNo(orderNo)
+                .orderStatus(statusName)
+                .title(title)
+                .body(body)
+                .type(approved ? NotificationType.STORE_ORDER_APPROVED : NotificationType.STORE_ORDER_REJECTED)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        notificationRepository.save(notification);
+
+        notificationSseService.send(String.valueOf(userId), notification);
+    }
+
+    @Transactional
+    public void notifyAutoPurchaseCreatedToHqStaff(Purchase purchase, List<User> hqList) {
+
+        Long purchaseId = purchase.getPurchaseId();
+        String purchaseNo = purchase.getPoNo();
+        String orderType = purchase.getOrderType().name();
+        Long supplierId = purchase.getSupplier().getSupplierId();
+        String supplierName = purchase.getSupplier().getSupplierName();
+        String supplierCode = purchase.getSupplier().getSupplierCode();
+
+        String title = "자동 생성된 자동발주";
+        String body = String.format(
+                "%s 공급사에 대한 자동발주가 생성되었습니다.\n" +
+                        "- 발주번호: %s\n" +
+                        "- 발주유형: %s\n" +
+                        "- 공급사번호: %s",
+                supplierName, purchaseNo, orderType, supplierCode
+        );
+
+        for (User hq : hqList) {
+            Notification notification = Notification.builder()
+                    .userId(hq.getUserId())
+                    .supplierId(supplierId)
+                    .purchaseOrderId(purchaseId)
+                    .poNo(purchase.getPoNo())
+                    .orderType(orderType)
+                    .title(title)
+                    .body(body)
+                    .type(NotificationType.AUTO_PURCHASE_CREATED)
+                    .createdAt(LocalDateTime.now())
+                    .build();
+
+            notificationRepository.save(notification);
+
+            notificationSseService.send(String.valueOf(hq.getUserId()), notification);
+        }
+    }
+
 }
