@@ -223,8 +223,13 @@ public class SmartOrderService {
 
     // SYSTEM 유저 조회
     private User getSystemUser() {
-        return userRepository.findByRole(Role.SYSTEM)
-                .orElseThrow(() -> new IllegalStateException("SYSTEM 유저를 찾을 수 없습니다."));
+        List<User> list = userRepository.findByRole(Role.SYSTEM);
+
+        if (list.isEmpty()) {
+            throw new IllegalStateException("SYSTEM 유저를 찾을 수 없습니다.");
+        }
+
+        return list.get(0);
     }
 
 
