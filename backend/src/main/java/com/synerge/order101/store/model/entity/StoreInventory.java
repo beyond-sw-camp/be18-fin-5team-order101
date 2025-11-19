@@ -7,9 +7,16 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Entity
-@Table(name = "store_inventory")
+@Getter@Entity
+@Table(
+        name = "store_inventory",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "ux_store_inventory_store_product",
+                        columnNames = {"store_id", "product_id"}
+                )
+        }
+)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
