@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watch } from 'vue';
-import axios from 'axios';
+import { getSupplierList } from '@/components/api/supplier/supplierService';
 
 const props = defineProps({
     isOpen: { type: Boolean, default: false },
@@ -20,23 +20,17 @@ const internalSelectedSupplier = ref(props.selectedSupplier);
 const fetchSuppliers = async (page = 1) => {
     isLoading.value = true;
     try {
-        const response = await axios.get('/api/v1/suppliers', {
-            params: { page: page, numOfRows: pageSize.value, keyword: keyword.value }
-        });
-        const responseData = response.data; // ItemsResponseDto 객체
-
-        // 1. 목록 (List<SupplierListRes>): DTO의 'data' 필드에 실제 리스트가 들어있음
-        suppliers.value = responseData.items || [];
-
-        // 2. 전체 개수: DTO의 'totalCount' 필드 사용
-        totalCount.value = responseData.totalCount;
-
-        // 3. 현재 페이지: DTO의 'page' 필드 사용
-        currentPage.value = responseData.page;
+        // 2. 분리된 API 함수를 호출하고 결과를 받음
+        const data = await getSupplierList(page, pageSize.value, keyword.value);
+        // 3. API 서비스에서 받은 가공된 데이터를 컴포넌트 상태에 반영
+        suppliers.value = data.suppliers;
+        totalCount.value = data.totalCount;
+        currentPage.value = data.currentPage;
 
     } catch (error) {
+        // API 서비스에서 전달받은 에러를 사용자에게 알림
         console.error("공급업체 목록 조회 실패:", error);
-        alert("공급업체 목록을 불러오는 데 실패했습니다.");
+        alert("공급업체 목록을 불러오는 데 실패했습니다. 잠시 후 다시 시도해 주세요.");
     } finally {
         isLoading.value = false;
     }
