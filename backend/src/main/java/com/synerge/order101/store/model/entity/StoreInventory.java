@@ -9,17 +9,9 @@ import java.time.LocalDateTime;
 
 @Getter
 @Entity
-@Table(
-        name = "store_inventory",
-        uniqueConstraints = {
-                @UniqueConstraint(
-                        name = "ux_store_inventory_store_product",
-                        columnNames = {"store_id", "product_id"}
-                )
-        }
-)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Table(name = "store_inventory")
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class StoreInventory {
 
@@ -37,15 +29,31 @@ public class StoreInventory {
     private Product product;
 
     @Column(name = "on_hand_qty", nullable = false)
-    private int onHandQty;
+    private int onHandQty = 0;
 
     @Column(name = "in_transit_qty", nullable = false)
-    private int inTransitQty;
+    private int inTransitQty = 0;
+
+    // 안전재고 필드 추가
+    @Column(name = "safety_qty")
+    private Integer safetyQuantity;
 
     @Column(name = "updated_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    public void updateOnHandQty(int onHandQty) {
+        this.onHandQty = onHandQty;
+    }
+
+    public void updateSafetyQty(Integer safety) {
+        this.safetyQuantity = safety;
+    }
+
+    // inTransitQty를 변경할 수 있는 메서드 추가
+    public void setInTransitQty(int inTransitQty) {
+        this.inTransitQty = inTransitQty;
+    }
 
     public static StoreInventory create(Store store, Product product) {
         return StoreInventory.builder()
@@ -82,5 +90,6 @@ public class StoreInventory {
         decreaseInTransit(qty);
         increaseOnHand(qty);
     }
+
 
 }
