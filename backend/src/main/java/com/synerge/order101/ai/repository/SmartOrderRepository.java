@@ -13,5 +13,6 @@ public interface SmartOrderRepository extends JpaRepository<SmartOrder,Long> {
     List<SmartOrder> findByTargetWeek(LocalDate targetWeek);
     List<SmartOrder> findByTargetWeekBetween(LocalDate from, LocalDate to);
     List<SmartOrder> findBySmartOrderStatusAndTargetWeekBetween(OrderStatus status, LocalDate from, LocalDate to);
+    List<SmartOrder> findBySupplier_SupplierIdAndTargetWeek(Long supplierId, LocalDate targetWeek);
 }
 

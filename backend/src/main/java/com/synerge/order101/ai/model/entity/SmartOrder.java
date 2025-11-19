@@ -78,18 +78,26 @@ public class SmartOrder {
 
 
 
-    public void updateDraft(Integer newRecommendedQty){
+    public void updateRecommendedQty(Integer newRecommendedQty){
         if(this.smartOrderStatus != OrderStatus.DRAFT_AUTO){
             throw new CustomException(AiErrorCode.SMART_ORDER_UPDATE_FAILED);
         }
         this.recommendedOrderQty = newRecommendedQty;
     }
 
-    public void submit() {
+    public void submit(User submitter) {
         if (this.smartOrderStatus != OrderStatus.DRAFT_AUTO) {
             throw new CustomException(AiErrorCode.SMART_ORDER_SUBMIT_FAILED);
         }
+        this.user = submitter;
         this.smartOrderStatus = OrderStatus.SUBMITTED;
+        this.snapshotAt = LocalDateTime.now();
+    }
+
+    public void setSystemUserIfNull(User systemUser) {
+        if (this.user == null) {
+            this.user = systemUser;
+        }
     }
 
 

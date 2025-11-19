@@ -1,9 +1,11 @@
 package com.synerge.order101.ai.model.dto.response;
 
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class SmartOrderLineItemDto {
+@Builder
+public class SmartOrderLineItemResponseDto {
     private Long smartOrderId;
 
     private Long productId;

@@ -3,6 +3,7 @@ package com.synerge.order101.ai.controller;
 
 import com.synerge.order101.ai.model.dto.request.SmartOrderUpdateRequestDto;
 import com.synerge.order101.ai.model.dto.response.SmartOrderDashboardResponseDto;
+import com.synerge.order101.ai.model.dto.response.SmartOrderDetailResponseDto;
 import com.synerge.order101.ai.model.dto.response.SmartOrderResponseDto;
 import com.synerge.order101.ai.service.SmartOrderService;
 import com.synerge.order101.common.enums.OrderStatus;
@@ -44,7 +45,7 @@ public class SmartOrderController {
         return ResponseEntity.ok(smartOrderService.getSmartOrders(status, from, to));
     }
 
-    //스마트 발주 상세 조회
+    //스마트 발주 상세 조회 (row 기준)
     @GetMapping("/{smartOrderId}")
     public ResponseEntity<SmartOrderResponseDto> getSmartOrder(
             @PathVariable Long smartOrderId
@@ -52,21 +53,26 @@ public class SmartOrderController {
         return ResponseEntity.ok(smartOrderService.getSmartOrder(smartOrderId));
     }
 
+
+    // 스마트 발주 상세 조회 (공급사 + 주차 기준, 품목 리스트)
+    @GetMapping("/detail")
+    public ResponseEntity<SmartOrderDetailResponseDto> getSmartOrderDetail(
+            @RequestParam("supplierId") Long supplierId,
+            @RequestParam("targetWeek")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate targetWeek
+    ) {
+        return ResponseEntity.ok(smartOrderService.getSmartOrderDetail(supplierId, targetWeek));
+    }
+
+
     //스마트 발주 수정
     @PatchMapping("/{smartOrderId}")
-    public ResponseEntity<SmartOrderResponseDto> updateDraft(
+    public ResponseEntity<SmartOrderResponseDto> submitSmartOrder(
             @PathVariable Long smartOrderId,
             @RequestBody SmartOrderUpdateRequestDto request
     ) {
-        return ResponseEntity.ok(smartOrderService.updateDraft(smartOrderId, request));
-    }
-
-    //제출
-    @PostMapping("/{smartOrderId}/submit")
-    public ResponseEntity<SmartOrderResponseDto> submit(
-            @PathVariable Long smartOrderId
-    ) {
-        return ResponseEntity.ok(smartOrderService.submit(smartOrderId));
+        return ResponseEntity.ok(smartOrderService.submitSmartOrder(smartOrderId, request));
     }
 
     //대시보드 상단 요약

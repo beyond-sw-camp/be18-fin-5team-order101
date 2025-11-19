@@ -8,10 +8,10 @@ import java.util.List;
 
 @Getter
 @Builder
-public class SmartOrderDetailDto {
+public class SmartOrderDetailResponseDto {
     private Long supplierId;
     private String supplierName;
     private LocalDate targetWeek;
     private String requesterName;
-    private List<SmartOrderLineItemDto> items;
+    private List<SmartOrderLineItemResponseDto> items;
 }
