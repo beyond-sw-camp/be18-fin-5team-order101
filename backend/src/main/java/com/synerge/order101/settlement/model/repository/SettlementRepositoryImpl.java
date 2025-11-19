@@ -11,6 +11,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,7 +34,8 @@ public class SettlementRepositoryImpl implements SettlementRepositoryCustom {
                 .where(
                     statusIn(cond.getStatuses()),
                     typeIn(cond.getTypes()),
-                    searchTextContains(cond.getSearchText())
+                    searchTextContains(cond.getSearchText()),
+                    DateBetween(cond.getFromDate(), cond.getToDate())
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -43,7 +48,8 @@ public class SettlementRepositoryImpl implements SettlementRepositoryCustom {
                 .where(
                         statusIn(cond.getStatuses()),
                         typeIn(cond.getTypes()),
-                        searchTextContains(cond.getSearchText())
+                        searchTextContains(cond.getSearchText()),
+                        DateBetween(cond.getFromDate(), cond.getToDate())
                 )
                 .fetchOne();
 
@@ -51,6 +57,18 @@ public class SettlementRepositoryImpl implements SettlementRepositoryCustom {
     }
 
     // --- 동적 쿼리 조건을 생성하는 BooleanExpression 메소드들 ---}
+    private BooleanExpression DateBetween(LocalDate startDate, LocalDate endDate) {
+        if (StringUtils.isEmpty(startDate) || StringUtils.isEmpty(endDate)) {
+                return null;
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        try {
+            return settlement.createdAt.between(startDate.atStartOfDay(), endDate.atStartOfDay());
+        } catch (Exception e) {
+            return null;
+        }
+    }
     private BooleanExpression statusIn(List<String> statuses) {
         if (statuses == null || statuses.isEmpty()) {
             return null;
