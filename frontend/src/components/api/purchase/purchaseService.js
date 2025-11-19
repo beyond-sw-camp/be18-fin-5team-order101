@@ -50,7 +50,7 @@ export async function getPurchaseDetail(id) {
 
         // ItemsResponseDto 객체에서 'purchaseDetail' 필드를 직접 추출
         // response.data가 { "purchaseDetail": { ... } } 구조라고 가정합니다.
-        const detailObject = response.data.purchaseDetail;
+        const detailObject = response.data;
 
         // 추출된 상세 객체 자체를 반환합니다.
         // 이렇게 하면 호출하는 컴포넌트에서 response.purchaseDetail 대신 detailObject를 바로 사용할 수 있습니다.

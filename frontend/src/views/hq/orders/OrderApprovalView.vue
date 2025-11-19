@@ -123,7 +123,6 @@ const fetchPurchaseDetail = async () => {
   // 2. await을 사용하여 API 호출이 완료되기를 기다립니다.
   const data = await getPurchaseDetail(poId);
   // 3. API 응답 데이터가 도착한 후 rows에 할당됩니다.
-  //console.log("Fetched PO detail data22:", data);
   Object.assign(po, {
     purchaseId: data.purchaseId,
     poNo: data.poNo,
