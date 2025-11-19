@@ -74,9 +74,9 @@
             </span>
           </div>
           <div class="summary-row">
-            <span>배송:</span><span class="numeric">
+            <!-- <span>배송:</span><span class="numeric">
               <Money :value="shipping" />
-            </span>
+            </span> -->
           </div>
           <hr />
           <div class="summary-row total">
