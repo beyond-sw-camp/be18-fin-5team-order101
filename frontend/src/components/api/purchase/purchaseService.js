@@ -16,11 +16,14 @@ export async function getPurchases(page, perPage, q, status) {
 
     try {
         // Axios의 'params' 옵션을 사용하여 쿼리 파라미터를 전송합니다.
+        console.log("발주 목록 조회 요청 - page:", page, "perPage:", perPage, "q:", q, "status:", status);
+
         const response = await axios.get(url, {
             params: {
-                keyword: q || '',
-                page: page,       // 0-based index
-                size: perPage,    // 페이지당 항목 수
+                keyword: q,
+                status: status || '',
+                page: page || 0,       // 0-based index
+                size: perPage || 10,    // 페이지당 항목 수
             }
         });
         console.log("발주 목록 조회 응답:", response.data);
