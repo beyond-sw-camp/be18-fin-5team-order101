@@ -62,11 +62,11 @@
             </tbody>
           </table>
         </section>
-
-        <div class="actions-bottom">
+        <PurchaseApprovalActions v-if="poId" :po-id="poId" @success="handleProcessSuccess" />
+        <!-- <div class="actions-bottom">
           <button class="btn-approve" @click="approve">승인</button>
           <button class="btn-reject" @click="reject">반려</button>
-        </div>
+        </div> -->
       </div>
 
       <aside class="right-col">
@@ -92,10 +92,11 @@
 
 <script setup>
 import { ref, computed, reactive, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { createWebHistory, useRoute, useRouter } from 'vue-router'
 import Money from '@/components/global/Money.vue'
 import { formatDateTimeMinute } from '@/components/global/Date.js'
-import { getPurchaseDetail } from '@/components/api/purchase/purchaseService.js'
+import { getPurchaseDetail, updatePurchaseStatus } from '@/components/api/purchase/purchaseService.js'
+import PurchaseApprovalActions from '@/views/hq/orders/PurchaseApproveButton.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -157,12 +158,13 @@ const subtotal = computed(() => {
 const total = computed(() => subtotal.value)
 
 function approve() {
-  // placeholder: call API to approve
+  console.log("승인 처리 호출 - PO ID:", poId);
+  updatePurchaseStatus(poId, 'CONFIRMED');
   alert(`발주 ${poId}를 승인했습니다.`)
   router.back()
 }
 function reject() {
-  // placeholder: call API to reject
+  updatePurchaseStatus(poId, 'REJECTED');
   alert(`발주 ${poId}를 반려했습니다.`)
   router.back()
 }

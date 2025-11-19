@@ -2,6 +2,30 @@
 import axios from 'axios';
 
 /**
+ * [발주 상태 업데이트(승인 및 거절) ]
+ * @param
+ * 
+ */
+
+export async function updatePurchaseStatus(purchaseId, status) {
+
+    const url = `/api/v1/purchase-orders/${purchaseId}/${status}`;
+    console.log("발주 상태 업데이트 URL:", url);
+    try {
+        console.log("발주 상태 업데이트 요청 - purchaseId:", purchaseId, "status:", status);
+        const response = await axios.patch(url, {
+            status: status,
+        });
+        console.log("발주 상태 업데이트 응답:", response.data);
+        return response.data;
+    }
+    catch (error) {
+        console.error("[API Error] 발주 상태 업데이트 실패:", error.message, error.response);
+        throw new Error("API 서버와의 통신에 실패했습니다.");
+    }
+}
+
+/**
  * [발주 목록 조회]
  * 페이지네이션 및 검색 조건에 맞는 발주 목록을 백엔드로부터 조회합니다.
  * @param {number} page 조회할 페이지 번호 (0부터 시작)
