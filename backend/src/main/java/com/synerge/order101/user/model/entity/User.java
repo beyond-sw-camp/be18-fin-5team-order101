@@ -55,5 +55,26 @@ public class User {
     @Column(name = "phone", nullable = false, length = 20)
     private String phone;
 
+    // 개발/테스트 용도: 비밀번호 해시 업데이트 메서드
+    public void changePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
+
+    // Add: update profile fields
+    public void updateProfile(String name, String phone) {
+        if (name != null && !name.isBlank()) this.name = name.trim();
+        if (phone != null && !phone.isBlank()) this.phone = phone.trim();
+    }
+
+    // Add: soft delete
+    public void softDelete() {
+        this.isDeleted = true;
+        this.isActive = false;
+    }
+
+    // Add: factory method to create a new User instance with required fields
+    public static User create(String email, String encodedPassword, String name, Role role, String phone) {
+        return new User(null, null, email, encodedPassword, name, role, true, null, null, false, phone);
+    }
 
 }

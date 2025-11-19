@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 
@@ -38,7 +39,7 @@ public class PurchaseDetail {
     private BigDecimal unitPrice;
 
     @Column
-    private LocalDateTime deadline;
+    private LocalDate deadline;
 
     @Column
     private LocalDateTime createdAt;
@@ -51,5 +52,9 @@ public class PurchaseDetail {
         }
 
         this.createdAt = LocalDateTime.now();
+    }
+
+    public void updateOrderQty(Integer newQty) {
+        this.orderQty = newQty;
     }
 }
