@@ -27,10 +27,7 @@ import com.synerge.order101.warehouse.model.repository.WarehouseRepository;
 import com.synerge.order101.warehouse.model.service.InventoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,7 +70,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     // 발주 목록 조회
     @Override
     @Transactional(readOnly = true)
-    public Page<PurchaseSummaryResponseDto> findPurchases(String keyword, Integer page, Integer size) {
+    public Page<PurchaseSummaryResponseDto> findPurchases(String keyword, Integer page, Integer size, OrderStatus status) {
 
         int pageNumber = (page != null && page >= 0) ? page : 0;
         int pageSize = (size != null && size > 0) ? size : 10;
@@ -81,18 +78,11 @@ public class PurchaseServiceImpl implements PurchaseService {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<PurchaseSummaryResponseDto> pageResult;
 
-        if (keyword.isBlank()) {
+        if (keyword.isBlank() && status == null) {
             return purchaseRepository.findAll(pageable).map(PurchaseSummaryResponseDto::fromEntity);
         }
 
-        String trimmedKeyword = keyword.trim();
-
-        pageResult = purchaseRepository.findByPoNoContainingIgnoreCaseOrSupplier_SupplierNameContainingIgnoreCaseOrUser_nameContainingIgnoreCase
-                        (trimmedKeyword, trimmedKeyword, trimmedKeyword, pageable)
-                .map(PurchaseSummaryResponseDto::fromEntity);
-
-
-        return pageResult;
+        return purchaseRepository.findByDynamicSearch(keyword, status, pageable).map(PurchaseSummaryResponseDto::fromEntity);
     }
 
     // 발주 상세 조회

@@ -11,7 +11,7 @@ public interface PurchaseService {
 
 
     // 발주 목록 조회
-    Page<PurchaseSummaryResponseDto> findPurchases(String keyword, Integer page, Integer size);
+    Page<PurchaseSummaryResponseDto> findPurchases(String keyword, Integer page, Integer size, OrderStatus status);
 
     // 발주 상세 조회
     PurchaseDetailResponseDto findPurchaseDetailsById(Long purchaseOrderId);

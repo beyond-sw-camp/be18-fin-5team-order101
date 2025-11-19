@@ -29,9 +29,10 @@ public class PurchaseController {
     public ResponseEntity<Page<PurchaseSummaryResponseDto>> findPurchases(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size
+            @RequestParam(required = false) Integer size,
+            @RequestParam(required = false) OrderStatus status
     ) {
-        Page<PurchaseSummaryResponseDto> response = purchaseService.findPurchases(keyword, page, size);
+        Page<PurchaseSummaryResponseDto> response = purchaseService.findPurchases(keyword, page, size, status);
         return ResponseEntity.ok(response);
     }
 

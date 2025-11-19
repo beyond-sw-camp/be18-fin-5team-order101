@@ -1,5 +1,6 @@
 package com.synerge.order101.purchase.model.repository;
 
+import aj.org.objectweb.asm.commons.Remapper;
 import com.synerge.order101.common.dto.ItemsResponseDto;
 import com.synerge.order101.common.enums.OrderStatus;
 import com.synerge.order101.purchase.model.dto.AutoPurchaseListResponseDto;
@@ -9,10 +10,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
+public interface PurchaseRepository extends JpaRepository<Purchase, Long>, QuerydslPredicateExecutor<Purchase> , PurchaseRepositoryCustom{
     /**
      * PO 번호 또는 Supplier의 이름 중 하나라도 키워드를 포함하는 Purchase 목록을 조회합니다.
      * 대소문자 구분 없이 (IgnoreCase), 페이징 처리 (Pageable)를 적용합니다.
@@ -62,4 +64,6 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
           AND p.orderStatus = :status
     """)
     Page<AutoPurchaseListResponseDto> findByAutoOrderStatus(OrderStatus status, Pageable pageable);
+
 }
+

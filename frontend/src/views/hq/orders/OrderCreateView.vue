@@ -71,7 +71,7 @@
           <div class="summary-row">
             <span>소계:</span><span class="numeric">
               <Money :value="subtotal" />
-            </span>
+            </span>1
           </div>
           <div class="summary-row">
             <!-- <span>배송:</span><span class="numeric">

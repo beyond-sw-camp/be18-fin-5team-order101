@@ -101,12 +101,13 @@ async function search() {
   const apiPage = page.value - 1; // 0-based index로 변환
 
   try {
-    const data = await getPurchases({
-      page: apiPage,
-      size: perPage.value,
-      keyword: filters.value.q,
-      status: filters.value.status
-    });
+    const data = await getPurchases(
+      apiPage,
+      perPage.value,
+      filters.value.q,
+      filters.value.status === '전체' ? null : filters.value.status
+    );
+
 
     console.log("API 응답 데이터:", data);
 
