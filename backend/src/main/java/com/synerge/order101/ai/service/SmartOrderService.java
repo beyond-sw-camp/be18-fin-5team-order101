@@ -13,8 +13,10 @@ import com.synerge.order101.ai.repository.SmartOrderRepository;
 import com.synerge.order101.common.enums.OrderStatus;
 import com.synerge.order101.common.exception.CustomException;
 import com.synerge.order101.product.model.repository.ProductSupplierRepository;
+import com.synerge.order101.purchase.model.repository.PurchaseDetailRepository;
 import com.synerge.order101.user.model.entity.Role;
 import com.synerge.order101.user.model.repository.UserRepository;
+import com.synerge.order101.warehouse.model.repository.WarehouseInventoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -35,6 +37,8 @@ public class SmartOrderService {
     private final DemandForecastRepository demandForecastRepository;
     private final ProductSupplierRepository productSupplierRepository;
     private final UserRepository userRepository;
+    private final WarehouseInventoryRepository  warehouseInventoryRepository;
+    private final PurchaseDetailRepository purchaseDetailRepository;
 
     //AI가 스마트 발주 초안 작성
     @Transactional
@@ -47,33 +51,67 @@ public class SmartOrderService {
         }
         User systemUser = getSystemUser();
 
-        // 1) 해당 주차의 수요 예측 조회
+        // 해당 주차의 수요 예측 가져오기
         List<DemandForecast> forecasts = demandForecastRepository.findByTargetWeek(targetWeek);
         if (forecasts.isEmpty()) {
             throw new CustomException(AiErrorCode.FORECAST_NOT_FOUND);
         }
 
-        // 2) 상품  공급사 매핑 후 스마트 발주 생성
+        // 스마트 발주 로직
         List<SmartOrder> saved = forecasts.stream()
                 .map(df -> {
                     var product = df.getProduct();
 
+                    //  상품 -> 공급사
                     var mapping = productSupplierRepository.findByProduct(product)
                             .orElseThrow(() ->
                                     new CustomException(AiErrorCode.SUPPLIER_MAPPING_NOT_FOUND)
                             );
+
+                    // 1주일 기준 예측 수요
+                    int weeklyForecast = df.getYPred() != null ? df.getYPred() : 0;
+
+                    // 리드타임 기반 추가 수요
+                    Integer leadTimeDays = mapping.getLeadTimeDays();   // product_supplier.lead_time_days
+                    int leadTimeDemand = 0;
+                    if (leadTimeDays != null && leadTimeDays > 0) {
+                        leadTimeDemand = (int) Math.round(weeklyForecast * (leadTimeDays / 7.0));
+                    }
+
+                    // 창고 재고 + 안전재고
+                    var invOpt = warehouseInventoryRepository.findByProduct(product);
+                    int onHand = 0;
+                    int safety = 0;
+                    if (invOpt.isPresent()) {
+                        var inv = invOpt.get();
+                        onHand = inv.getOnHandQuantity() != null ? inv.getOnHandQuantity() : 0;
+                        safety = inv.getSafetyQuantity() != null ? inv.getSafetyQuantity() : 0;
+                    }
+
+                    // 본사 입고 예정 수량  - purchase_detail
+                    long inTransit = purchaseDetailRepository
+                            .sumOpenOrderQtyByProduct(product);
+
+                    // 필요 재고 계산
+                    int targetStock = weeklyForecast + leadTimeDemand + safety;
+
+                    //  최종 발주량 = 목표재고 - 현재고 - 입고예정
+                    long rawOrder = (long) targetStock - onHand - inTransit;
+                    int recommendedOrderQty = (rawOrder > 0) ? (int) rawOrder : 0;
+
 
                     SmartOrder so = SmartOrder.builder()
                             .supplier(mapping.getSupplier())
                             .product(product)
                             .demandForecast(df)
                             .targetWeek(df.getTargetWeek())
-                            .forecastQty(df.getYPred())
-                            .recommendedOrderQty(df.getYPred())
+                            .forecastQty(weeklyForecast)
+                            .recommendedOrderQty(recommendedOrderQty)
                             .smartOrderStatus(OrderStatus.DRAFT_AUTO)
                             .build();
 
                     so.setSystemUserIfNull(systemUser);
+
                     return so;
                 })
                 .map(smartOrderRepository::save)
