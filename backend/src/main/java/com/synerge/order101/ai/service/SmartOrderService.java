@@ -72,7 +72,7 @@ public class SmartOrderService {
                     int weeklyForecast = df.getYPred() != null ? df.getYPred() : 0;
 
                     // 리드타임 기반 추가 수요
-                    Integer leadTimeDays = mapping.getLeadTimeDays();   // product_supplier.lead_time_days
+                    Integer leadTimeDays = mapping.getLeadTimeDays();
                     int leadTimeDemand = 0;
                     if (leadTimeDays != null && leadTimeDays > 0) {
                         leadTimeDemand = (int) Math.round(weeklyForecast * (leadTimeDays / 7.0));
@@ -264,7 +264,7 @@ public class SmartOrderService {
         List<User> list = userRepository.findByRole(Role.SYSTEM);
 
         if (list.isEmpty()) {
-            throw new IllegalStateException("SYSTEM 유저를 찾을 수 없습니다.");
+            throw new CustomException(AiErrorCode.SYSTEM_USER_NOT_FOUND);
         }
 
         return list.get(0);
@@ -277,7 +277,7 @@ public class SmartOrderService {
         if (auth == null ||
                 !auth.isAuthenticated() ||
                 auth instanceof AnonymousAuthenticationToken) {
-            throw new IllegalStateException("로그인 정보가 없습니다.");
+            throw new CustomException(AiErrorCode.AUTHENTICATION_REQUIRED);
         }
 
         Object principal = auth.getPrincipal();
@@ -291,12 +291,11 @@ public class SmartOrderService {
             String username = userDetails.getUsername();
             return userRepository.findByEmail(username)
                     .orElseThrow(() ->
-                            new IllegalStateException("로그인 유저를 찾을 수 없습니다. username=" + username));
+                            new CustomException(AiErrorCode.AUTHENTICATED_USER_NOT_FOUND));
         }
 
 
-        throw new IllegalStateException(
-                "지원하지 않는 principal 타입: " + principal.getClass().getName());
+        throw new CustomException(AiErrorCode.UNSUPPORTED_PRINCIPAL_TYPE);
     }
 
 
