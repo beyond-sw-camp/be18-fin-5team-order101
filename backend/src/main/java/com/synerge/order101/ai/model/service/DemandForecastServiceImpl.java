@@ -1,9 +1,9 @@
-package com.synerge.order101.ai.service;
+package com.synerge.order101.ai.model.service;
 
 import com.synerge.order101.ai.exception.AiErrorCode;
 import com.synerge.order101.ai.model.dto.response.*;
 import com.synerge.order101.ai.model.entity.DemandForecast;
-import com.synerge.order101.ai.repository.DemandForecastRepository;
+import com.synerge.order101.ai.model.repository.DemandForecastRepository;
 import com.synerge.order101.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

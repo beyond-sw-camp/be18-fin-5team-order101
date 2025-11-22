@@ -1,4 +1,4 @@
-package com.synerge.order101.ai.service;
+package com.synerge.order101.ai.model.service;
 
 import com.synerge.order101.ai.exception.AiErrorCode;
 import com.synerge.order101.ai.model.dto.request.SmartOrderUpdateRequestDto;
@@ -8,8 +8,8 @@ import com.synerge.order101.ai.model.dto.response.SmartOrderLineItemResponseDto;
 import com.synerge.order101.ai.model.dto.response.SmartOrderResponseDto;
 import com.synerge.order101.ai.model.entity.DemandForecast;
 import com.synerge.order101.ai.model.entity.SmartOrder;
-import com.synerge.order101.ai.repository.DemandForecastRepository;
-import com.synerge.order101.ai.repository.SmartOrderRepository;
+import com.synerge.order101.ai.model.repository.DemandForecastRepository;
+import com.synerge.order101.ai.model.repository.SmartOrderRepository;
 import com.synerge.order101.common.enums.OrderStatus;
 import com.synerge.order101.common.exception.CustomException;
 import com.synerge.order101.product.model.repository.ProductSupplierRepository;

@@ -1,4 +1,4 @@
-package com.synerge.order101.ai.service;
+package com.synerge.order101.ai.model.service;
 
 import com.synerge.order101.ai.model.dto.request.SmartOrderUpdateRequestDto;
 import com.synerge.order101.ai.model.dto.response.SmartOrderDashboardResponseDto;
